@@ -31,7 +31,7 @@ This is a responsive property listing web application built with **React.js** an
 ### 1. Clone the repository
 ```bash
 git clone https://github.com/asyrafibr/PropMall.git
-cd your-repo-name
+cd PropMall
 npm install
 npm start
 
