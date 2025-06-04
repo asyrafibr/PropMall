@@ -5,9 +5,43 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-color: #f0f0f0 !important;
+  
 }
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+/* index.css */
+/* html, body, #root {
+  height: auto;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+} */
+/* index.css */
+
+/* Ensure full height for sticky footer layout */
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+    width: 100%;
+
+}
+
+
+/* Flex container for app */
+.app-wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* Main should fill remaining space */
+main.flex-fill {
+  flex: 1;
 }
