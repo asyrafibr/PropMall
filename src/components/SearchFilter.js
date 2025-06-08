@@ -16,7 +16,7 @@ const SearchFilter = ({
   setActiveTab,
 }) => {
   const { isLoggedIn } = useAuth();
-
+console.log()
   return (
     <div style={{ width: "100%", display: "flex", justifyContent: "center" }}>
       <div
@@ -112,8 +112,8 @@ const SearchFilter = ({
               >
                 <option value="">Select Location</option>
                 {locations.map((loc) => (
-                  <option key={loc.location_id} value={loc.location_id}>
-                    {loc.location_name}
+                  <option key={loc.location_id} value={loc.id_state}>
+                    {loc.state_name}
                   </option>
                 ))}
               </select>

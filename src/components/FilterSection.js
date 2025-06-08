@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import headerImage from "../image/Landing_Hero.jpg";
-import agentimage from "../image/Profile.jpg";
 import AgentBox from "../components/AgentBox";
 import { useAuth } from "../context/AuthContext";
+const isDesktop = window.innerWidth >= 768;
 
 const Filters = ({
   locations,
@@ -14,72 +14,72 @@ const Filters = ({
   setSelectedYear,
   setSearchTerm,
   handleSearch,
+  agent,
 }) => {
   const [activeTab, setActiveTab] = useState("rent");
-  const { isLoggedIn } = useAuth(); // ✅ Get login status
+  const { isLoggedIn } = useAuth();
+
+   useEffect(() => {
+  }, [locations])
 
   return (
     <div>
       <div
-        className="hero-section d-flex align-items-center justify-content-center"
+        className="hero-section d-flex flex-column flex-md-row align-items-start justify-content-center flex-wrap"
         style={{
           position: "relative",
           width: "100%",
-          height: "541px",
+          minHeight: "541px",
           backgroundImage: `url(${headerImage})`,
           backgroundSize: "cover",
           backgroundRepeat: "no-repeat",
           backgroundPosition: "center center",
-          color: "white",
+          color: "white",         padding: "20px",
         }}
       >
-        {isLoggedIn && <AgentBox />}
-
-        {/* Content */}
+        {/* AgentBox - responsive placement */}
         <div
-          className="d-flex flex-column align-items-center justify-content-center"
+          className="order-1 order-md-2 w-100 w-md-auto"
+          style={{
+            marginBottom: "40px",
+            paddingLeft: "20px",
+            paddingRight: "20px",
+          }}
+        >
+          <AgentBox />
+        </div>
+
+        {/* Main Content */}
+        <div
+          className="container-fluid order-2 order-md-1"
           style={{
             position: "relative",
             zIndex: 2,
-            width: "100%",
-            maxWidth: "1300px",
-            padding: "0 50px",
-            paddingTop:'80px'
+            flex: 1,
+            paddingTop: "150px",
+            paddingLeft: "100px",
+            paddingRight: "100px",
           }}
         >
-          {/* Headline */}
-          <h4
-            style={{
-              color: "white",
-              fontWeight: "bold",
-              marginBottom: "20px",
-              textAlign: "right",
-              width: "100%",
-            }}
-          >
+          <h4 className="text-white fw-bold text-end mb-4">
             Discover 20,000+ Dream Properties at HomesMatchKL.co
           </h4>
 
-          {/* Filters Box */}
           <div
             style={{
               backgroundColor: "rgba(0,0,0,0.6)",
               borderRadius: "8px",
               padding: "20px",
-              width: "100%",
             }}
           >
-            {/* Rent / Sell Toggle Buttons */}
-            <div style={{ marginBottom: "10px" }}>
+            {/* Rent / Sell Tabs */}
+            <div className="mb-3 d-flex">
               <button
-                className="btn"
+                className="btn text-white me-3"
                 onClick={() => setActiveTab("rent")}
                 style={{
-                  color: "white",
                   background: "transparent",
-                  border: "none",
-                  marginRight: "20px",
-                  borderRadius: "0px",
+                  borderRadius: 1,
                   borderBottom:
                     activeTab === "rent"
                       ? "3px solid #F4980E"
@@ -89,13 +89,11 @@ const Filters = ({
                 For Rent
               </button>
               <button
-                className="btn"
+                className="btn text-white"
                 onClick={() => setActiveTab("sell")}
                 style={{
-                  color: "white",
                   background: "transparent",
-                  border: "none",
-                  borderRadius: "0px",
+                  borderRadius: 1,
                   borderBottom:
                     activeTab === "sell"
                       ? "3px solid #F4980E"
@@ -104,18 +102,19 @@ const Filters = ({
               >
                 For Sale
               </button>
-              <div
-                style={{ borderBottom: "2px solid #3A3A3A", marginTop: "-2px" }}
-              ></div>
             </div>
 
+            <div
+              style={{
+                borderBottom: "2px solid #3A3A3A",
+                marginBottom: "15px",
+              }}
+            ></div>
+
             {/* Filters Row */}
-            <div className="row justify-content-left">
+            <div className="row g-3">
               {/* Location Dropdown */}
-              <div className="col-12 col-md-3 mb-3">
-                <label htmlFor="location" className="form-label text-white">
-                  Location:
-                </label>
+              <div className="col-12 col-md-3">
                 <select
                   id="location"
                   className="form-select"
@@ -123,32 +122,18 @@ const Filters = ({
                   value={selectedLocation}
                   style={{ height: "60px" }}
                 >
-                  <option value="">Select Location</option>
+                  <option value="">All States</option>
                   {locations.map((loc) => (
-                    <option key={loc.location_id} value={loc.location_id}>
-                      {loc.location_name}
+                    <option key={loc.id_state} value={loc.id_state}>
+                      {loc.state_name}
                     </option>
                   ))}
                 </select>
               </div>
 
-              {/* Search input + button container */}
-              <div className="col-12 col-md-9 d-flex align-items-start mb-3">
-                {/* Search label + input */}
-                <div
-                  style={{
-                    width: "834px",
-                    display: "flex",
-                    flexDirection: "column",
-                  }}
-                >
-                  <label
-                    htmlFor="search"
-                    className="form-label text-white"
-                    style={{ marginBottom: "6px" }}
-                  >
-                    Search:
-                  </label>
+              {/* Search + Button */}
+              <div className="col-12 col-md-9">
+                <div className="d-flex flex-column flex-md-row gap-3">
                   <input
                     id="search"
                     type="text"
@@ -156,71 +141,65 @@ const Filters = ({
                     placeholder="Search"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    style={{
-                      height: "60px",
-                      padding: "6px 12px",
-                      boxSizing: "border-box",
-                    }}
+                    style={{ height: "60px" }}
                   />
+                  <button
+                    className="btn btn-primary"
+                    onClick={handleSearch}
+                    style={{
+                      backgroundColor: "#F4980E",
+                      borderColor: "#F4980E",
+                      borderRadius: "8px",
+                      height: "60px",
+                      minWidth: "160px",
+                      whiteSpace: "nowrap",
+                    }}
+                  >
+                    Search...
+                  </button>
                 </div>
-
-                {/* Search button */}
-                <button
-                  className="btn btn-primary ms-3"
-                  onClick={handleSearch}
-                  style={{
-                    backgroundColor: "#F4980E",
-                    borderColor: "#F4980E",
-                    width: "160px",
-                    borderRadius: "8px",
-                    height: "60px",
-                    padding: "6px 0",
-                    boxSizing: "border-box",
-                    display: "flex",
-                    alignItems: "center",
-                    marginTop: "30px",
-                    justifyContent: "center",
-                  }}
-                >
-                  Search
-                </button>
               </div>
             </div>
 
-            {/* Additional Filter Dropdown Buttons Row */}
-            <div
-              className="d-flex gap-3 mt-3"
-              style={{ justifyContent: "flex-start" }}
-            >
-              {[
-                "All Categories",
-                "All Holding Types",
-                "Price Ranges (RM)",
-                "Bedroom(s)",
-                "Bathroom(s)",
-              ].map((label) => (
-                <button
-                  key={label}
-                  className="btn btn-link p-0 text-white d-flex align-items-center"
-                  style={{
-                    textDecoration: "none",
-                    border: "none",
-                    background: "transparent",
-                    fontWeight: "400",
-                    fontSize: "16px",
-                    fontFamily: "Poppins",
-                    cursor: "pointer",
-                  }}
-                  onClick={() => {
-                    // Optional: Add dropdown toggle logic here if needed
-                  }}
-                >
-                  {label}
-                  <span style={{ marginLeft: "6px", fontSize: "0.7rem" }}>
-                    ▼
-                  </span>
-                </button>
-              ))}
+            {/* Additional Filters Row */}
+            <div className="row mt-4">
+              <div className="col-12 d-flex flex-column flex-md-row gap-3">
+                {[
+                  "All Categories",
+                  "All Holding Types",
+                  "Price Ranges (RM)",
+                  "Bedroom(s)",
+                  "Bathroom(s)",
+                ].map((label) => (
+                  <button
+                    key={label}
+                    className="btn btn-link text-white p-0 d-flex align-items-center"
+                    style={{
+                      justifyContent: "space-between",
+                      width: "100%",
+                      textDecoration: "none",
+                      background: "transparent",
+                      border: "none",
+                      fontWeight: "400",
+                      fontSize: "16px",
+                      fontFamily: "Poppins",
+                    }}
+                  >
+                    <span style={{ flexGrow: 1, textAlign: "left" }}>
+                      {label}
+                    </span>
+                    <span
+                      style={{
+                        marginLeft: "6px",
+                        fontSize: "0.7rem",
+                        flexShrink: 0,
+                      }}
+                    >
+                      ▼
+                    </span>
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
         </div>

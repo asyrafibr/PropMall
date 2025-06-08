@@ -9,7 +9,7 @@ import React, {
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import "../SearchPage/SearchPage.css";
-import { getLocations, getPriceYears, getListings } from "../../api/axiosApi";
+import { getLocations, getListings } from "../../api/axiosApi";
 import debounce from "lodash.debounce";
 
 const SearchFilter = lazy(() => import("../../components/SearchFilter"));
@@ -44,22 +44,28 @@ const SearchPage = () => {
 
   const activeYear = selectedYear || currentYear.toString();
 
-  useEffect(() => {
+    useEffect(() => {
     const fetchFilterData = async () => {
       try {
         const locationRes = await getLocations();
-        setLocations(locationRes.data.locations);
+        console.log("test1", locationRes.data.states); // log raw data
 
-        if (!years.length) {
-          const yearRes = await getPriceYears();
-          setYears(yearRes.data.price_years);
-        }
+        setLocations(locationRes.data.states);
       } catch (error) {
         console.error("Error fetching filters:", error);
       }
     };
+
     fetchFilterData();
-  }, [years.length]);
+  }, []);
+
+  // This useEffect logs locations every time it updates
+  useEffect(() => {
+    if (locations.length > 0) {
+      console.log("test2", locations);
+    }
+  }, [locations]);
+
 
   const slugify = (text) =>
     text?.toLowerCase().trim().replace(/\s+/g, "-") || "";
@@ -74,7 +80,7 @@ const SearchPage = () => {
       const searchQuery = searchTerm.trim();
 
       const selectedLocationObj = locations.find(
-        (loc) => loc.location_id === locationId
+        (loc) => loc.id_state === locationId
       );
       setSearchedLocationName(selectedLocationObj?.location_name || "");
 
@@ -108,11 +114,14 @@ const SearchPage = () => {
   );
 
   const memoizedListings = useMemo(() => {
-    if (loading) return [...Array(5)].map((_, idx) => <ListingCardSkeleton key={idx} />);
-    if (products.length === 0 && hasSearched) return <NoResults />;
-    return products.map((product) => (
+    const productListing = products.featured_rows;
+    console.log("data listing123", products.featured_rows);
+    if (loading)
+      return [...Array(5)].map((_, idx) => <ListingCardSkeleton key={idx} />);
+    if (productListing.length === 0 && hasSearched) return <NoResults />;
+    return productListing.map((product) => (
       <ListingCard
-        key={product.property_id}
+        key={product.id_listing}
         product={product}
         years={years}
         handleViewDetails={handleViewDetails}
