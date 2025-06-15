@@ -121,14 +121,15 @@ const ProductList = () => {
 
   // Navigate to product details
   const handleViewDetails = (productId, title, location) => {
+    console.log("data test",productId,title,location)
     const titleSlug = slugify(title);
-    navigate(`/property/${titleSlug}`, {
-      state: {
-        productId,
-        title,
-        location,
-      },
-    });
+    // navigate(`/property/${titleSlug}`, {
+    //   state: {
+    //     productId,
+    //     title,
+    //     location,
+    //   },
+    // });
   };
 
   return (

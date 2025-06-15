@@ -48,7 +48,6 @@ const SearchPage = () => {
     const fetchFilterData = async () => {
       try {
         const locationRes = await getLocations();
-        console.log("test1", locationRes.data.states); // log raw data
 
         setLocations(locationRes.data.states);
       } catch (error) {
@@ -102,6 +101,7 @@ const SearchPage = () => {
   const handleViewDetails = useCallback(
     (productId, title, location) => {
       const titleSlug = slugify(title);
+      console.log('productid',productId)
       navigate(`/property/${titleSlug}`, {
         state: {
           productId,
@@ -114,8 +114,7 @@ const SearchPage = () => {
   );
 
   const memoizedListings = useMemo(() => {
-    const productListing = products.featured_rows;
-    console.log("data listing123", products.featured_rows);
+    const productListing = products;
     if (loading)
       return [...Array(5)].map((_, idx) => <ListingCardSkeleton key={idx} />);
     if (productListing.length === 0 && hasSearched) return <NoResults />;

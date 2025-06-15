@@ -19,8 +19,7 @@ const Filters = ({
   const [activeTab, setActiveTab] = useState("rent");
   const { isLoggedIn } = useAuth();
 
-   useEffect(() => {
-  }, [locations])
+  useEffect(() => {}, [locations]);
 
   return (
     <div>
@@ -34,7 +33,8 @@ const Filters = ({
           backgroundSize: "cover",
           backgroundRepeat: "no-repeat",
           backgroundPosition: "center center",
-          color: "white",         padding: "20px",
+          color: "white",
+          padding: "20px",
         }}
       >
         {/* AgentBox - responsive placement */}
@@ -61,7 +61,14 @@ const Filters = ({
             paddingRight: "100px",
           }}
         >
-          <h4 className="text-white fw-bold text-end mb-4">
+          <h4
+            className="text-white fw-bold text-end mb-4"
+            style={{
+              fontSize: "34px",
+              fontFamily: "Poppins",
+              fontWeight: 600,
+            }}
+          >
             Discover 20,000+ Dream Properties at HomesMatchKL.co
           </h4>
 
@@ -80,6 +87,9 @@ const Filters = ({
                 style={{
                   background: "transparent",
                   borderRadius: 1,
+                  fontSize: "16px",
+                  fontFamily: "Poppins",
+                  fontWeight: 400,
                   borderBottom:
                     activeTab === "rent"
                       ? "3px solid #F4980E"
@@ -94,6 +104,9 @@ const Filters = ({
                 style={{
                   background: "transparent",
                   borderRadius: 1,
+                  fontSize: "16px",
+                  fontFamily: "Poppins",
+                  fontWeight: 400,
                   borderBottom:
                     activeTab === "sell"
                       ? "3px solid #F4980E"
@@ -122,7 +135,16 @@ const Filters = ({
                   value={selectedLocation}
                   style={{ height: "60px" }}
                 >
-                  <option value="">All States</option>
+                  <option
+                    value=""
+                    style={{
+                      fontSize: "16px",
+                      fontFamily: "Poppins",
+                      fontWeight: 400,
+                    }}
+                  >
+                    All States
+                  </option>
                   {locations.map((loc) => (
                     <option key={loc.id_state} value={loc.id_state}>
                       {loc.state_name}
@@ -139,8 +161,8 @@ const Filters = ({
                     type="text"
                     className="form-control"
                     placeholder="Search"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
+                    // value={searchTerm}
+                    // onChange={(e) => setSearchTerm(e.target.value)}
                     style={{ height: "60px" }}
                   />
                   <button
@@ -153,9 +175,12 @@ const Filters = ({
                       height: "60px",
                       minWidth: "160px",
                       whiteSpace: "nowrap",
+                      fontSize: "16px",
+                      fontFamily: "Poppins",
+                      fontWeight: 400,
                     }}
                   >
-                    Search...
+                    Search
                   </button>
                 </div>
               </div>

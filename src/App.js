@@ -7,6 +7,7 @@ import {
   useLocation,
 } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
+import { TemplateProvider } from "./context/TemplateContext"; // ✅ Import
 
 import ProductList from "./pages/ProductList";
 import ProductDetail from "./pages/ProductDetail";
@@ -16,12 +17,12 @@ import BusinessCard from "./components/BusinessCard";
 import Footer from "./components/Footer";
 import Header from "./components/Header";
 import DoneDeal from "./components/DoneDeal";
+import ProductDetailPage from "./pages/ProductDetailPage";
+import DoneDealDetail from "./components/DoneDealsDetail";
 
 import "bootstrap-icons/font/bootstrap-icons.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./index.css";
-import ProductDetailPage from "./pages/ProductDetailPage";
-import DoneDealDetail from "./components/DoneDealsDetail";
 
 const Layout = () => {
   const location = useLocation();
@@ -34,10 +35,10 @@ const Layout = () => {
         <Route path="/" element={<Dashboard />} />
         <Route path="/search" element={<SearchProduct />} />
         <Route path="/donedeal/:id" element={<DoneDealDetail />} />
-
         <Route path="/donedeal" element={<DoneDeal />} />
         <Route path="/property/:slug" element={<ProductDetailPage />} />
         <Route path="/business-card" element={<BusinessCard />} />
+        {/* Add other routes here */}
       </Routes>
       {!isBusinessCardPage && <Footer />}
     </>
@@ -46,9 +47,11 @@ const Layout = () => {
 
 const App = () => (
   <AuthProvider>
-    <Router>
-      <Layout />
-    </Router>
+    <TemplateProvider>
+      <Router>
+        <Layout />
+      </Router>
+    </TemplateProvider>
   </AuthProvider>
 );
 

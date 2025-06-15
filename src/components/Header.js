@@ -1,9 +1,12 @@
+// components/Header.js
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { useTemplate } from "../context/TemplateContext"; // ✅ Import Template Context
 
 const Navbar = () => {
   const { isLoggedIn, login, logout } = useAuth();
+  const { template, switchTemplate } = useTemplate(); // ✅ Use Template Context
   const navigate = useNavigate();
 
   const handleLogoClick = (e) => {
@@ -12,16 +15,16 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="navbar navbar-expand-lg bg-white">
+    <nav className="navbar navbar-expand-lg bg-white px-3">
       <div className="container-fluid">
-        {/* Brand/logo */}
         <a
           href="/"
           className="navbar-brand fs-5 fw-semibold text-start"
           onClick={handleLogoClick}
-          style={{ fontFamily: "Poppins, sans-serif", cursor: "pointer" }}
+          style={{ fontFamily: "Poppins, sans-serif", cursor: "pointer" , fontSize:'20px', fontWeight:600}}
         >
-          TeslaAgent
+          TESLA REALTY SDN. BHD
+
         </a>
 
         <button
@@ -42,32 +45,32 @@ const Navbar = () => {
         >
           <ul className="navbar-nav ms-auto align-items-xl-center">
             <li className="nav-item">
-              <Link className="nav-link text-nowrap" to="/">
+              <Link className="nav-link text-nowrap" to="/" style={{fontSize:'16px', fontWeight:400, fontFamily:"Poppins"}}>
                 Sale
               </Link>
             </li>
             <li className="nav-item">
-              <Link className="nav-link text-nowrap" to="/rent">
+              <Link className="nav-link text-nowrap" to="/rent"  style={{fontSize:'16px', fontWeight:400, fontFamily:"Poppins"}}>
                 Rent
               </Link>
             </li>
             <li className="nav-item">
-              <Link className="nav-link text-nowrap" to="/new-project">
+              <Link className="nav-link text-nowrap" to="/new-project"  style={{fontSize:'16px', fontWeight:400, fontFamily:"Poppins"}}>
                 New Project
               </Link>
             </li>
             <li className="nav-item">
-              <Link className="nav-link text-nowrap" to="/articles">
+              <Link className="nav-link text-nowrap" to="/articles"  style={{fontSize:'16px', fontWeight:400, fontFamily:"Poppins"}}>
                 Articles
               </Link>
             </li>
             <li className="nav-item">
-              <Link className="nav-link text-nowrap" to="/about">
+              <Link className="nav-link text-nowrap" to="/about"  style={{fontSize:'16px', fontWeight:400, fontFamily:"Poppins"}}>
                 About Me
               </Link>
             </li>
             <li className="nav-item">
-              <Link className="nav-link text-nowrap" to="/donedeal">
+              <Link className="nav-link text-nowrap" to="/donedeal"  style={{fontSize:'16px', fontWeight:400, fontFamily:"Poppins"}}>
                 Done Deals
               </Link>
             </li>
@@ -78,7 +81,7 @@ const Navbar = () => {
                 id="iWantToDropdown"
                 data-bs-toggle="dropdown"
                 aria-expanded="false"
-                style={{ textDecoration: "none" }}
+                style={{ textDecoration: "none",fontSize:'16px', fontWeight:400, fontFamily:"Poppins"}}
               >
                 I Want To
               </button>
@@ -87,48 +90,36 @@ const Navbar = () => {
                 aria-labelledby="iWantToDropdown"
               >
                 <li>
-                  <Link className="dropdown-item" to="/buy">
+                  <Link className="dropdown-item" to="/buy"  style={{fontSize:'16px', fontWeight:400, fontFamily:"Poppins"}}>
                     Buy a Property
                   </Link>
                 </li>
                 <li>
-                  <Link className="dropdown-item" to="/rent">
+                  <Link className="dropdown-item" to="/rent"  style={{fontSize:'16px', fontWeight:400, fontFamily:"Poppins"}}>
                     Rent a Property
                   </Link>
                 </li>
                 <li>
-                  <Link className="dropdown-item" to="/sell">
+                  <Link className="dropdown-item" to="/sell"  style={{fontSize:'16px', fontWeight:400, fontFamily:"Poppins"}}>
                     Sell a Property
                   </Link>
                 </li>
-                {!isLoggedIn && (
-                  <>
-                    <li>
-                      <Link className="dropdown-item" to="/signup">
-                        Sign Up
-                      </Link>
-                    </li>
-                    <li>
-                      <Link className="dropdown-item" to="/login">
-                        Log In
-                      </Link>
-                    </li>
-                  </>
-                )}
-                {isLoggedIn && (
-                  <li>
-                    <button
-                      className="dropdown-item"
-                      onClick={() => {
-                        logout();
-                        navigate("/");
-                      }}
-                    >
-                      Log Out
-                    </button>
-                  </li>
-                )}
               </ul>
+            </li>
+
+            {/* ✅ Template Switch Dropdown */}
+            <li className="nav-item ms-3">
+              <select
+                className="form-select"
+                style={{ width: "150px" }}
+                value={template}
+                onChange={(e) => switchTemplate(e.target.value)}
+              >
+                <option value="template1">Template 1</option>
+                <option value="template2">Template 2</option>
+                <option value="template3">Template 3</option>
+                <option value="template4">Template 4</option>
+              </select>
             </li>
           </ul>
         </div>

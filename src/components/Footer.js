@@ -1,7 +1,10 @@
 // src/components/Footer.js
 import React from "react";
+import { useTemplate } from "../context/TemplateContext";
 
 const Footer = () => {
+    const { template } = useTemplate();
+
   return (
     <footer
       style={{

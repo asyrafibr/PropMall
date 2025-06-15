@@ -14,37 +14,41 @@ const ProductDetail = () => {
   const productId = location.state?.productId;
   const [previewImage, setPreviewImage] = useState(null);
   const { isLoggedIn } = useAuth(); // ✅ Get login status
-
-  useEffect(() => {
+ useEffect(() => {
     const fetchProductDetails = async () => {
-      try {
+         try {
         const response = await axios.post(
-          "https://interview.propmall.my/listing/detail",
-          { property_id: productId },
+          "https://dev-agentv3.propmall.net/graph/me/listing/info",
+         
           {
             headers: {
-              Authentication: "TOKEN 67ce6d78ad121633723921",
               "Content-Type": "application/json",
             },
           }
         );
-        if (response.data.status === "ok") {
-          setProduct(response.data.listing);
-        } else {
-          setError("Failed to fetch product details.");
-        }
-      } catch {
-        setError("Error fetching product details.");
+          console.log('ID PRODICY',productId)
+
+        console.log("🧾 Full response", response.data);
+        setProduct(response.data.listing_info);
+      } catch (err) {
+        setError(err.message || "Something went wrong");
       } finally {
         setLoading(false);
       }
     };
-    if (productId) fetchProductDetails();
-    else {
-      setError("Missing property ID.");
-      setLoading(false);
+
+    if (productId) {
+      fetchProductDetails();
     }
   }, [productId]);
+ 
+
+  // 🧠 Log product when it updates
+  useEffect(() => {
+    if (product) {
+      console.log("Updated produc123t:", product);
+    }
+  }, [product]);
 
   const whatsappMessage = `Hello My Lovely Agent,\nI'm interested in the property that you advertise at website\n${window.location.href}\nand I would love to visit this property.\nMy name is:`;
 
@@ -71,42 +75,26 @@ const ProductDetail = () => {
       className="container "
       style={{ maxWidth: "1300px", paddingLeft: "50px", paddingRight: "50px" }}
     >
-   {isLoggedIn && (
-          <div
-            style={{
-              width: "100vw", // Full viewport width
-              position: "relative",
-              left: "50%",
-              right: "50%",
-              marginLeft: "-50vw",
-              marginRight: "-50vw",
-              background: "#F0F0F0", // Optional background to distinguish
-              padding: "50px 0"
-              
-            }}
-          >
-            <div style={{ maxWidth: "1300px", margin: "0 auto" }}>
-              <AgentBox />
-            </div>
-          </div>
-        )}
-      <div style={{paddingTop:isLoggedIn == true ?'100px':'80px'}}>
+      <div style={{ maxWidth: "1300px", margin: "0 auto" }}>
+        <AgentBox />
+      </div>
+      <div style={{ paddingTop: "100px" }}>
         <text className="fw-bold" style={{ fontSize: "20px" }}>
-          {product.property_title}
+          {product.ads_title}
         </text>
       </div>
       <div className="card shadow-sm">
         {/* Responsive Images */}
-        {product?.property_photos?.length > 0 && (
+        {product?.photos?.length > 0 && (
           <div
             className="d-flex flex-lg-row flex-column mb-4"
             style={{ gap: "12px", alignItems: "flex-start" }}
           >
             {/* Large Image */}
             <img
-              src={product.property_photos[0]}
+              src={product.photos[0]}
               alt="Main Property"
-              onClick={() => setPreviewImage(product.property_photos[0])}
+              onClick={() => setPreviewImage(product.photos[0])}
               style={{
                 width: "100%",
                 maxWidth: 646,
@@ -134,13 +122,13 @@ const ProductDetail = () => {
             >
               {[1, 2, 3, 4].map(
                 (i) =>
-                  product.property_photos[i] && (
+                  product.photos[i] && (
                     <img
                       key={i}
-                      src={product.property_photos[i]}
+                      src={product.photos[i]}
                       alt={`Property ${i + 1}`}
                       onClick={() =>
-                        setPreviewImage(product.property_photos[i])
+                        setPreviewImage(product.photos[i])
                       }
                       style={{
                         width: "100%",
@@ -161,11 +149,11 @@ const ProductDetail = () => {
         <div className="row g-4 p-4">
           <div className="col-lg-8">
             <h5 className="fw-bold text-dark mb-2">
-              RM {parseInt(product.price).toLocaleString()}
+              RM {product.price}
             </h5>
             <p className="mb-1">{product.property_title}</p>
             <small className="text-muted d-block mb-3">
-              {product.property_location}
+              {product.location_state}
             </small>
 
             <div className="d-flex justify-content-start flex-wrap gap-3">
@@ -174,14 +162,14 @@ const ProductDetail = () => {
                 style={{ gap: "6px", fontSize: "16px", color: "#444" }}
               >
                 <FaBed />
-                {product.property_room} beds
+                {product.room} beds
               </span>
               <span
                 className="d-flex align-items-center"
                 style={{ gap: "6px", fontSize: "16px", color: "#444" }}
               >
                 <FaBath />
-                {product.property_bathroom} baths
+                {product.bathroom} baths
               </span>
             </div>
           </div>
@@ -271,7 +259,7 @@ const ProductDetail = () => {
               <div className="col-6">
                 <strong>Type:</strong>
                 <br />
-                {product.property_type}
+                {product.property_type_description}
               </div>
               <div className="col-6">
                 <strong>Land Title:</strong>
@@ -281,12 +269,12 @@ const ProductDetail = () => {
               <div className="col-6">
                 <strong>Title Type:</strong>
                 <br />
-                {product.property_title_type}
+                {product.property_title}
               </div>
               <div className="col-6">
                 <strong>Lot:</strong>
                 <br />
-                {product.bumi_lot}
+                {product.property_lot_type_description}
               </div>
               <div className="col-6">
                 <strong>Tenure:</strong>
@@ -296,7 +284,7 @@ const ProductDetail = () => {
               <div className="col-6">
                 <strong>Size:</strong>
                 <br />
-                {product.property_built_size} sqft
+                {product.built_size} sqft
               </div>
             </div>
           </div>

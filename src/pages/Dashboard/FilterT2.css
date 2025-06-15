@@ -1,0 +1,15 @@
+/* components/HeroSection.css */
+.hero-section h2 {
+  font-size: 1.8rem;
+}
+
+.filter-box {
+  background-color: rgba(0, 0, 0, 0.7); /* semi-transparent background */
+  color: white;
+  flex-wrap: wrap;
+}
+
+.filter-box .form-select,
+.filter-box .btn {
+  font-size: 0.9rem;
+}

@@ -36,7 +36,6 @@ const DoneDealDetail = (id) => {
           }
         );
         setListingDetail(response.data.donedeal_info);
-        console.log("data detail", response.data.donedeal_info);
       } catch (err) {
         setError(err.message || "Something went wrong");
       } finally {
