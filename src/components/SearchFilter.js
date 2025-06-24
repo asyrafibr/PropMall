@@ -16,30 +16,18 @@ const SearchFilter = ({
   setActiveTab,
 }) => {
   const { isLoggedIn } = useAuth();
-console.log()
+
   return (
     <div style={{ width: "100%", display: "flex", justifyContent: "center" }}>
-      <div
-        style={{
-          width: "100%",
-          maxWidth: "1300px",
-          position: "relative",
-          zIndex: 2,
-        }}
-      >
-        {/* ✅ AgentBox with no side padding */}
+      <div style={{ width: "100%", maxWidth: "1300px", position: "relative", zIndex: 2 }}>
+        {/* ✅ AgentBox with full-width container (not sticky) */}
         {isLoggedIn && (
           <div
             style={{
-              width: "100vw", // Full viewport width
-              position: "relative",
-              left: "50%",
-              right: "50%",
+              width: "100vw",
               marginLeft: "-50vw",
-              marginRight: "-50vw",
-              background: "#F0F0F0", // Optional background to distinguish
-              padding: "20px 0",paddingBottom:'200px'
-              
+              background: "#F0F0F0",
+              padding: "20px 0",
             }}
           >
             <div style={{ maxWidth: "1300px", margin: "0 auto" }}>
@@ -48,9 +36,10 @@ console.log()
           </div>
         )}
 
-        {/* ✅ Filters Box */}
+        {/* ✅ Sticky Filters Box */}
         <div
           style={{
+         
             backgroundColor: "#FAFAFA",
             borderRadius: "8px",
             padding: "20px 15px",
@@ -69,9 +58,7 @@ console.log()
                 marginRight: "20px",
                 borderRadius: "0px",
                 borderBottom:
-                  activeTab === "rent"
-                    ? "3px solid #F4980E"
-                    : "3px solid transparent",
+                  activeTab === "rent" ? "3px solid #F4980E" : "3px solid transparent",
               }}
             >
               Rent
@@ -85,9 +72,7 @@ console.log()
                 border: "none",
                 borderRadius: "0px",
                 borderBottom:
-                  activeTab === "sell"
-                    ? "3px solid #F4980E"
-                    : "3px solid transparent",
+                  activeTab === "sell" ? "3px solid #F4980E" : "3px solid transparent",
               }}
             >
               Sale
@@ -100,7 +85,7 @@ console.log()
           {/* Filters Row */}
           <div className="row justify-content-left">
             <div className="col-12 col-md-3 mb-3">
-              <label htmlFor="location" className="form-label text-white">
+              <label htmlFor="location" className="form-label">
                 Location:
               </label>
               <select
@@ -110,7 +95,7 @@ console.log()
                 value={selectedLocation}
                 style={{ height: "60px" }}
               >
-                <option value="">Select Location</option>
+                <option value="">All Location</option>
                 {locations.map((loc) => (
                   <option key={loc.location_id} value={loc.id_state}>
                     {loc.state_name}
@@ -127,11 +112,7 @@ console.log()
                   flexDirection: "column",
                 }}
               >
-                <label
-                  htmlFor="search"
-                  className="form-label text-white"
-                  style={{ marginBottom: "6px" }}
-                >
+                <label htmlFor="search" className="form-label" style={{ marginBottom: "6px" }}>
                   Search:
                 </label>
                 <input

@@ -31,7 +31,7 @@ const AgentBox = () => {
   return (
     <div
       style={{
-        position: "absolute",
+        position: "relative",
         inset: 0,
         zIndex: 1,
         height: "146px",

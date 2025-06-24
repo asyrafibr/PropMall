@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import Filters from "../../components/FilterSection";
 import { useAuth } from "../../context/AuthContext";
@@ -14,7 +14,7 @@ import { type } from "@testing-library/user-event/dist/type";
 import { useTemplate } from "../../context/TemplateContext";
 import DashboardListingT1 from "./DashboardListingT1";
 import FilterT2 from "./DashboardT2";
-
+const data = {};
 const Dashboard = () => {
   const { isLoggedIn } = useAuth();
   const navigate = useNavigate();
@@ -39,6 +39,7 @@ const Dashboard = () => {
 
         const feaListRes = await getFeaturedList();
         setFeaturedList(feaListRes.data.featured_search);
+        console.log("TEST", feaListRes);
 
         const locationRes = await getLocations();
         setLocations(locationRes.data.states);
@@ -111,7 +112,7 @@ const Dashboard = () => {
   }, []);
 
   const handleSearch = async () => {
-    const locationId = selectedLocation || "1101";
+    const locationId = selectedLocation;
     const selectedLocationObj = locations.find(
       (loc) => loc.id_state === locationId
     );
@@ -153,6 +154,8 @@ const Dashboard = () => {
 
     try {
       const response = await getListings(payload);
+      console.log("response", response.data);
+
       const stingtype = String(locationId);
       console.log("response", response.data.listing_search);
 
@@ -171,6 +174,23 @@ const Dashboard = () => {
       console.error("Error fetching listings:", error);
     }
   };
+
+  const slugify = (text) =>
+    text?.toLowerCase().trim().replace(/\s+/g, "-") || "";
+  const handleViewDetails = useCallback(
+    (productId, title, location) => {
+      const titleSlug = slugify(title);
+      console.log("productid", productId);
+      navigate(`/property/${titleSlug}`, {
+        state: {
+          productId,
+          title,
+          location,
+        },
+      });
+    },
+    [navigate]
+  );
   const renderByTemplate = () => {
     switch (template) {
       case "template1":
@@ -192,12 +212,16 @@ const Dashboard = () => {
               setActiveTab={setActiveTab}
             />
             <DashboardListingT1
+              handleViewDetails={handleViewDetails}
               listings={featuredList.featured_rows}
             ></DashboardListingT1>
           </>
         );
       case "template2":
-        return <><FilterT2   locations={locations}
+        return (
+          <>
+            <FilterT2
+              locations={locations}
               agent={agent}
               years={years}
               isLoggedIn={isLoggedIn}
@@ -209,10 +233,13 @@ const Dashboard = () => {
               setSearchTerm={setSearchTerm}
               handleSearch={handleSearch}
               activeTab={activeTab}
-              setActiveTab={setActiveTab}></FilterT2>
-           <DashboardListingT1
+              setActiveTab={setActiveTab}
+            ></FilterT2>
+            <DashboardListingT1
               listings={featuredList.featured_rows}
-            ></DashboardListingT1></>;
+            ></DashboardListingT1>
+          </>
+        );
       case "template3":
         return null;
       case "template4":

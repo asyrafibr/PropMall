@@ -11,12 +11,20 @@ const ListingCard = ({ product, handleViewDetails }) => {
     built_size,
     location_area,
     location_state,
+    listing_modus,
+    below_market,
     photos,
   } = product;
 
   const location = `${location_area}, ${location_state}`;
-  const photo1 = photos?.[0] || "";
-  const photo2 = photos?.[1] || photo1;
+  const photo1 = photos?.[0] || "https://via.placeholder.com/860x300";
+
+  const modus = listing_modus?.toUpperCase();
+  const isForSale = modus === "FOR SALE";
+  const isForRent = modus === "FOR RENT";
+  const statusText = isForSale ? "For Sale" : isForRent ? "For Rent" : "";
+  const statusColor = isForSale ? "#FF7A00" : isForRent ? "#007B83" : "#ccc";
+  const isBelowMarket = below_market === "Y";
 
   return (
     <div
@@ -29,39 +37,97 @@ const ListingCard = ({ product, handleViewDetails }) => {
     >
       <div className="card" style={{ maxWidth: "900px", width: "100%" }}>
         <div className="p-3">
-          {/* Images Row */}
-          <div style={{ display: "flex", gap: "10px", marginBottom: "15px" }}>
+          {/* Image with Badges */}
+          <div style={{ position: "relative", marginBottom: "15px" }}>
             <img
               src={photo1}
               alt={ads_title}
               style={{
-                width: "50%",
-                height: "200px",
+                width: "100%",
+                height: "300px",
                 objectFit: "cover",
                 borderRadius: "6px",
               }}
             />
-            <img
-              src={photo2}
-              alt={ads_title}
+
+            {/* Tag Badges (top-left) */}
+            {(statusText || isBelowMarket) && (
+              <div
+                style={{
+                  position: "absolute",
+                  top: "10px",
+                  left: "10px",
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "8px",
+                  zIndex: 2,
+                }}
+              >
+                {statusText && (
+                  <div
+                    style={{
+                      backgroundColor: statusColor,
+                      color: "white",
+                      borderRadius: "4px",
+                      padding: "4px 12px",
+                      fontSize: "14px",
+                      fontWeight: 600,
+                      textAlign:"left",
+                      maxWidth: "80px",
+                    }}
+                  >
+                    {statusText}
+                  </div>
+                )}
+                {isBelowMarket && (
+                  <div
+                    style={{
+                      backgroundColor: "#7C9A2C",
+                      color: "white",
+                      borderRadius: "4px",
+                      padding: "4px 12px",
+                      fontSize: "14px",
+                      fontWeight: 600,
+                      textAlign: "center",
+                      minWidth: "90px",
+                    }}
+                  >
+                    Below Market
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Exclusive Ribbon (top-right corner) */}
+            <div
+              className="position-absolute"
               style={{
-                width: "50%",
-                height: "200px",
-                objectFit: "cover",
-                borderRadius: "6px",
+                top: "38px",
+                right: "-8px",
+                transform: "rotate(45deg)",
+                backgroundColor: "#f6b400",
+                color: "white",
+                width: "120px",
+                height: "28px",
+                textAlign: "center",
+                fontWeight: "600",
+                fontSize: "0.75rem",
+                zIndex: 3,
+                whiteSpace: "nowrap",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontFamily: "Poppins",
+                pointerEvents: "none",
               }}
-            />
+            >
+              Exclusive
+            </div>
           </div>
 
           {/* Price + Save */}
           <div className="d-flex justify-content-between align-items-center mb-2">
-            <div
-              style={{
-                fontWeight: 600,
-                fontSize: "20px",
-                fontFamily: "Poppins, sans-serif",
-              }}
-            >
+            <div style={{ fontWeight: 600, fontSize: "20px" }}>
               RM {price}
             </div>
             <button
@@ -111,7 +177,7 @@ const ListingCard = ({ product, handleViewDetails }) => {
             {location}
           </div>
 
-          {/* Built Size */}
+          {/* Built-up Size */}
           {built_size && (
             <div
               style={{
@@ -125,7 +191,7 @@ const ListingCard = ({ product, handleViewDetails }) => {
             </div>
           )}
 
-          {/* Room/Bath + Buttons */}
+          {/* Room / Bath and Buttons */}
           <div
             className="d-flex justify-content-between align-items-start mt-3 flex-wrap"
             style={{ gap: "20px" }}

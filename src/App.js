@@ -7,7 +7,7 @@ import {
   useLocation,
 } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
-import { TemplateProvider } from "./context/TemplateContext"; // ✅ Import
+import { TemplateProvider } from "./context/TemplateContext";
 
 import ProductList from "./pages/ProductList";
 import ProductDetail from "./pages/ProductDetail";
@@ -26,11 +26,14 @@ import "./index.css";
 
 const Layout = () => {
   const location = useLocation();
-  const isBusinessCardPage = location.pathname === "/business-card";
+
+  // Hide header/footer ONLY for /business-card route
+  const hideHeaderFooter = location.pathname === "/business-card";
 
   return (
     <>
-      {!isBusinessCardPage && <Header />}
+      {!hideHeaderFooter && <Header />}
+
       <Routes>
         <Route path="/" element={<Dashboard />} />
         <Route path="/search" element={<SearchProduct />} />
@@ -38,9 +41,10 @@ const Layout = () => {
         <Route path="/donedeal" element={<DoneDeal />} />
         <Route path="/property/:slug" element={<ProductDetailPage />} />
         <Route path="/business-card" element={<BusinessCard />} />
-        {/* Add other routes here */}
+        {/* Add more routes if needed */}
       </Routes>
-      {!isBusinessCardPage && <Footer />}
+
+      {!hideHeaderFooter && <Footer />}
     </>
   );
 };

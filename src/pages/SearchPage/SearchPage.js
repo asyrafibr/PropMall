@@ -38,9 +38,13 @@ const SearchPage = () => {
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState(state?.searchType || "rent");
   const [searchType, setSearchType] = useState(state?.searchType || null);
+  const [currentPage, setCurrentPage] = useState(1);
+const itemsPerPage = 30;
   const [searchedLocationName, setSearchedLocationName] = useState(
     state?.selectedLocationName || ""
   );
+const totalPages = Math.ceil(products.length / itemsPerPage);
+const pageNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
 
   const activeYear = selectedYear || currentYear.toString();
 
@@ -113,21 +117,26 @@ const SearchPage = () => {
     [navigate]
   );
 
-  const memoizedListings = useMemo(() => {
-    const productListing = products;
-    if (loading)
-      return [...Array(5)].map((_, idx) => <ListingCardSkeleton key={idx} />);
-    if (productListing.length === 0 && hasSearched) return <NoResults />;
-    return productListing.map((product) => (
-      <ListingCard
-        key={product.id_listing}
-        product={product}
-        years={years}
-        handleViewDetails={handleViewDetails}
-        activeYear={activeYear}
-      />
-    ));
-  }, [loading, products, years, handleViewDetails, activeYear, hasSearched]);
+ const memoizedListings = useMemo(() => {
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedProducts = products.slice(startIndex, endIndex);
+
+  if (loading)
+    return [...Array(5)].map((_, idx) => <ListingCardSkeleton key={idx} />);
+  if (products.length === 0 && hasSearched) return <NoResults />;
+  
+  return paginatedProducts.map((product) => (
+    <ListingCard
+      key={product.id_listing}
+      product={product}
+      years={years}
+      handleViewDetails={handleViewDetails}
+      activeYear={activeYear}
+    />
+    
+  ));
+}, [loading, products, years, handleViewDetails, activeYear, hasSearched, currentPage]);
 
   return (
     <div
@@ -153,21 +162,44 @@ const SearchPage = () => {
         />
       </Suspense>
 
-      <div className="results-wrapper mt-4">
-        <div className="listings order-2 order-lg-1">
-          <Suspense fallback={<div>Loading listings...</div>}>
-            {memoizedListings}
-          </Suspense>
-        </div>
-        <div className="sidebar order-1 order-lg-2">
-          <Suspense fallback={<div>Loading sidebar...</div>}>
-            <SidebarFilters
-              selectedLocationName={searchedLocationName}
-              searchType={searchType}
-            />
-          </Suspense>
-        </div>
-      </div>
+    <div className="container mt-4">
+  <div className="row g-5"> {/* g-2 = reduced gutter spacing */}
+    <div className="col-lg-8 order-2 order-lg-1">
+      <Suspense fallback={<div>Loading listings...</div>}>
+        {memoizedListings}
+      </Suspense>
+    </div>
+    
+    <div className="col-lg-4 order-1 order-lg-2">
+      <Suspense fallback={<div>Loading sidebar...</div>}>
+        <SidebarFilters
+          selectedLocationName={searchedLocationName}
+          searchType={searchType}
+        />
+      </Suspense>
+    </div>
+    
+  </div>
+</div>
+<div className="d-flex justify-content-center my-4 flex-wrap">
+  {totalPages > 1 && (
+  <div className="d-flex justify-content-center my-4 flex-wrap">
+    {pageNumbers.map((page) => (
+      <button
+        key={page}
+        onClick={() => setCurrentPage(page)}
+        className={`btn mx-1 ${
+          currentPage === page ? "btn-primary" : "btn-outline-primary"
+        }`}
+        style={{ minWidth: "40px" }}
+      >
+        {page}
+      </button>
+    ))}
+  </div>
+)}
+</div>
+
     </div>
   );
 };

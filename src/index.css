@@ -6,7 +6,11 @@ body {
   background-color: #f0f0f0 !important;
   
 }
-
+.no-scroll {
+  overflow: hidden !important;
+  height: 100vh;
+  position: relative;
+}
 code {
   font-family: 'Poppins';
 }

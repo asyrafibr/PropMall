@@ -1,0 +1,111 @@
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden; /* ✅ prevent scroll */
+}
+
+.modal-content {
+  position: relative;
+  background: rgba(0, 0, 0, 0); /* or white or any non-transparent */
+  border-radius: 8px;
+  padding: 20px;
+  max-width: 50%;
+  max-height: 90%;
+  width: 100%;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow: hidden; /* ✅ prevent scroll */
+}
+
+.modal-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  overflow: hidden; /* ✅ prevent scroll */
+}
+
+.modal-image {
+  max-width: 100%;
+  max-height: 60vh; /* limit height to keep space for thumbnails */
+  object-fit: contain;
+  margin-bottom: 10px;
+}
+
+.image-counter {
+    color: white;           /* ✅ Make text white */
+  font-weight: bold;
+  margin-top: 10px;
+  text-align: center;
+}
+
+.thumbnail-container {
+  display: flex;
+  gap: 8px;
+  padding: 10px 0;
+  margin-top: 10px;
+  max-width: 100%;
+  overflow-x: auto; /* ✅ allow scroll only here if needed */
+  overflow-y: hidden;
+}
+
+.thumbnail-container.center {
+  justify-content: center;
+}
+
+.thumbnail {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border: 2px solid transparent;
+  cursor: pointer;
+  opacity: 0.6;
+  transition: all 0.2s ease;
+  flex-shrink: 0; /* prevent shrinking in overflow */
+}
+
+.thumbnail.active {
+  border-color: #826044;
+  opacity: 1;
+}
+
+.close-button {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  font-size: 28px;
+  border: none;
+  background: transparent;
+  color: #000;
+  cursor: pointer;
+}
+
+.nav-button {
+  position: absolute;
+  top: 50%;
+  font-size: 32px;
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  transform: translateY(-50%);
+  z-index: 10;
+}
+
+.nav-button.prev {
+  left: 10px;
+}
+
+.nav-button.next {
+  right: 10px;
+}
