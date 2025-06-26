@@ -14,6 +14,7 @@ const ListingCard = ({ product, handleViewDetails }) => {
     listing_modus,
     below_market,
     photos,
+    monetary_currency,
   } = product;
 
   const location = `${location_area}, ${location_state}`;
@@ -38,97 +39,107 @@ const ListingCard = ({ product, handleViewDetails }) => {
       <div className="card" style={{ maxWidth: "900px", width: "100%" }}>
         <div className="p-3">
           {/* Image with Badges */}
-          <div style={{ position: "relative", marginBottom: "15px" }}>
-            <img
-              src={photo1}
-              alt={ads_title}
-              style={{
-                width: "100%",
-                height: "300px",
-                objectFit: "cover",
-                borderRadius: "6px",
-              }}
-            />
+        <div
+  style={{
+    position: "relative",
+    marginBottom: "15px",
+    overflow: "hidden", // ✅ Ensures anything outside the box (e.g. ribbon) is clipped
+    borderRadius: "6px", // ✅ Optional: match image border
+    height: "300px",     // ✅ Match image height
+  }}
+>
+  <img
+    src={photo1}
+    alt={ads_title}
+    style={{
+      width: "100%",
+      height: "100%",
+      objectFit: "cover",
+      display: "block",
+    }}
+  />
 
-            {/* Tag Badges (top-left) */}
-            {(statusText || isBelowMarket) && (
-              <div
-                style={{
-                  position: "absolute",
-                  top: "10px",
-                  left: "10px",
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "8px",
-                  zIndex: 2,
-                }}
-              >
-                {statusText && (
-                  <div
-                    style={{
-                      backgroundColor: statusColor,
-                      color: "white",
-                      borderRadius: "4px",
-                      padding: "4px 12px",
-                      fontSize: "14px",
-                      fontWeight: 600,
-                      textAlign:"left",
-                      maxWidth: "80px",
-                    }}
-                  >
-                    {statusText}
-                  </div>
-                )}
-                {isBelowMarket && (
-                  <div
-                    style={{
-                      backgroundColor: "#7C9A2C",
-                      color: "white",
-                      borderRadius: "4px",
-                      padding: "4px 12px",
-                      fontSize: "14px",
-                      fontWeight: 600,
-                      textAlign: "center",
-                      minWidth: "90px",
-                    }}
-                  >
-                    Below Market
-                  </div>
-                )}
-              </div>
-            )}
+  {/* Tag Badges (top-left) */}
+  {(statusText || isBelowMarket) && (
+    <div
+      style={{
+        position: "absolute",
+        top: "10px",
+        left: "10px",
+        display: "flex",
+        flexDirection: "column",
+        gap: "8px",
+        zIndex: 2,
+      }}
+    >
+      {statusText && (
+        <div
+          style={{
+            backgroundColor: statusColor,
+            color: "white",
+            borderRadius: "4px",
+            padding: "4px 12px",
+            fontSize: "14px",
+            fontWeight: 600,
+            textAlign: "left",
+            maxWidth: "80px",
+          }}
+        >
+          {statusText}
+        </div>
+      )}
+      {isBelowMarket && (
+        <div
+          style={{
+            backgroundColor: "#7C9A2C",
+            color: "white",
+            borderRadius: "4px",
+            padding: "4px 12px",
+            fontSize: "14px",
+            fontWeight: 600,
+            textAlign: "center",
+            minWidth: "90px",
+          }}
+        >
+          Below Market
+        </div>
+      )}
+    </div>
+  )}
 
-            {/* Exclusive Ribbon (top-right corner) */}
-            <div
-              className="position-absolute"
-              style={{
-                top: "38px",
-                right: "-8px",
-                transform: "rotate(45deg)",
-                backgroundColor: "#f6b400",
-                color: "white",
-                width: "120px",
-                height: "28px",
-                textAlign: "center",
-                fontWeight: "600",
-                fontSize: "0.75rem",
-                zIndex: 3,
-                whiteSpace: "nowrap",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                fontFamily: "Poppins",
-                pointerEvents: "none",
-              }}
-            >
-              Exclusive
-            </div>
-          </div>
+  {/* Exclusive Ribbon (top-right corner) */}
+  <div
+    style={{
+      position: "absolute",
+      top: "2rem",
+      right: "-2.5rem",
+      backgroundColor: "#f6b400",
+      color: "white",
+      transform: "rotate(45deg)",
+      width: "200px",
+      height: "30px",
+      textAlign: "center",
+      fontWeight: "bold",
+      fontSize: "0.85rem",
+      zIndex: 2,
+      overflow: "hidden",
+      whiteSpace: "nowrap",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      pointerEvents: "none",
+    }}
+  >
+    Exclusive
+  </div>
+</div>
+
+
 
           {/* Price + Save */}
           <div className="d-flex justify-content-between align-items-center mb-2">
             <div style={{ fontWeight: 600, fontSize: "20px" }}>
-              RM {price}
+              {monetary_currency} {price}
             </div>
             <button
               className="btn d-flex align-items-center"
@@ -201,13 +212,19 @@ const ListingCard = ({ product, handleViewDetails }) => {
               style={{ gap: "20px", fontSize: "16px", color: "#444" }}
             >
               {room && (
-                <span className="d-flex align-items-center" style={{ gap: "6px" }}>
+                <span
+                  className="d-flex align-items-center"
+                  style={{ gap: "6px" }}
+                >
                   <FaBed />
                   {room} beds
                 </span>
               )}
               {bathroom && (
-                <span className="d-flex align-items-center" style={{ gap: "6px" }}>
+                <span
+                  className="d-flex align-items-center"
+                  style={{ gap: "6px" }}
+                >
                   <FaBath />
                   {bathroom} baths
                 </span>

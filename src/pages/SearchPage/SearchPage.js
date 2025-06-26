@@ -39,20 +39,19 @@ const SearchPage = () => {
   const [activeTab, setActiveTab] = useState(state?.searchType || "rent");
   const [searchType, setSearchType] = useState(state?.searchType || null);
   const [currentPage, setCurrentPage] = useState(1);
-const itemsPerPage = 30;
+  const itemsPerPage = 30;
   const [searchedLocationName, setSearchedLocationName] = useState(
     state?.selectedLocationName || ""
   );
-const totalPages = Math.ceil(products.length / itemsPerPage);
-const pageNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
+  const totalPages = Math.ceil(products.length / itemsPerPage);
+  const pageNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
 
   const activeYear = selectedYear || currentYear.toString();
 
-    useEffect(() => {
+  useEffect(() => {
     const fetchFilterData = async () => {
       try {
         const locationRes = await getLocations();
-
         setLocations(locationRes.data.states);
       } catch (error) {
         console.error("Error fetching filters:", error);
@@ -61,14 +60,6 @@ const pageNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
 
     fetchFilterData();
   }, []);
-
-  // This useEffect logs locations every time it updates
-  useEffect(() => {
-    if (locations.length > 0) {
-      console.log("test2", locations);
-    }
-  }, [locations]);
-
 
   const slugify = (text) =>
     text?.toLowerCase().trim().replace(/\s+/g, "-") || "";
@@ -105,7 +96,6 @@ const pageNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
   const handleViewDetails = useCallback(
     (productId, title, location) => {
       const titleSlug = slugify(title);
-      console.log('productid',productId)
       navigate(`/property/${titleSlug}`, {
         state: {
           productId,
@@ -117,26 +107,39 @@ const pageNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
     [navigate]
   );
 
- const memoizedListings = useMemo(() => {
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
-  const paginatedProducts = products.slice(startIndex, endIndex);
+  const memoizedListings = useMemo(() => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    const paginatedProducts = products.slice(startIndex, endIndex);
 
-  if (loading)
-    return [...Array(5)].map((_, idx) => <ListingCardSkeleton key={idx} />);
-  if (products.length === 0 && hasSearched) return <NoResults />;
-  
-  return paginatedProducts.map((product) => (
-    <ListingCard
-      key={product.id_listing}
-      product={product}
-      years={years}
-      handleViewDetails={handleViewDetails}
-      activeYear={activeYear}
-    />
-    
-  ));
-}, [loading, products, years, handleViewDetails, activeYear, hasSearched, currentPage]);
+    if (loading)
+      return [...Array(5)].map((_, idx) => <ListingCardSkeleton key={idx} />);
+
+    if (products.length === 0) {
+      return (
+        <div
+          style={{
+            minHeight: "300px",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <NoResults />
+        </div>
+      );
+    }
+
+    return paginatedProducts.map((product) => (
+      <ListingCard
+        key={product.id_listing}
+        product={product}
+        years={years}
+        handleViewDetails={handleViewDetails}
+        activeYear={activeYear}
+      />
+    ));
+  }, [loading, products, years, handleViewDetails, activeYear, currentPage]);
 
   return (
     <div
@@ -162,44 +165,43 @@ const pageNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
         />
       </Suspense>
 
-    <div className="container mt-4">
-  <div className="row g-5"> {/* g-2 = reduced gutter spacing */}
-    <div className="col-lg-8 order-2 order-lg-1">
-      <Suspense fallback={<div>Loading listings...</div>}>
-        {memoizedListings}
-      </Suspense>
-    </div>
-    
-    <div className="col-lg-4 order-1 order-lg-2">
-      <Suspense fallback={<div>Loading sidebar...</div>}>
-        <SidebarFilters
-          selectedLocationName={searchedLocationName}
-          searchType={searchType}
-        />
-      </Suspense>
-    </div>
-    
-  </div>
-</div>
-<div className="d-flex justify-content-center my-4 flex-wrap">
-  {totalPages > 1 && (
-  <div className="d-flex justify-content-center my-4 flex-wrap">
-    {pageNumbers.map((page) => (
-      <button
-        key={page}
-        onClick={() => setCurrentPage(page)}
-        className={`btn mx-1 ${
-          currentPage === page ? "btn-primary" : "btn-outline-primary"
-        }`}
-        style={{ minWidth: "40px" }}
-      >
-        {page}
-      </button>
-    ))}
-  </div>
-)}
-</div>
+      <div className="container mt-4">
+        <div className="row g-5">
+          <div className="col-lg-8 order-2 order-lg-1">
+            <Suspense fallback={<div>Loading listings...</div>}>
+              {memoizedListings}
+            </Suspense>
+          </div>
 
+          <div className="col-lg-4 order-1 order-lg-2">
+            <Suspense fallback={<div>Loading sidebar...</div>}>
+              <SidebarFilters
+                selectedLocationName={searchedLocationName}
+                searchType={searchType}
+              />
+            </Suspense>
+          </div>
+        </div>
+      </div>
+
+      <div className="d-flex justify-content-center my-4 flex-wrap">
+        {totalPages > 1 && (
+          <div className="d-flex justify-content-center my-4 flex-wrap">
+            {pageNumbers.map((page) => (
+              <button
+                key={page}
+                onClick={() => setCurrentPage(page)}
+                className={`btn mx-1 ${
+                  currentPage === page ? "btn-primary" : "btn-outline-primary"
+                }`}
+                style={{ minWidth: "40px" }}
+              >
+                {page}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 };
