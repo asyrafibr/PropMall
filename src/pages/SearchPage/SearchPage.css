@@ -8,7 +8,7 @@ html, body, #root {
 
 .results-wrapper {
   display: flex;
-  flex-direction: column;
+  flex-direction: column; /* mobile default */
   gap: 10px;
   width: 100%;
   box-sizing: border-box;
@@ -21,7 +21,9 @@ html, body, #root {
 }
 
 .sidebar {
-  display: none;
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 24px; /* spacing for mobile */
 }
 
 @media (min-width: 992px) {
@@ -37,9 +39,8 @@ html, body, #root {
   }
 
   .sidebar {
-    display: block;
     width: 400px;
     flex-shrink: 0;
-    box-sizing: border-box;
+    margin-top: 0; /* remove top margin for desktop */
   }
 }

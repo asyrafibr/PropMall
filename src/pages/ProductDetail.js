@@ -10,7 +10,8 @@ import { getAgent, getFeaturedList } from "../api/axiosApi";
 import sharImage from "../image/ios_share.svg";
 import saveImage from "../image/kid_star.svg";
 import SimilarListing from "../components/SimilarListingCard";
-import './ProductDetail.css'
+import "./ProductDetail.css";
+import { FiCamera } from "react-icons/fi";
 
 const ProductDetail = () => {
   const [product, setProduct] = useState(null);
@@ -95,22 +96,22 @@ const ProductDetail = () => {
     return (
       <div className="text-center mt-5 text-muted">Product not found.</div>
     );
-    function formatAdsDescription(description) {
-  if (!description) return "";
-  return description
-    .replace(/\r\n|\n|\r/g, "\n")
-    .replace(/\u2022/g, "•")
-    .replace(/\u21a9\ufe0f/g, "↩️")
-    .replace(/\u2019/g, "’")
-    .replace(/\u00a9/g, "©")
-    .replace(/\ud83d\udccc/g, "📌")
-    .replace(/\u00ae/g, "®")
-    .replace(/\u00a0/g, " ")
-    .replace(/\\\//g, "/")
-    .replace(/\\u([0-9a-fA-F]{4})/g, (_, code) =>
-      String.fromCharCode(parseInt(code, 16))
-    );
-}
+  function formatAdsDescription(description) {
+    if (!description) return "";
+    return description
+      .replace(/\r\n|\n|\r/g, "\n")
+      .replace(/\u2022/g, "•")
+      .replace(/\u21a9\ufe0f/g, "↩️")
+      .replace(/\u2019/g, "’")
+      .replace(/\u00a9/g, "©")
+      .replace(/\ud83d\udccc/g, "📌")
+      .replace(/\u00ae/g, "®")
+      .replace(/\u00a0/g, " ")
+      .replace(/\\\//g, "/")
+      .replace(/\\u([0-9a-fA-F]{4})/g, (_, code) =>
+        String.fromCharCode(parseInt(code, 16))
+      );
+  }
   const showPrev = () =>
     setCurrentImageIndex((prev) =>
       prev === 0 ? modalImages.length - 1 : prev - 1
@@ -183,7 +184,7 @@ const ProductDetail = () => {
                 className="d-grid gap-3"
                 style={{
                   gridTemplateColumns: "repeat(2, 1fr)",
-                  maxWidth: "420px",
+                  maxWidth: "530px",
                   width: "100%",
                   height: "480px",
                 }}
@@ -208,37 +209,58 @@ const ProductDetail = () => {
                           setModalOpen(true);
                         }}
                       >
+                        {/* Show All button at bottom-right */}
                         <div
-                          className="position-absolute top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center"
+                          className="position-absolute"
                           style={{
-                            backgroundColor: "rgba(0, 0, 0, 0.5)",
-                            color: "white",
-                            fontSize: "20px",
-                            fontWeight: "bold",
+                            bottom: "8px",
+                            right: "8px",
                           }}
                         >
-                          Show All
+                          <div
+                            className="d-flex align-items-center"
+                            style={{
+                              padding: "12px",
+                              gap: "6px",
+                              borderRadius: "8px",
+                              border: "1px solid #999",
+                              background: "#FAFAFA",
+                              width: "122px", // ✅ Updated width
+                              height: "48px",
+                              fontFamily: "Poppins",
+                              fontSize: "16px",
+                              fontStyle: "normal",
+                              fontWeight: 400,
+                              lineHeight: "normal",
+                              color: "var(--Grey-4, #737373)",
+                              cursor: "pointer",
+                            }}
+                          >
+                            <FiCamera size={16} color="#737373" />
+
+                            <span>Show All</span>
+                          </div>
                         </div>
                       </div>
                     );
                   }
 
+                  // Regular image tiles...
                   return (
-                    <img
-                      key={actualIndex}
-                      src={photo}
-                      alt={`Property ${actualIndex + 1}`}
+                    <div
+                      key={photo}
+                      className="rounded overflow-hidden"
+                      style={{
+                        height: "calc(480px / 2 - 12px)",
+                        backgroundImage: `url(${photo})`,
+                        backgroundSize: "cover",
+                        backgroundPosition: "center",
+                        cursor: "pointer",
+                      }}
                       onClick={() => {
                         setModalImages(product.photos);
                         setCurrentImageIndex(actualIndex);
                         setModalOpen(true);
-                      }}
-                      className="img-fluid rounded"
-                      style={{
-                        height: "calc(480px / 2 - 12px)",
-                        objectFit: "cover",
-                        cursor: "pointer",
-                        width: "100%",
                       }}
                     />
                   );
@@ -313,8 +335,8 @@ const ProductDetail = () => {
               <div className="col-lg-8">
                 <div className="d-flex justify-content-between align-items-start">
                   <div className="d-flex gap-3">
-                    <h5 className="fw-bold text-dark">RM {product.price}</h5>
-                    <h6 className="text-muted">
+                    <h5 className="fw-bold text-dark" style={{fontFamily:"Poppins",fontSize:20,fontWeight:600}}>RM {product.price}</h5>
+                    <h6 className="text-muted" style={{fontFamily:"Poppins",fontSize:16,fontWeight:600,marginTop:2}}>
                       (RM {product.built_price_per_sqft} per sq ft)
                     </h6>
                   </div>
@@ -344,9 +366,12 @@ const ProductDetail = () => {
                   </div>
                 </div>
 
-                <p className="mb-1">{product.property_title}</p>
-                <small className="text-muted d-block mb-3">
+                <p className="mb-1" style={{fontFamily:"Poppins",fontSize:20,fontWeight:400}}>{product.property_title}</p>
+                <small className="text-muted d-block mb-3" style={{fontFamily:"Poppins",fontSize:16,fontWeight:400}}>
                   {product.location_area}
+                </small>
+                   <small className="text-muted d-block mb-3" style={{fontFamily:"Poppins",fontSize:16,fontWeight:400}}>
+                  {product.category_type_title_holding_lottype_storey} || Built-up:{product.built_size} {product.built_size_unit}
                 </small>
 
                 <div className="d-flex gap-3 mb-2">
@@ -468,15 +493,21 @@ const ProductDetail = () => {
               </div>
             </div>
           </div>
-                {/* Property Description */}
-      {product.ads_description && (
-        <div className="card p-3 shadow-sm">
-          <h5 className="fw-bold mb-3">Property Description</h5>
-          <p style={{ whiteSpace: "pre-line", fontFamily: "Poppins", fontSize: "16px" }}>
-            {formatAdsDescription(product.ads_description)}
-          </p>
-        </div>
-      )}
+          {/* Property Description */}
+          {product.ads_description && (
+            <div className="card p-3 shadow-sm">
+              <h5 className="fw-bold mb-3">Property Description</h5>
+              <p
+                style={{
+                  whiteSpace: "pre-line",
+                  fontFamily: "Poppins",
+                  fontSize: "16px",
+                }}
+              >
+                {formatAdsDescription(product.ads_description)}
+              </p>
+            </div>
+          )}
 
           {/* Similar Listings */}
           <SimilarListing listings={similarListing?.featured_rows ?? []} />

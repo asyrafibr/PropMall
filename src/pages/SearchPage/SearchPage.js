@@ -142,38 +142,49 @@ const SearchPage = () => {
   }, [loading, products, years, handleViewDetails, activeYear, currentPage]);
 
   return (
-    <div
+      <div
       style={{
         boxSizing: "border-box",
-        padding: isLoggedIn === false ? "50px 50px" : "0px 50px",
+        padding: isLoggedIn === false ? "50px 0px" : "0px",
       }}
     >
-      <Suspense fallback={<div>Loading filters...</div>}>
-        <SearchFilter
-          locations={locations}
-          years={years}
-          selectedLocation={selectedLocation}
-          selectedYear={selectedYear}
-          searchTerm={searchTerm}
-          setSelectedLocation={setSelectedLocation}
-          setSelectedYear={setSelectedYear}
-          setSearchTerm={setSearchTerm}
-          isLoggedIn={isLoggedIn}
-          handleSearch={handleSearch}
-          activeTab={activeTab}
-          setActiveTab={setActiveTab}
-        />
-      </Suspense>
+      <div className="container px-2">
+        {/* Sticky Search Filter */}
+        <div
+          style={{
+            position: "sticky",
+            top: 0,
+            zIndex: 1000,
+            backgroundColor: "#fff",
+          }}
+        >
+          <Suspense fallback={<div>Loading filters...</div>}>
+            <SearchFilter
+              locations={locations}
+              years={years}
+              selectedLocation={selectedLocation}
+              selectedYear={selectedYear}
+              searchTerm={searchTerm}
+              setSelectedLocation={setSelectedLocation}
+              setSelectedYear={setSelectedYear}
+              setSearchTerm={setSearchTerm}
+              isLoggedIn={isLoggedIn}
+              handleSearch={handleSearch}
+              activeTab={activeTab}
+              setActiveTab={setActiveTab}
+            />
+          </Suspense>
+        </div>
 
-      <div className="container mt-4">
-        <div className="row g-5">
-          <div className="col-lg-8 order-2 order-lg-1">
+        {/* Listings + Sidebar using your custom flex layout */}
+        <div className="results-wrapper mt-4">
+          <div className="listings">
             <Suspense fallback={<div>Loading listings...</div>}>
               {memoizedListings}
             </Suspense>
           </div>
 
-          <div className="col-lg-4 order-1 order-lg-2">
+          <div className="sidebar">
             <Suspense fallback={<div>Loading sidebar...</div>}>
               <SidebarFilters
                 selectedLocationName={searchedLocationName}
@@ -182,27 +193,31 @@ const SearchPage = () => {
             </Suspense>
           </div>
         </div>
-      </div>
 
-      <div className="d-flex justify-content-center my-4 flex-wrap">
-        {totalPages > 1 && (
-          <div className="d-flex justify-content-center my-4 flex-wrap">
-            {pageNumbers.map((page) => (
-              <button
-                key={page}
-                onClick={() => setCurrentPage(page)}
-                className={`btn mx-1 ${
-                  currentPage === page ? "btn-primary" : "btn-outline-primary"
-                }`}
-                style={{ minWidth: "40px" }}
-              >
-                {page}
-              </button>
-            ))}
-          </div>
-        )}
+        {/* Pagination */}
+        <div className="d-flex justify-content-center my-4 flex-wrap">
+          {totalPages > 1 && (
+            <div className="d-flex justify-content-center my-4 flex-wrap">
+              {pageNumbers.map((page) => (
+                <button
+                  key={page}
+                  onClick={() => setCurrentPage(page)}
+                  className={`btn mx-1 ${
+                    currentPage === page
+                      ? "btn-primary"
+                      : "btn-outline-primary"
+                  }`}
+                  style={{ minWidth: "40px" }}
+                >
+                  {page}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     </div>
+
   );
 };
 

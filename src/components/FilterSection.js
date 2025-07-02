@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import headerImage from "../image/Landing_Hero.jpg";
 import AgentBox from "../components/AgentBox";
 import { useAuth } from "../context/AuthContext";
@@ -13,6 +13,7 @@ const Filters = ({
   setSearchTerm,
 }) => {
   const navigate = useNavigate();
+  const containerRef = useRef(null); // ✅ ref to the whole dropdown group
 
   const [activeTab, setActiveTab] = useState("rent");
   const [showModal, setShowModal] = useState(false);
@@ -26,6 +27,20 @@ const Filters = ({
   const [selectedState, setSelectedState] = useState(null);
   const [selectedAreaObjects, setSelectedAreaObjects] = useState([]);
   const [loadingLocationData, setLoadingLocationData] = useState(false);
+  const [openDropdown, setOpenDropdown] = useState(null);
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(event.target)
+      ) {
+        setOpenDropdown(null);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   useEffect(() => {
     if (showModal) {
@@ -59,11 +74,14 @@ const Filters = ({
     try {
       setLoadingLocationData(true);
       setSelectedCountry(country);
-      const res = await axios.post("https://dev-agentv3.propmall.net/graph/param/location", {
-        domain: "myhartanah.co",
-        url_fe: window.location.href,
-        id_country: country.id_country,
-      });
+      const res = await axios.post(
+        "https://dev-agentv3.propmall.net/graph/param/location",
+        {
+          domain: "myhartanah.co",
+          url_fe: window.location.href,
+          id_country: country.id_country,
+        }
+      );
       if (res.data?.country) {
         setLocationTree([res.data.country]);
         setNavigationStack([res.data.country]);
@@ -170,7 +188,53 @@ const Filters = ({
   };
   const currentLevel = navigationStack[navigationStack.length - 1];
   const displayList = currentLevel?.child_list || [];
+  const filters = {
+    "All Categories": [
+      "Apartmen/Condo (Highrise)",
+      "House/Bungalow (Landed)",
+      "Commercial/Office/Industry/Building",
+      "Land",
+      "Hotel/Resort/Homestay",
+    ],
+    "All Holding Types": [
+      "Freehold",
+      "Leasehold",
+      "Non-Bumi",
+      "Bumi",
+      "Malay Reserve",
+      "Customary Land",
+      "Freehold & Non-Bumi",
+      "Freehold & Bumi",
+      "Freehold & Malay Reserve",
+      "Freehold & Customary Land",
+      "Leasehold & Non-Bumi",
+      "Leasehold & Bumi",
+      "Leasehold & Malay Reserve",
+      "Leasehold & Customary Land",
+    ],
+    "Price Ranges (RM)": [
+      "Any",
+      "Up to RM 250k",
+      "Above RM 250k to RM 500k",
+      "Above RM 500k to RM 750k",
+      "Above RM 750k to RM 1m",
+      "Above RM 1m to RM 2.5m",
+      "Above RM 2.5m to RM 5m",
+      "Above RM 5m to RM 7.5m",
+      "Above RM 7.5m to RM 10m",
+      "Above RM 10m",
+    ],
+    "Bedroom(s)": ["Any", "1-3", "4-6", "7-10", ">10"],
+    "Bathroom(s)": ["Any", "1-3", "4-6", "7-10", ">10"],
+  };
 
+  const DropdownFilters = () => {
+    const [openDropdown, setOpenDropdown] = useState(null);
+  };
+
+  const toggleDropdown = (label) => {
+    setOpenDropdown(openDropdown === label ? null : label);
+  };
   return (
     <div>
       <div className="order-1 order-md-2 w-100 w-md-auto">
@@ -287,43 +351,89 @@ const Filters = ({
               </div>
             </div>
 
-            <div className="row mt-4">
+            <div className="row mt-4" ref={containerRef}>
               <div className="col-12 d-flex flex-column flex-md-row gap-3">
-                {[
-                  "All Categories",
-                  "All Holding Types",
-                  "Price Ranges (RM)",
-                  "Bedroom(s)",
-                  "Bathroom(s)",
-                ].map((label) => (
-                  <button
+                {Object.entries(filters).map(([label, options]) => (
+                  <div
                     key={label}
-                    className="btn btn-link text-white p-0 d-flex align-items-center"
-                    style={{
-                      justifyContent: "space-between",
-                      width: "100%",
-                      background: "transparent",
-                      border: "none",
-                      fontSize: "16px",
-                      fontFamily: "Poppins",
-                    }}
+                    style={{ position: "relative", width: "100%" }}
                   >
-                    <span style={{ flexGrow: 1, textAlign: "left" }}>
-                      {label}
-                    </span>
-                    <span
+                    <button
+                      className="btn p-0 d-flex align-items-center"
                       style={{
-                        marginLeft: "6px",
-                        fontSize: "0.7rem",
-                        flexShrink: 0,
+                        justifyContent: "space-between",
+                        width: "100%",
+                        background: "transparent",
+                        border: "none",
+                        fontSize: "16px",
+                        fontFamily: "Poppins",
+                        color: "white",
+                        textDecoration: "none",
                       }}
+                      onClick={() => toggleDropdown(label)}
                     >
-                      ▼
-                    </span>
-                  </button>
+                      <span style={{ flexGrow: 1, textAlign: "left" }}>
+                        {label}
+                      </span>
+                      <span
+                        style={{
+                          marginLeft: "6px",
+                          fontSize: "0.7rem",
+                          flexShrink: 0,
+                        }}
+                      >
+                        ▼
+                      </span>
+                    </button>
+
+                    {openDropdown === label && (
+                      <ul
+                        style={{
+                          listStyle: "none",
+                          margin: 0,
+                          padding: "10px",
+                          position: "absolute",
+                          top: "100%",
+                          left: 0,
+                          width: "100%",
+                          background: "white",
+                          color: "#333",
+                          borderRadius: "8px",
+                          boxShadow: "0 4px 8px rgba(0,0,0,0.15)",
+                          zIndex: 1000,
+                          maxHeight: "300px",
+                          overflowY: "auto",
+                        }}
+                      >
+                        {options.map((item, index) => (
+                          <li
+                            key={index}
+                            style={{
+                              padding: "6px 10px",
+                              cursor: "pointer",
+                              fontFamily: "Poppins",
+                              fontSize: "14px",
+                            }}
+                            onClick={() => {
+                              console.log(`Selected: ${item}`);
+                              setOpenDropdown(null);
+                            }}
+                            onMouseEnter={(e) =>
+                              (e.currentTarget.style.background = "#f1f1f1")
+                            }
+                            onMouseLeave={(e) =>
+                              (e.currentTarget.style.background = "transparent")
+                            }
+                          >
+                            {item}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
                 ))}
               </div>
-            </div>
+            </div>  
           </div>
         </div>
       </div>
