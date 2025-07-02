@@ -109,7 +109,7 @@ const Filters = ({
     const countryName = selectedCountry?.name || "";
     const stateName = selectedState?.name || "";
     const areaNames = selectedAreaNames.join(", ");
-    setSelectedLocation(`${countryName} ${stateName} ${areaNames}`);
+    setSelectedLocation(`${countryName}, ${stateName}, ${areaNames}`);
     setShowModal(false);
     setNavigationStack([]);
     setLocationTree([]);
