@@ -335,8 +335,25 @@ const ProductDetail = () => {
               <div className="col-lg-8">
                 <div className="d-flex justify-content-between align-items-start">
                   <div className="d-flex gap-3">
-                    <h5 className="fw-bold text-dark" style={{fontFamily:"Poppins",fontSize:20,fontWeight:600}}>RM {product.price}</h5>
-                    <h6 className="text-muted" style={{fontFamily:"Poppins",fontSize:16,fontWeight:600,marginTop:2}}>
+                    <h5
+                      className="fw-bold text-dark"
+                      style={{
+                        fontFamily: "Poppins",
+                        fontSize: 20,
+                        fontWeight: 600,
+                      }}
+                    >
+                      RM {product.price}
+                    </h5>
+                    <h6
+                      className="text-muted"
+                      style={{
+                        fontFamily: "Poppins",
+                        fontSize: 16,
+                        fontWeight: 600,
+                        marginTop: 2,
+                      }}
+                    >
                       (RM {product.built_price_per_sqft} per sq ft)
                     </h6>
                   </div>
@@ -366,32 +383,46 @@ const ProductDetail = () => {
                   </div>
                 </div>
 
-                <p className="mb-1" style={{fontFamily:"Poppins",fontSize:20,fontWeight:400}}>{product.property_title}</p>
-                <small className="text-muted d-block mb-3" style={{fontFamily:"Poppins",fontSize:16,fontWeight:400}}>
+                <p
+                  className="mb-1"
+                  style={{
+                    fontFamily: "Poppins",
+                    fontSize: 20,
+                    fontWeight: 400,
+                  }}
+                >
+                  {product.property_title}
+                </p>
+                <small
+                  className="text-muted d-block mb-3"
+                  style={{
+                    fontFamily: "Poppins",
+                    fontSize: 16,
+                    fontWeight: 400,
+                  }}
+                >
                   {product.location_area}
                 </small>
-          <small
-  className="text-muted d-flex align-items-center gap-2 mb-3"
-  style={{
-    fontFamily: "Poppins",
-    fontSize: 16,
-    fontWeight: 400,
-  }}
->
-  {product.category_type_title_holding_lottype_storey}
-
-  <span
-    style={{
-      width: "8px",
-      height: "8px",
-      borderRadius: "50%",
-      backgroundColor: "#666",
-      display: "inline-block",
-    }}
-  ></span>
-
-  Built-up: {product.built_size} {product.built_size_unit}
-</small>
+                <small
+                  className="text-muted d-flex align-items-center gap-2 mb-3"
+                  style={{
+                    fontFamily: "Poppins",
+                    fontSize: 16,
+                    fontWeight: 400,
+                  }}
+                >
+                  {product.category_type_title_holding_lottype_storey}
+                  <span
+                    style={{
+                      width: "8px",
+                      height: "8px",
+                      borderRadius: "50%",
+                      backgroundColor: "#666",
+                      display: "inline-block",
+                    }}
+                  ></span>
+                  Built-up: {product.built_size} {product.built_size_unit}
+                </small>
 
                 <div className="d-flex gap-3 mb-2">
                   <span className="d-flex align-items-center gap-1">
