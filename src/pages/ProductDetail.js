@@ -370,9 +370,28 @@ const ProductDetail = () => {
                 <small className="text-muted d-block mb-3" style={{fontFamily:"Poppins",fontSize:16,fontWeight:400}}>
                   {product.location_area}
                 </small>
-                   <small className="text-muted d-block mb-3" style={{fontFamily:"Poppins",fontSize:16,fontWeight:400}}>
-                  {product.category_type_title_holding_lottype_storey} || Built-up:{product.built_size} {product.built_size_unit}
-                </small>
+          <small
+  className="text-muted d-flex align-items-center gap-2 mb-3"
+  style={{
+    fontFamily: "Poppins",
+    fontSize: 16,
+    fontWeight: 400,
+  }}
+>
+  {product.category_type_title_holding_lottype_storey}
+
+  <span
+    style={{
+      width: "8px",
+      height: "8px",
+      borderRadius: "50%",
+      backgroundColor: "#666",
+      display: "inline-block",
+    }}
+  ></span>
+
+  Built-up: {product.built_size} {product.built_size_unit}
+</small>
 
                 <div className="d-flex gap-3 mb-2">
                   <span className="d-flex align-items-center gap-1">

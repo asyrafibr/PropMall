@@ -15,6 +15,7 @@ const ListingCard = ({ product, handleViewDetails }) => {
     below_market,
     photos,
     monetary_currency,
+    category_type_title_holding_lottype_storey,
   } = product;
 
   const location = `${location_area}, ${location_state}`;
@@ -39,102 +40,100 @@ const ListingCard = ({ product, handleViewDetails }) => {
       <div className="card" style={{ maxWidth: "900px", width: "100%" }}>
         <div className="p-3">
           {/* Image with Badges */}
-        <div
-  style={{
-    position: "relative",
-    marginBottom: "15px",
-    overflow: "hidden", // ✅ Ensures anything outside the box (e.g. ribbon) is clipped
-    borderRadius: "6px", // ✅ Optional: match image border
-    height: "300px",     // ✅ Match image height
-  }}
->
-  <img
-    src={photo1}
-    alt={ads_title}
-    style={{
-      width: "100%",
-      height: "100%",
-      objectFit: "cover",
-      display: "block",
-    }}
-  />
+          <div
+            style={{
+              position: "relative",
+              marginBottom: "15px",
+              overflow: "hidden", // ✅ Ensures anything outside the box (e.g. ribbon) is clipped
+              borderRadius: "6px", // ✅ Optional: match image border
+              height: "300px", // ✅ Match image height
+            }}
+          >
+            <img
+              src={photo1}
+              alt={ads_title}
+              style={{
+                width: "100%",
+                height: "100%",
+                objectFit: "cover",
+                display: "block",
+              }}
+            />
 
-  {/* Tag Badges (top-left) */}
-  {(statusText || isBelowMarket) && (
-    <div
-      style={{
-        position: "absolute",
-        top: "10px",
-        left: "10px",
-        display: "flex",
-        flexDirection: "column",
-        gap: "8px",
-        zIndex: 2,
-      }}
-    >
-      {statusText && (
-        <div
-          style={{
-            backgroundColor: statusColor,
-            color: "white",
-            borderRadius: "4px",
-            padding: "4px 12px",
-            fontSize: "14px",
-            fontWeight: 600,
-            textAlign: "left",
-            maxWidth: "80px",
-          }}
-        >
-          {statusText}
-        </div>
-      )}
-      {isBelowMarket && (
-        <div
-          style={{
-            backgroundColor: "#7C9A2C",
-            color: "white",
-            borderRadius: "4px",
-            padding: "4px 12px",
-            fontSize: "14px",
-            fontWeight: 600,
-            textAlign: "center",
-            minWidth: "90px",
-          }}
-        >
-          Below Market
-        </div>
-      )}
-    </div>
-  )}
+            {/* Tag Badges (top-left) */}
+            {(statusText || isBelowMarket) && (
+              <div
+                style={{
+                  position: "absolute",
+                  top: "10px",
+                  left: "10px",
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "8px",
+                  zIndex: 2,
+                }}
+              >
+                {statusText && (
+                  <div
+                    style={{
+                      backgroundColor: statusColor,
+                      color: "white",
+                      borderRadius: "4px",
+                      padding: "4px 12px",
+                      fontSize: "14px",
+                      fontWeight: 600,
+                      textAlign: "left",
+                      maxWidth: "80px",
+                    }}
+                  >
+                    {statusText}
+                  </div>
+                )}
+                {isBelowMarket && (
+                  <div
+                    style={{
+                      backgroundColor: "#7C9A2C",
+                      color: "white",
+                      borderRadius: "4px",
+                      padding: "4px 12px",
+                      fontSize: "14px",
+                      fontWeight: 600,
+                      textAlign: "center",
+                      minWidth: "90px",
+                    }}
+                  >
+                    Below Market
+                  </div>
+                )}
+              </div>
+            )}
 
-  {/* Exclusive Ribbon (top-right corner) */}
-  <div
-    style={{
-      position: "absolute",
-      top: "2rem",
-      right: "-2.5rem",
-      backgroundColor: "#f6b400",
-      color: "white",
-      transform: "rotate(45deg)",
-      width: "200px",
-      height: "30px",
-      textAlign: "center",
-      fontWeight: "bold",
-      fontSize: "0.85rem",
-      zIndex: 2,
-      overflow: "hidden",
-      whiteSpace: "nowrap",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      pointerEvents: "none",
-    }}
-  >
-    Exclusive
-  </div>
-</div>
-
-
+            {/* Exclusive Ribbon (top-right corner) */}
+            <div
+              style={{
+                position: "absolute",
+                top: "2rem",
+                right: "-2.5rem",
+                backgroundColor: "#f6b400",
+                color: "white",
+                transform: "rotate(45deg)",
+                width: "200px",
+                height: "30px",
+                textAlign: "center",
+                fontWeight: "bold",
+                fontSize: "0.85rem",
+                zIndex: 2,
+                overflow: "hidden",
+                whiteSpace: "nowrap",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                pointerEvents: "none",
+              }}
+            >
+              Exclusive
+            </div>
+          </div>
 
           {/* Price + Save */}
           <div className="d-flex justify-content-between align-items-center mb-2">
@@ -188,19 +187,41 @@ const ListingCard = ({ product, handleViewDetails }) => {
             {location}
           </div>
 
-          {/* Built-up Size */}
-          {built_size && (
-            <div
-              style={{
-                fontWeight: 400,
-                fontSize: "16px",
-                color: "#666",
-                marginBottom: "10px",
-              }}
-            >
-              Built-up size: {built_size} sqft
-            </div>
-          )}
+          <div
+            style={{
+              fontWeight: 400,
+              fontSize: "16px",
+              color: "#666",
+              marginBottom: "10px",
+              fontFamily: "Poppins",
+              display: "flex",
+              alignItems: "center",
+              flexWrap: "wrap",
+            }}
+          >
+            {/* Always show category type */}
+            <span>{category_type_title_holding_lottype_storey}</span>
+
+            {/* Conditionally render dot and built-up size */}
+            {built_size && (
+              <>
+                {/* Dot */}
+                <span
+                  style={{
+                    display: "inline-block",
+                    width: "8px",
+                    height: "8px",
+                    borderRadius: "50%",
+                    backgroundColor: "#666",
+                    margin: "0 8px",
+                  }}
+                ></span>
+
+                {/* Built-up size */}
+                <span>Built-up size: {built_size} sqft</span>
+              </>
+            )}
+          </div>
 
           {/* Room / Bath and Buttons */}
           <div
