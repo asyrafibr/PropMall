@@ -235,6 +235,9 @@ const Filters = ({
   const toggleDropdown = (label) => {
     setOpenDropdown(openDropdown === label ? null : label);
   };
+  const handleClear = () => {
+    setSelectedAreaIds([]);
+  };
   return (
     <div>
       <div className="order-1 order-md-2 w-100 w-md-auto">
@@ -433,7 +436,7 @@ const Filters = ({
                   </div>
                 ))}
               </div>
-            </div>  
+            </div>
           </div>
         </div>
       </div>
@@ -462,7 +465,7 @@ const Filters = ({
               width: "750px",
               height: "500px",
               backgroundColor: "white",
-              borderRadius: "10px",
+              borderRadius: "16px",
               display: "flex",
               flexDirection: "column",
               position: "relative",
@@ -470,41 +473,81 @@ const Filters = ({
           >
             <div
               style={{
-                backgroundColor: "black",
-                color: "white",
+                backgroundColor: "transparent",
+                color: "black",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "space-between",
                 padding: "12px 20px",
                 fontFamily: "Poppins",
+                // borderRadius:"16px"
               }}
             >
               <div>
                 {navigationStack.length > 1 && (
                   <button
                     onClick={handleBack}
-                    className="btn btn-sm"
+                    className="btn p-0 d-flex justify-content-center align-items-center"
                     style={{
+                      width: "16px",
+                      height: "16px",
+                      fontSize: "14px",
+                      lineHeight: "1",
                       border: "none",
                       background: "transparent",
-                      color: "white",
+                      color: "black", marginRight:'10px'
                     }}
                   >
-                    ←
+                    &lt;
                   </button>
                 )}
               </div>
-              <div style={{ flex: 1 }}>
-                <h6 style={{ margin: 0, textAlign: "left", fontWeight: "600" }}>
-                  {`Select ${
-                    currentLevel?.node_level === 1
-                      ? "Country"
-                      : currentLevel?.node_level === 2
-                      ? "State"
-                      : "Area"
-                  }`}
-                </h6>
-              </div>
+             <div style={{ flex: 1 }}>
+  <h6
+    style={{
+      margin: 0,
+      textAlign: "left",
+      fontWeight: "600",
+      fontSize: "16px",
+      fontFamily: "Poppins",
+    }}
+  >
+    {currentLevel?.node_level === 0
+      ? "Select Country"
+      : currentLevel?.node_level === 1
+      ? "Search by State"
+      : currentLevel?.node_level === 2
+      ? "Select City/Area"
+      : ""}
+  </h6>
+
+  {currentLevel?.node_level === 1 && navigationStack[0] && (
+    <p
+      style={{
+        margin: 0,
+        fontSize: "14px",
+        color: "#555",
+        fontFamily: "Poppins",
+      }}
+    >
+      {navigationStack[0].name}
+    </p>
+  )}
+
+  {currentLevel?.node_level === 2 && navigationStack[1] && (
+    <p
+      style={{
+        margin: 0,
+        fontSize: "14px",
+        color: "#555",
+        fontFamily: "Poppins",
+      }}
+    >
+       {navigationStack[1].name}
+    </p>
+  )}
+</div>
+
               <div>
                 <button
                   onClick={() => setShowModal(false)}
@@ -536,7 +579,7 @@ const Filters = ({
                     agent?.listing_country?.map((country) => (
                       <div
                         key={country.id_country}
-                        className="py-2 border-bottom d-flex justify-content-between align-items-center"
+                        className="py-2 d-flex justify-content-between align-items-center"
                         style={{ cursor: "pointer" }}
                         onClick={() => handleCountryClick(country)}
                       >
@@ -544,26 +587,36 @@ const Filters = ({
                         <span>&#x276F;</span>
                       </div>
                     ))}
-
                   {navigationStack.length > 0 &&
                     displayList.map((node) => (
                       <div
                         key={node.id}
-                        className="py-2 border-bottom d-flex justify-content-between align-items-center"
+                        className="py-2 d-flex align-items-center"
                         style={{ cursor: "pointer" }}
                         onClick={() => handleNodeClick(node)}
                       >
-                        <span>{node.name}</span>
                         {node.node_level === 3 ? (
-                          <input
-                            type="checkbox"
-                            className="form-check-input"
-                            checked={selectedAreaIds.includes(node.id)}
-                            onChange={() => handleAreaToggle(node)}
-                            onClick={(e) => e.stopPropagation()}
-                          />
+                          <>
+                            <input
+                              type={"radio"}
+                              className="form-check-input"
+                              checked={selectedAreaIds.includes(node.id)}
+                              onChange={() => handleAreaToggle(node)}
+                              onClick={(e) => e.stopPropagation()}
+                              style={{ marginRight: "2%" }}
+                            />
+                            <span>{node.name}</span>
+                          </>
                         ) : (
-                          <span>&#x276F;</span>
+                          <div
+                            key={node.id}
+                            className="py-2 d-flex align-items-center justify-content-between w-100"
+                            style={{ cursor: "pointer" }}
+                            onClick={() => handleNodeClick(node)}
+                          >
+                            <span>{node.name}</span>
+                            <span>&#x276F;</span>
+                          </div>
                         )}
                       </div>
                     ))}
@@ -571,23 +624,34 @@ const Filters = ({
               )}
             </div>
 
-            <div
-              style={{
-                borderTop: "1px solid #ddd",
-                padding: "15px 20px",
-                backgroundColor: "white",
-                display: "flex",
-                justifyContent: "flex-end",
-              }}
-            >
-              <button
-                className="btn text-white px-4"
-                style={{ backgroundColor: "#826044", fontFamily: "Poppins" }}
-                onClick={handleApply}
+            {currentLevel?.node_level === 2 && (
+              <div
+                style={{
+                  // borderTop: "1px solid #ddd",
+                  padding: "15px 20px",
+                  backgroundColor: "white",
+                  display: "flex",
+                  justifyContent: "space-between", // left & right alignment
+                  borderRadius: "16px",
+                }}
               >
-                Apply
-              </button>
-            </div>
+                <button
+                  className="btn btn-outline-secondary px-4"
+                  style={{ fontFamily: "Poppins" }}
+                  onClick={handleClear}
+                >
+                  Clear
+                </button>
+
+                <button
+                  className="btn text-white px-4"
+                  style={{ backgroundColor: "#F4980E", fontFamily: "Poppins" }}
+                  onClick={handleApply}
+                >
+                  Apply
+                </button>
+              </div>
+            )}
           </div>
         </div>
       )}

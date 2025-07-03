@@ -1,7 +1,19 @@
 import axios from "axios";
 
+const hostname = window.location.hostname;
+
+let baseURL = "https://dev-agentv3.propmall.net"; // default fallback
+
+if (hostname.includes("prohartanah")) {
+  baseURL = "https://dev-agentv3-prohartanah.propmall.net";
+} else if (hostname.includes("hartawan")) {
+  baseURL = "https://dev-agentv3-hartawan.propmall.net";
+} else if (hostname.includes("salahproperty")) {
+  baseURL = "https://dev-agentv3-salahproperty.propmall.net";
+}
+
 const API = axios.create({
-  baseURL: "https://dev-agentv3.propmall.net",
+  baseURL,
   headers: {
     Authentication: "TOKEN 67ce6d78ad121633723921",
     "Content-Type": "application/json",

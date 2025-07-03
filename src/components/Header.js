@@ -15,7 +15,10 @@ const Navbar = () => {
     navigate("/");
   };
   const [agent, setAgent] = useState({});
-
+  const handleNavigate = (path) => {
+    // You can also add logic here if needed before navigating
+    navigate(path);
+  };
   useEffect(() => {
     const fetchAgentData = async () => {
       try {
@@ -33,7 +36,7 @@ const Navbar = () => {
   }, []);
   useEffect(() => {
     if (agent) {
-      console.log('testing', agent)
+      console.log("testing", agent);
     }
   }, [agent]);
 
@@ -44,10 +47,14 @@ const Navbar = () => {
           href="/"
           className="navbar-brand fs-5 fw-semibold text-start"
           onClick={handleLogoClick}
-          style={{ fontFamily: "Poppins, sans-serif", cursor: "pointer", fontSize: '20px', fontWeight: 600 }}
+          style={{
+            fontFamily: "Poppins, sans-serif",
+            cursor: "pointer",
+            fontSize: "20px",
+            fontWeight: 600,
+          }}
         >
           TESLA REALTY SDN. BHD
-
         </a>
 
         <button
@@ -68,32 +75,80 @@ const Navbar = () => {
         >
           <ul className="navbar-nav ms-auto align-items-xl-center">
             <li className="nav-item">
-              <Link className="nav-link text-nowrap" to="/" style={{ fontSize: '16px', fontWeight: 400, fontFamily: "Poppins" }}>
+              <Link
+                className="nav-link text-nowrap"
+                to="/"
+                style={{
+                  fontSize: "16px",
+                  fontWeight: 400,
+                  fontFamily: "Poppins",
+                }}
+              >
                 Sale
               </Link>
             </li>
             <li className="nav-item">
-              <Link className="nav-link text-nowrap" to="/rent" style={{ fontSize: '16px', fontWeight: 400, fontFamily: "Poppins" }}>
+              <Link
+                className="nav-link text-nowrap"
+                to="/rent"
+                style={{
+                  fontSize: "16px",
+                  fontWeight: 400,
+                  fontFamily: "Poppins",
+                }}
+              >
                 Rent
               </Link>
             </li>
             <li className="nav-item">
-              <Link className="nav-link text-nowrap" to="/new-project" style={{ fontSize: '16px', fontWeight: 400, fontFamily: "Poppins" }}>
+              <Link
+                className="nav-link text-nowrap"
+                to="/new-project"
+                style={{
+                  fontSize: "16px",
+                  fontWeight: 400,
+                  fontFamily: "Poppins",
+                }}
+              >
                 New Project
               </Link>
             </li>
             <li className="nav-item">
-              <Link className="nav-link text-nowrap" to="/articles" style={{ fontSize: '16px', fontWeight: 400, fontFamily: "Poppins" }}>
+              <Link
+                className="nav-link text-nowrap"
+                to="/articles"
+                style={{
+                  fontSize: "16px",
+                  fontWeight: 400,
+                  fontFamily: "Poppins",
+                }}
+              >
                 Articles
               </Link>
             </li>
             <li className="nav-item">
-              <Link className="nav-link text-nowrap" to="/about" style={{ fontSize: '16px', fontWeight: 400, fontFamily: "Poppins" }}>
+              <Link
+                className="nav-link text-nowrap"
+                to="/about"
+                style={{
+                  fontSize: "16px",
+                  fontWeight: 400,
+                  fontFamily: "Poppins",
+                }}
+              >
                 About Me
               </Link>
             </li>
             <li className="nav-item">
-              <Link className="nav-link text-nowrap" to="/donedeal" style={{ fontSize: '16px', fontWeight: 400, fontFamily: "Poppins" }}>
+              <Link
+                className="nav-link text-nowrap"
+                to="/donedeal"
+                style={{
+                  fontSize: "16px",
+                  fontWeight: 400,
+                  fontFamily: "Poppins",
+                }}
+              >
                 Done Deals
               </Link>
             </li>
@@ -109,7 +164,7 @@ const Navbar = () => {
                     textDecoration: "none",
                     fontSize: "16px",
                     fontWeight: 400,
-                    fontFamily: "Poppins"
+                    fontFamily: "Poppins",
                   }}
                 >
                   I Want To
@@ -122,13 +177,14 @@ const Navbar = () => {
                     <Link
                       className="dropdown-item"
                       to="/buy"
+                      onClick={() => handleNavigate("/buy")}
                       style={{
                         fontSize: "16px",
                         fontWeight: 400,
-                        fontFamily: "Poppins"
+                        fontFamily: "Poppins",
                       }}
                     >
-                      Buy a Property
+                      Buy a Property (WTB)
                     </Link>
                   </li>
                   <li>
@@ -138,12 +194,16 @@ const Navbar = () => {
                       style={{
                         fontSize: "16px",
                         fontWeight: 400,
-                        fontFamily: "Poppins"
+                        fontFamily: "Poppins",
                       }}
                     >
-                      Rent a Property
+                      Rent a Property (WTR)
                     </Link>
                   </li>
+                  <li>
+                    <hr className="dropdown-divider" />
+                  </li>
+
                   <li>
                     <Link
                       className="dropdown-item"
@@ -151,16 +211,29 @@ const Navbar = () => {
                       style={{
                         fontSize: "16px",
                         fontWeight: 400,
-                        fontFamily: "Poppins"
+                        fontFamily: "Poppins",
                       }}
                     >
-                      Sell a Property
+                      Sell a Property (WTS)
+                    </Link>
+                  </li>
+
+                  <li>
+                    <Link
+                      className="dropdown-item"
+                      to="/sell"
+                      style={{
+                        fontSize: "16px",
+                        fontWeight: 400,
+                        fontFamily: "Poppins",
+                      }}
+                    >
+                      Let a Property (WTL)
                     </Link>
                   </li>
                 </ul>
               </li>
             )}
-
 
             {/* ✅ Template Switch Dropdown */}
             <li className="nav-item ms-3">

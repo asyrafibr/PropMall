@@ -19,6 +19,7 @@ import Header from "./components/Header";
 import DoneDeal from "./components/DoneDeal";
 import ProductDetailPage from "./pages/ProductDetailPage";
 import DoneDealDetail from "./components/DoneDealsDetail";
+import WTBWTRFormPage from "./pages/WTBWTRFormPage";
 
 import "bootstrap-icons/font/bootstrap-icons.css";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -41,6 +42,8 @@ const Layout = () => {
         <Route path="/donedeal" element={<DoneDeal />} />
         <Route path="/property/:slug" element={<ProductDetailPage />} />
         <Route path="/business-card" element={<BusinessCard />} />
+        <Route path="/buy" element={<WTBWTRFormPage mode="buy" />} />
+        <Route path="/rent" element={<WTBWTRFormPage mode="rent" />} />
         {/* Add more routes if needed */}
       </Routes>
 
