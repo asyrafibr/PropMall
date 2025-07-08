@@ -23,6 +23,8 @@ const Filters = ({
   const [selectedAreaNames, setSelectedAreaNames] = useState([]);
   const { isLoggedIn } = useAuth();
   const [agent, setAgent] = useState({});
+    const [domain, setDomain] = useState({});
+
   const [selectedCountry, setSelectedCountry] = useState(null);
   const [selectedState, setSelectedState] = useState(null);
   const [selectedAreaObjects, setSelectedAreaObjects] = useState([]);
@@ -63,13 +65,19 @@ const Filters = ({
       try {
         const agentRes = await getAgent();
         setAgent(agentRes.data.domain.config);
+        setDomain(agentRes.data.domain)
       } catch (error) {
         console.error("Error fetching agent:", error);
       }
     };
     fetchAgentData();
   }, []);
-
+  useEffect(() => {
+   
+    if (domain) {
+      console.log("domain", domain);
+    }
+  }, [ domain]);
   const handleCountryClick = async (country) => {
     try {
       setLoadingLocationData(true);
@@ -135,10 +143,12 @@ const Filters = ({
 
   const handleSearch = async () => {
     try {
+    const hostname = window.location.hostname; // e.g., "prohartanah.my"
+    const domain = hostname.replace(/^www\./, "").split(".")[0]; // e.g., "prohartanah"
       const response = await axios.post(
         "https://dev-agentv3.propmall.net/graph/me/listing/search",
         {
-          domain: "myhartanah.co",
+          domain: domain,
           url_fe: window.location.href,
           listing_search: {
             page_num: 1,
@@ -228,9 +238,6 @@ const Filters = ({
     "Bathroom(s)": ["Any", "1-3", "4-6", "7-10", ">10"],
   };
 
-  const DropdownFilters = () => {
-    const [openDropdown, setOpenDropdown] = useState(null);
-  };
 
   const toggleDropdown = (label) => {
     setOpenDropdown(openDropdown === label ? null : label);
@@ -272,7 +279,7 @@ const Filters = ({
             className="text-white fw-bold text-end mb-4"
             style={{ fontSize: "34px", fontFamily: "Poppins", fontWeight: 600 }}
           >
-            Discover 20,000+ Dream Properties at HomesMatchKL.co
+            Discover Dream Properties at {domain.name}
           </h4>
 
           <div

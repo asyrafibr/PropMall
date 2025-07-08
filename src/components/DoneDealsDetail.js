@@ -53,10 +53,12 @@ const DoneDealDetail = (id) => {
   useEffect(() => {
     const fetchListingInfo = async () => {
       try {
+             const hostname = window.location.hostname; // e.g., "prohartanah.my"
+    const domain = hostname.replace(/^www\./, "").split(".")[0]; // e.g., "prohartanah"
         const response = await axios.post(
           "https://dev-agentv3.propmall.net/graph/me/listing/info",
           {
-            domain: "myhartanah.co",
+            domain: domain,
             url_fe: window.location.href,
             id_listing: productId,
           },

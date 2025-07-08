@@ -15,6 +15,8 @@ const Navbar = () => {
     navigate("/");
   };
   const [agent, setAgent] = useState({});
+  const [category, setCategory] = useState({});
+
   const handleNavigate = (path) => {
     // You can also add logic here if needed before navigating
     navigate(path);
@@ -25,6 +27,7 @@ const Navbar = () => {
         const agentRes = await getAgent();
 
         setAgent(agentRes.data.domain.config); // ✅ schedules agent update
+        setCategory(agentRes.data.domain.config.listing_category); // ✅ schedules agent update
 
         // ❌ agent is NOT updated here yet
       } catch (error) {
@@ -38,7 +41,10 @@ const Navbar = () => {
     if (agent) {
       console.log("testing", agent);
     }
-  }, [agent]);
+    if (category) {
+      console.log("category", category);
+    }
+  }, [agent, category]);
 
   return (
     <nav className="navbar navbar-expand-lg bg-white px-3">
@@ -77,40 +83,87 @@ const Navbar = () => {
             <li className="nav-item">
               <Link
                 className="nav-link text-nowrap"
-                to="/"
+                to="/home"
                 style={{
                   fontSize: "16px",
                   fontWeight: 400,
                   fontFamily: "Poppins",
                 }}
               >
-                Sale
+                Home
               </Link>
             </li>
+            {category?.sale && (
+              <li className="nav-item">
+                <Link
+                  className="nav-link text-nowrap"
+                  to="/sale"
+                  style={{
+                    fontSize: "16px",
+                    fontWeight: 400,
+                    fontFamily: "Poppins",
+                  }}
+                >
+                  Sale
+                </Link>
+              </li>
+            )}
+            {category?.rent && (
+              <li className="nav-item">
+                <Link
+                  className="nav-link text-nowrap"
+                  to="/rent"
+                  style={{
+                    fontSize: "16px",
+                    fontWeight: 400,
+                    fontFamily: "Poppins",
+                  }}
+                >
+                  Rent
+                </Link>
+              </li>
+            )}
+            {category?.project && (
+              <li className="nav-item">
+                <Link
+                  className="nav-link text-nowrap"
+                  to="/new-project"
+                  style={{
+                    fontSize: "16px",
+                    fontWeight: 400,
+                    fontFamily: "Poppins",
+                  }}
+                >
+                  New Project
+                </Link>
+              </li>
+            )}
+            {category?.auction && (
+              <li className="nav-item">
+                <Link
+                  className="nav-link text-nowrap"
+                  to="/auction"
+                  style={{
+                    fontSize: "16px",
+                    fontWeight: 400,
+                    fontFamily: "Poppins",
+                  }}
+                >
+                  Auction
+                </Link>
+              </li>
+            )}
             <li className="nav-item">
               <Link
                 className="nav-link text-nowrap"
-                to="/rent"
+                to="/donedeal"
                 style={{
                   fontSize: "16px",
                   fontWeight: 400,
                   fontFamily: "Poppins",
                 }}
               >
-                Rent
-              </Link>
-            </li>
-            <li className="nav-item">
-              <Link
-                className="nav-link text-nowrap"
-                to="/new-project"
-                style={{
-                  fontSize: "16px",
-                  fontWeight: 400,
-                  fontFamily: "Poppins",
-                }}
-              >
-                New Project
+                Done Deals
               </Link>
             </li>
             <li className="nav-item">
@@ -129,7 +182,7 @@ const Navbar = () => {
             <li className="nav-item">
               <Link
                 className="nav-link text-nowrap"
-                to="/about"
+                to="/aboutme"
                 style={{
                   fontSize: "16px",
                   fontWeight: 400,
@@ -139,36 +192,24 @@ const Navbar = () => {
                 About Me
               </Link>
             </li>
-            <li className="nav-item">
-              <Link
-                className="nav-link text-nowrap"
-                to="/donedeal"
-                style={{
-                  fontSize: "16px",
-                  fontWeight: 400,
-                  fontFamily: "Poppins",
-                }}
-              >
-                Done Deals
-              </Link>
-            </li>
 
             {agent.i_want_to && (
-              <li className="nav-item dropdown d-xl-flex">
-                <button
-                  className="dropdown-toggle nav-link active text-nowrap btn btn-link"
+              <li className="nav-item dropdown">
+                <a
+                  href="#"
+                  className="nav-link dropdown-toggle text-nowrap"
                   id="iWantToDropdown"
+                  role="button"
                   data-bs-toggle="dropdown"
                   aria-expanded="false"
                   style={{
-                    textDecoration: "none",
                     fontSize: "16px",
                     fontWeight: 400,
                     fontFamily: "Poppins",
                   }}
                 >
                   I Want To
-                </button>
+                </a>
                 <ul
                   className="dropdown-menu dropdown-menu-end border-0 px-2"
                   aria-labelledby="iWantToDropdown"
@@ -203,7 +244,6 @@ const Navbar = () => {
                   <li>
                     <hr className="dropdown-divider" />
                   </li>
-
                   <li>
                     <Link
                       className="dropdown-item"
@@ -217,7 +257,6 @@ const Navbar = () => {
                       Sell a Property (WTS)
                     </Link>
                   </li>
-
                   <li>
                     <Link
                       className="dropdown-item"
@@ -232,6 +271,21 @@ const Navbar = () => {
                     </Link>
                   </li>
                 </ul>
+              </li>
+            )}
+            {agent.tools && (
+              <li className="nav-item">
+                <Link
+                  className="nav-link text-nowrap"
+                  to="/tools"
+                  style={{
+                    fontSize: "16px",
+                    fontWeight: 400,
+                    fontFamily: "Poppins",
+                  }}
+                >
+                  Tools
+                </Link>
               </li>
             )}
 

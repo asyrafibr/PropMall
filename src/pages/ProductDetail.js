@@ -12,6 +12,7 @@ import saveImage from "../image/kid_star.svg";
 import SimilarListing from "../components/SimilarListingCard";
 import "./ProductDetail.css";
 import { FiCamera } from "react-icons/fi";
+import MortgageCalculator from "./MortgageCalculator";
 
 const ProductDetail = () => {
   const [product, setProduct] = useState(null);
@@ -32,10 +33,12 @@ const ProductDetail = () => {
   useEffect(() => {
     const fetchProductDetails = async () => {
       try {
+        const hostname = window.location.hostname; // e.g., "prohartanah.my"
+    const domain = hostname.replace(/^www\./, "").split(".")[0]; // e.g., "prohartanah"
         const response = await axios.post(
           "https://dev-agentv3.propmall.net/graph/me/listing/info",
           {
-            domain: "myhartanah.co",
+            domain: domain,
             url_fe: window.location.href,
             id_listing: productId,
           },
@@ -558,6 +561,9 @@ const ProductDetail = () => {
               </p>
             </div>
           )}
+          <div>
+            <MortgageCalculator product={product}></MortgageCalculator>
+          </div>
 
           {/* Similar Listings */}
           <SimilarListing listings={similarListing?.featured_rows ?? []} />
