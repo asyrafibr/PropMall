@@ -78,14 +78,28 @@ const Filters = ({
       console.log("domain", domain);
     }
   }, [ domain]);
+  const getSubdomain = () => {
+  const hostname = window.location.hostname; // e.g., "prohartanah.myhartanah.co"
+  const parts = hostname.split(".");
+  
+  // Handle localhost (e.g., "localhost" or "localhost:3000")
+  if (hostname.includes("localhost")) return "localhost";
+
+  // e.g. ["prohartanah", "myhartanah", "co"]
+  if (parts.length > 2) return parts[0]; // "prohartanah"
+  return null; // fallback if no subdomain
+};
+
   const handleCountryClick = async (country) => {
     try {
       setLoadingLocationData(true);
       setSelectedCountry(country);
+          const domain = getSubdomain(); // dynamic domain
+
       const res = await axios.post(
         "https://dev-agentv3.propmall.net/graph/param/location",
         {
-          domain: "myhartanah.co",
+          domain: domain,
           url_fe: window.location.href,
           id_country: country.id_country,
         }
