@@ -3,7 +3,8 @@ import React, { useState, useEffect } from "react";
 const MortgageCalculator = ({ product }) => {
   const [productList, setProductList] = useState(product); // start from 0
 
-  const [propertyPrice, setPropertyPrice] = useState(0); // start from 0
+  const [propertyPrice, setPropertyPrice] = useState(null); // use null instead of 0
+
   const [loanAmount, setLoanAmount] = useState(0);
   const [interestRate, setInterestRate] = useState(0);
   const [loanTenure, setLoanTenure] = useState(0);
@@ -15,12 +16,22 @@ const MortgageCalculator = ({ product }) => {
     calculateMortgage();
     console.log("Product price is:", productList);
   }, [propertyPrice, loanAmount, interestRate, loanTenure]);
-
   useEffect(() => {
-    if (product?.price) {
-      setPropertyPrice(product.price);
+    const rawPrice = product?.price;
+    if (rawPrice != null) {
+      const clean = String(rawPrice).replace(/,/g, "");
+      const parsed = Number(clean);
+
+      console.log("Cleaned price:", clean, "→ Parsed:", parsed);
+
+      if (!isNaN(parsed)) {
+        setPropertyPrice(parsed);
+      } else {
+        console.warn("Product price is not a number:", rawPrice);
+      }
     }
-  }, [product?.price]);
+  }, [product]);
+
   const calculateMortgage = () => {
     const P = loanAmount;
     const i = interestRate / 100 / 12;
@@ -122,10 +133,17 @@ const MortgageCalculator = ({ product }) => {
               <input
                 type="number"
                 className="form-control"
-                value={propertyPrice}
-                onChange={(e) => setPropertyPrice(Number(e.target.value) || 0)}
+                value={propertyPrice === null ? "" : propertyPrice}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  setPropertyPrice(val === "" ? null : Number(val));
+                }}
+                onBlur={() => {
+                  if (propertyPrice === null) setPropertyPrice(0);
+                }}
               />
             </div>
+
             <div className="col-12">
               <label className="form-label">Loan Amount</label>
               <input

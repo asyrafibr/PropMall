@@ -2,15 +2,19 @@ import axios from "axios";
 
 const hostname = window.location.hostname;
 
-let baseURL = "https://dev-agentv3.propmall.net"; // default fallback
+const cleanHost = hostname.replace(/^www\./, "");
 
-if (hostname.includes("prohartanah")) {
-  baseURL = "https://dev-agentv3-prohartanah.propmall.net";
-} else if (hostname.includes("hartawan")) {
-  baseURL = "https://dev-agentv3-hartawan.propmall.net";
-} else if (hostname.includes("salahproperty")) {
-  baseURL = "https://dev-agentv3-salahproperty.propmall.net";
+// Extract subdomain (e.g. 'prohartanah' from 'prohartanah.com')
+let subdomain = null;
+const parts = cleanHost.split(".");
+if (parts.length >= 2) {
+  subdomain = parts[0];
 }
+
+// Build baseURL dynamically
+const baseURL = subdomain
+  ? `https://dev-agentv3-${subdomain}.propmall.net`
+  : `https://dev-agentv3.propmall.net`; // fallback
 
 const API = axios.create({
   baseURL,
