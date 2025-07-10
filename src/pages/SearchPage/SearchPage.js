@@ -7,7 +7,6 @@ import React, {
   useMemo,
 } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useAuth } from "../../context/AuthContext";
 import "../SearchPage/SearchPage.css";
 import { getLocations, getListings } from "../../api/axiosApi";
 import debounce from "lodash.debounce";
@@ -24,7 +23,6 @@ const SearchPage = () => {
   const navigate = useNavigate();
   const { state } = useLocation();
   const currentYear = new Date().getFullYear();
-  const { isLoggedIn } = useAuth();
 
   const [locations, setLocations] = useState([]);
   const [years, setYears] = useState(state?.years || []);
@@ -145,7 +143,6 @@ const SearchPage = () => {
       <div
       style={{
         boxSizing: "border-box",
-        padding: isLoggedIn === false ? "50px 0px" : "0px",
       }}
     >
       <div className="container px-2">
@@ -168,7 +165,6 @@ const SearchPage = () => {
               setSelectedLocation={setSelectedLocation}
               setSelectedYear={setSelectedYear}
               setSearchTerm={setSearchTerm}
-              isLoggedIn={isLoggedIn}
               handleSearch={handleSearch}
               activeTab={activeTab}
               setActiveTab={setActiveTab}

@@ -4,7 +4,6 @@ import axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import { FaBed, FaBath } from "react-icons/fa";
-import { useAuth } from "../context/AuthContext";
 import AgentBox from "../components/AgentBox";
 import { getAgent, getFeaturedList } from "../api/axiosApi";
 import sharImage from "../image/ios_share.svg";
@@ -23,7 +22,6 @@ const ProductDetail = () => {
   const [previewImage, setPreviewImage] = useState(null);
   const [similarListing, setSimilarListing] = useState([]);
   const [agent, setAgent] = useState({});
-  const { isLoggedIn } = useAuth();
 
   const whatsappMessage = `Hello My Lovely Agent,\nI'm interested in the property that you advertise at website\n${window.location.href}\nand I would love to visit this property.\nMy name is:`;
   const [modalOpen, setModalOpen] = useState(false);

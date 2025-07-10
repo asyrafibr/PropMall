@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import headerImage from "../image/Landing_Hero.jpg";
 import AgentBox from "../components/AgentBox";
-import { useAuth } from "../context/AuthContext";
 import axios from "axios";
 import { getAgent } from "../api/axiosApi";
 import { useNavigate } from "react-router-dom"; // at top
@@ -21,9 +20,8 @@ const Filters = ({
   const [navigationStack, setNavigationStack] = useState([]);
   const [selectedAreaIds, setSelectedAreaIds] = useState([]);
   const [selectedAreaNames, setSelectedAreaNames] = useState([]);
-  const { isLoggedIn } = useAuth();
   const [agent, setAgent] = useState({});
-    const [domain, setDomain] = useState({});
+  const [domain, setDomain] = useState({});
 
   const [selectedCountry, setSelectedCountry] = useState(null);
   const [selectedState, setSelectedState] = useState(null);
@@ -65,7 +63,7 @@ const Filters = ({
       try {
         const agentRes = await getAgent();
         setAgent(agentRes.data.domain.config);
-        setDomain(agentRes.data.domain)
+        setDomain(agentRes.data.domain);
       } catch (error) {
         console.error("Error fetching agent:", error);
       }
@@ -73,28 +71,27 @@ const Filters = ({
     fetchAgentData();
   }, []);
   useEffect(() => {
-   
     if (domain) {
       console.log("domain", domain);
     }
-  }, [ domain]);
+  }, [domain]);
   const getSubdomain = () => {
-  const hostname = window.location.hostname; // e.g., "prohartanah.myhartanah.co"
-  const parts = hostname.split(".");
-  
-  // Handle localhost (e.g., "localhost" or "localhost:3000")
-  if (hostname.includes("localhost")) return "localhost";
+    const hostname = window.location.hostname; // e.g., "prohartanah.myhartanah.co"
+    const parts = hostname.split(".");
 
-  // e.g. ["prohartanah", "myhartanah", "co"]
-  if (parts.length > 2) return parts[0]; // "prohartanah"
-  return null; // fallback if no subdomain
-};
+    // Handle localhost (e.g., "localhost" or "localhost:3000")
+    if (hostname.includes("localhost")) return "localhost";
+
+    // e.g. ["prohartanah", "myhartanah", "co"]
+    if (parts.length > 2) return parts[0]; // "prohartanah"
+    return null; // fallback if no subdomain
+  };
 
   const handleCountryClick = async (country) => {
     try {
       setLoadingLocationData(true);
       setSelectedCountry(country);
-          const domain = getSubdomain(); // dynamic domain
+      const domain = getSubdomain(); // dynamic domain
 
       const res = await axios.post(
         "https://dev-agentv3.propmall.net/graph/param/location",
@@ -115,14 +112,43 @@ const Filters = ({
     }
   };
 
-  const handleNodeClick = (node) => {
-    if (node.node_level === 2) setSelectedState(node);
-    if (node.node_level === 3) {
-      handleAreaToggle(node);
-    } else if (node.child_count > 0 && node.child_list?.length > 0) {
-      setNavigationStack((prev) => [...prev, node]);
+const handleNodeClick = (node) => {
+  if (node.node_level === 2) {
+    setSelectedState(node);
+    setSelectedAreaIds([]);
+    setSelectedAreaNames([]);
+    setSelectedAreaObjects([]);
+  }
+
+  if (node.node_level === 3) {
+    let parentState = null;
+    for (const country of agent?.listing_country || []) {
+      const match = country.child_list?.find(
+        (state) => state.id === node.parent_id
+      );
+      if (match) {
+        parentState = match;
+        break;
+      }
     }
-  };
+
+    if (!selectedState || selectedState.id !== node.parent_id) {
+      setSelectedState(parentState); // Set full object, including .name
+      setSelectedAreaIds([node.id]);
+      setSelectedAreaNames([node.name]);
+      setSelectedAreaObjects([node]);
+    } else {
+      handleAreaToggle(node);
+    }
+    return;
+  }
+
+  if (node.child_count > 0 && node.child_list?.length > 0) {
+    setNavigationStack((prev) => [...prev, node]);
+  }
+};
+
+
 
   const handleBack = () => {
     if (navigationStack.length > 1) {
@@ -131,19 +157,20 @@ const Filters = ({
   };
 
   const handleAreaToggle = (area) => {
-    const isSelected = selectedAreaIds.includes(area.id);
-    if (isSelected) {
-      setSelectedAreaIds((prev) => prev.filter((id) => id !== area.id));
-      setSelectedAreaNames((prev) => prev.filter((name) => name !== area.name));
-      setSelectedAreaObjects((prev) =>
-        prev.filter((obj) => obj.id !== area.id)
-      );
-    } else {
-      setSelectedAreaIds((prev) => [...prev, area.id]);
-      setSelectedAreaNames((prev) => [...prev, area.name]);
-      setSelectedAreaObjects((prev) => [...prev, area]);
-    }
-  };
+  const isSelected = selectedAreaIds.includes(area.id);
+  if (isSelected) {
+    setSelectedAreaIds((prev) => prev.filter((id) => id !== area.id));
+    setSelectedAreaNames((prev) => prev.filter((name) => name !== area.name));
+    setSelectedAreaObjects((prev) =>
+      prev.filter((obj) => obj.id !== area.id)
+    );
+  } else {
+    setSelectedAreaIds((prev) => [...prev, area.id]);
+    setSelectedAreaNames((prev) => [...prev, area.name]);
+    setSelectedAreaObjects((prev) => [...prev, area]);
+  }
+};
+
 
   const handleApply = () => {
     const countryName = selectedCountry?.name || "";
@@ -157,8 +184,8 @@ const Filters = ({
 
   const handleSearch = async () => {
     try {
-    const hostname = window.location.hostname; // e.g., "prohartanah.my"
-    const domain = hostname.replace(/^www\./, "").split(".")[0]; // e.g., "prohartanah"
+      const hostname = window.location.hostname; // e.g., "prohartanah.my"
+      const domain = hostname.replace(/^www\./, "").split(".")[0]; // e.g., "prohartanah"
       const response = await axios.post(
         "https://dev-agentv3.propmall.net/graph/me/listing/search",
         {
@@ -252,7 +279,6 @@ const Filters = ({
     "Bathroom(s)": ["Any", "1-3", "4-6", "7-10", ">10"],
   };
 
-
   const toggleDropdown = (label) => {
     setOpenDropdown(openDropdown === label ? null : label);
   };
@@ -304,7 +330,7 @@ const Filters = ({
             }}
           >
             <div className="d-flex">
-              {["rent", "sell"].map((tab) => (
+              {["Buy", "Rent", "New Project", "Auction"].map((tab) => (
                 <button
                   key={tab}
                   className="btn text-white me-3"
@@ -320,7 +346,7 @@ const Filters = ({
                     borderRadius: 0,
                   }}
                 >
-                  For {tab === "rent" ? "Rent" : "Sale"}
+                  {tab}
                 </button>
               ))}
             </div>
@@ -344,7 +370,15 @@ const Filters = ({
                     fontFamily: "Poppins",
                   }}
                 >
-                  <span>{selectedLocation || "Select Location"}</span>
+                  <span
+                    style={{
+                      fontFamily: "Poppins",
+                      fontSize: "20px",
+                      fontWeight: 400,
+                    }}
+                  >
+                    {selectedLocation || "Select Location"}
+                  </span>
                   <span style={{ fontSize: "0.8rem" }}>▼</span>
                 </div>
               </div>
@@ -516,58 +550,59 @@ const Filters = ({
                       lineHeight: "1",
                       border: "none",
                       background: "transparent",
-                      color: "black", marginRight:'10px'
+                      color: "black",
+                      marginRight: "10px",
                     }}
                   >
                     &lt;
                   </button>
                 )}
               </div>
-             <div style={{ flex: 1 }}>
-  <h6
-    style={{
-      margin: 0,
-      textAlign: "left",
-      fontWeight: "600",
-      fontSize: "16px",
-      fontFamily: "Poppins",
-    }}
-  >
-    {currentLevel?.node_level === 0
-      ? "Select Country"
-      : currentLevel?.node_level === 1
-      ? "Search by State"
-      : currentLevel?.node_level === 2
-      ? "Select City/Area"
-      : ""}
-  </h6>
+              <div style={{ flex: 1 }}>
+                <h6
+                  style={{
+                    margin: 0,
+                    textAlign: "left",
+                    fontWeight: "600",
+                    fontSize: "16px",
+                    fontFamily: "Poppins",
+                  }}
+                >
+                  {currentLevel?.node_level === 0
+                    ? "Select Country"
+                    : currentLevel?.node_level === 1
+                    ? "Search by State"
+                    : currentLevel?.node_level === 2
+                    ? "Select City/Area"
+                    : ""}
+                </h6>
 
-  {currentLevel?.node_level === 1 && navigationStack[0] && (
-    <p
-      style={{
-        margin: 0,
-        fontSize: "14px",
-        color: "#555",
-        fontFamily: "Poppins",
-      }}
-    >
-      {navigationStack[0].name}
-    </p>
-  )}
+                {currentLevel?.node_level === 1 && navigationStack[0] && (
+                  <p
+                    style={{
+                      margin: 0,
+                      fontSize: "14px",
+                      color: "#555",
+                      fontFamily: "Poppins",
+                    }}
+                  >
+                    {navigationStack[0].name}
+                  </p>
+                )}
 
-  {currentLevel?.node_level === 2 && navigationStack[1] && (
-    <p
-      style={{
-        margin: 0,
-        fontSize: "14px",
-        color: "#555",
-        fontFamily: "Poppins",
-      }}
-    >
-       {navigationStack[1].name}
-    </p>
-  )}
-</div>
+                {currentLevel?.node_level === 2 && navigationStack[1] && (
+                  <p
+                    style={{
+                      margin: 0,
+                      fontSize: "14px",
+                      color: "#555",
+                      fontFamily: "Poppins",
+                    }}
+                  >
+                    {navigationStack[1].name}
+                  </p>
+                )}
+              </div>
 
               <div>
                 <button

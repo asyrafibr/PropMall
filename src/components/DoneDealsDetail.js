@@ -5,7 +5,6 @@ import React, { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import { FaBed, FaBath } from "react-icons/fa";
-import { useAuth } from "../context/AuthContext";
 import AgentBox from "../components/AgentBox";
 import SimilarListing from "./SimilarListingCard";
 const DoneDealDetail = (id) => {

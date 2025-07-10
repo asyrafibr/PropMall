@@ -1,12 +1,10 @@
 // components/Header.js
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
 import { useTemplate } from "../context/TemplateContext"; // ✅ Import Template Context
 import { getAgent } from "../api/axiosApi";
 
 const Navbar = () => {
-  // const { isLoggedIn, login, logout } = useAuth();
   const { template, switchTemplate } = useTemplate(); // ✅ Use Template Context
   const navigate = useNavigate();
 

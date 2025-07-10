@@ -1,6 +1,5 @@
 import React from "react";
 import AgentBox from "./AgentBox";
-import { useAuth } from "../context/AuthContext";
 
 const SearchFilter = ({
   locations,
@@ -15,26 +14,13 @@ const SearchFilter = ({
   activeTab,
   setActiveTab,
 }) => {
-  const { isLoggedIn } = useAuth();
 
   return (
     <div style={{ width: "100%", display: "flex", justifyContent: "center" }}>
       <div style={{ width: "100%", maxWidth: "1300px", position: "relative", zIndex: 2 }}>
         {/* ✅ AgentBox with full-width container (not sticky) */}
-        {isLoggedIn && (
-          <div
-            style={{
-              width: "100vw",
-              marginLeft: "-50vw",
-              background: "#F0F0F0",
-              padding: "20px 0",
-            }}
-          >
-            <div style={{ maxWidth: "1300px", margin: "0 auto" }}>
-              <AgentBox />
-            </div>
-          </div>
-        )}
+                    <AgentBox />
+
 
         {/* ✅ Sticky Filters Box */}
         <div

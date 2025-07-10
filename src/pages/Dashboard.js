@@ -3,11 +3,8 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Filters from "../components/FilterSection";
 import { useNavigate } from "react-router-dom";
-import AgentBox from "../components/AgentBox";
-import { useAuth } from "../context/AuthContext";
 
 const Dashboard = () => {
-  const { isLoggedIn } = useAuth(); // ✅ Get login status
   const navigate = useNavigate();
 
   const [locations, setLocations] = useState([]);
@@ -79,7 +76,6 @@ const Dashboard = () => {
       <Filters
         locations={locations}
         years={years}
-        isLoggedIn={isLoggedIn}
         selectedLocation={selectedLocation}
         selectedYear={selectedYear}
         searchTerm={searchTerm}

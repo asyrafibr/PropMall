@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { useAuth } from "../context/AuthContext";
 import agentBoxbg from "../image/Landing_HeroAgent.jpg";
 import { getAgent } from "../api/axiosApi";
 
 const AgentBox = () => {
   const [agent, setAgent] = useState({});
-  const { isLoggedIn } = useAuth();
 
    useEffect(() => {
     const fetchAgentData = async () => {

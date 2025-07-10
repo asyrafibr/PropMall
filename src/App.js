@@ -6,7 +6,6 @@ import {
   Route,
   useLocation,
 } from "react-router-dom";
-import { AuthProvider } from "./context/AuthContext";
 import { TemplateProvider } from "./context/TemplateContext";
 
 import ProductList from "./pages/ProductList";
@@ -71,13 +70,11 @@ const Layout = () => {
 };
 
 const App = () => (
-  <AuthProvider>
     <TemplateProvider>
       <Router>
         <Layout />
       </Router>
     </TemplateProvider>
-  </AuthProvider>
 );
 
 export default App;

@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import Filters from "../../components/FilterSection";
-import { useAuth } from "../../context/AuthContext";
 import {
   getLocations,
   getPriceYears,
@@ -16,7 +15,6 @@ import DashboardListingT1 from "./DashboardListingT1";
 import FilterT2 from "./DashboardT2";
 const data = {};
 const Dashboard = () => {
-  const { isLoggedIn } = useAuth();
   const navigate = useNavigate();
   const { template } = useTemplate();
 
@@ -200,7 +198,6 @@ const Dashboard = () => {
               locations={locations}
               agent={agent}
               years={years}
-              isLoggedIn={isLoggedIn}
               selectedLocation={selectedLocation}
               selectedYear={selectedYear}
               searchTerm={searchTerm}
@@ -224,7 +221,6 @@ const Dashboard = () => {
               locations={locations}
               agent={agent}
               years={years}
-              isLoggedIn={isLoggedIn}
               selectedLocation={selectedLocation}
               selectedYear={selectedYear}
               searchTerm={searchTerm}
