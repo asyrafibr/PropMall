@@ -5,7 +5,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import { FaBed, FaBath } from "react-icons/fa";
 import AgentBox from "../components/AgentBox";
-import { getAgent, getFeaturedList } from "../api/axiosApi";
+import { getAgent, getFeaturedList ,getListingInfo} from "../api/axiosApi";
 import sharImage from "../image/ios_share.svg";
 import saveImage from "../image/kid_star.svg";
 import SimilarListing from "../components/SimilarListingCard";
@@ -28,29 +28,29 @@ const ProductDetail = () => {
   const [modalImages, setModalImages] = useState([]);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const thumbnailRefs = useRef([]);
-  useEffect(() => {
-    const fetchProductDetails = async () => {
-      try {
-        const hostname = window.location.hostname; // e.g., "prohartanah.my"
-    const domain = hostname.replace(/^www\./, "").split(".")[0]; // e.g., "prohartanah"
-        const response = await axios.post(
-          "https://dev-agentv3.propmall.net/graph/me/listing/info",
-          {
-            domain: domain,
-            url_fe: window.location.href,
-            id_listing: productId,
-          },
-          { headers: { "Content-Type": "application/json" } }
-        );
-        setProduct(response.data.listing_info);
-      } catch (err) {
-        setError(err.message || "Something went wrong");
-      } finally {
-        setLoading(false);
-      }
-    };
-    if (productId) fetchProductDetails();
-  }, [productId]);
+ useEffect(() => {
+  const fetchProductDetails = async () => {
+    try {
+      const hostname = window.location.hostname;
+      const domain = hostname.replace(/^www\./, "").split(".")[0];
+      const url_fe = window.location.href;
+
+      const response = await getListingInfo({
+        id_listing: productId,
+        domain,
+        url_fe,
+      });
+
+      setProduct(response.data.listing_info);
+    } catch (err) {
+      setError(err.message || "Something went wrong");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (productId) fetchProductDetails();
+}, [productId]);
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === "Escape") setModalOpen(false);

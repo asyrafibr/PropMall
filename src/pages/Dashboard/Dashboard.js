@@ -48,66 +48,66 @@ const Dashboard = () => {
     fetchFilterData();
   }, []);
 
-  useEffect(() => {
-    const fetchSearchList = async () => {
-      try {
-        const response = await axios.post(
-          "https://dev-agentv3.propmall.net/graph/me/listing/search",
-          {
-            search: {
-              page_num: 1,
-              page_size: 10,
-              search_text: null,
-              search_fields: {
-                title: true,
-                description: true,
-              },
-              search_filters: {
-                objective: {
-                  sale: true,
-                  rent: true,
-                  project: true,
-                },
-                location: {
-                  id_country: 1,
-                  id_province: [],
-                  id_state: [],
-                  id_cities: [],
-                  id_area: [],
-                },
-                property_category: null,
-                property_holding: null,
-                property_lot_type: null,
-                room: {
-                  min: null,
-                  max: null,
-                },
-                bathroom: {
-                  min: null,
-                  max: null,
-                },
-                price: {
-                  min: null,
-                  max: null,
-                },
-              },
-            },
-          },
-          {
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
-        setSearchList(response.data.listing_search);
-        console.log("Search results:", response.data.listing_search);
-      } catch (error) {
-        console.error("Error fetching search list:", error);
-      }
-    };
+  // useEffect(() => {
+  //   const fetchSearchList = async () => {
+  //     try {
+  //       const response = await axios.post(
+  //         "https://dev-agentv3.propmall.net/graph/me/listing/search",
+  //         {
+  //           search: {
+  //             page_num: 1,
+  //             page_size: 10,
+  //             search_text: null,
+  //             search_fields: {
+  //               title: true,
+  //               description: true,
+  //             },
+  //             search_filters: {
+  //               objective: {
+  //                 sale: true,
+  //                 rent: true,
+  //                 project: true,
+  //               },
+  //               location: {
+  //                 id_country: 1,
+  //                 id_province: [],
+  //                 id_state: [],
+  //                 id_cities: [],
+  //                 id_area: [],
+  //               },
+  //               property_category: null,
+  //               property_holding: null,
+  //               property_lot_type: null,
+  //               room: {
+  //                 min: null,
+  //                 max: null,
+  //               },
+  //               bathroom: {
+  //                 min: null,
+  //                 max: null,
+  //               },
+  //               price: {
+  //                 min: null,
+  //                 max: null,
+  //               },
+  //             },
+  //           },
+  //         },
+  //         {
+  //           headers: {
+  //             "Content-Type": "application/json",
+  //           },
+  //         }
+  //       );
+  //       setSearchList(response.data.listing_search);
+  //       console.log("Search results:", response.data.listing_search);
+  //     } catch (error) {
+  //       console.error("Error fetching search list:", error);
+  //     }
+  //   };
 
-    fetchSearchList();
-  }, []);
+  //   fetchSearchList();
+  // }, []);
 
   const handleSearch = async () => {
     const locationId = selectedLocation;

@@ -4,7 +4,10 @@ import AgentBox from "../components/AgentBox";
 import axios from "axios";
 import { getAgent } from "../api/axiosApi";
 import { useNavigate } from "react-router-dom"; // at top
+import { FaSearch } from "react-icons/fa";  
+// import getSubdomain from "../utils/getSubdomain"; // if you’ve extracted it to a helper
 
+import { getCategory, getHolding,getLocationTree ,getListings} from "../api/axiosApi";
 const Filters = ({
   selectedLocation,
   setSelectedLocation,
@@ -13,7 +16,11 @@ const Filters = ({
 }) => {
   const navigate = useNavigate();
   const containerRef = useRef(null); // ✅ ref to the whole dropdown group
-
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [selectedHolding, setSelectedHolding] = useState(null);
+  const [roomRange, setRoomRange] = useState({ min: null, max: null });
+  const [bathroomRange, setBathroomRange] = useState({ min: null, max: null });
+  const [priceModalOpen, setPriceModalOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("rent");
   const [showModal, setShowModal] = useState(false);
   const [locationTree, setLocationTree] = useState([]);
@@ -22,6 +29,9 @@ const Filters = ({
   const [selectedAreaNames, setSelectedAreaNames] = useState([]);
   const [agent, setAgent] = useState({});
   const [domain, setDomain] = useState({});
+  const [category, setCategory] = useState({});
+  const [holding, setHolding] = useState({});
+  const [priceRange, setPriceRange] = useState({ min: null, max: null });
 
   const [selectedCountry, setSelectedCountry] = useState(null);
   const [selectedState, setSelectedState] = useState(null);
@@ -43,6 +53,33 @@ const Filters = ({
   }, []);
 
   useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const categoryList = await getCategory();
+
+        setCategory(categoryList.data.property_category);
+
+        const holdingList = await getHolding();
+        setHolding(holdingList.data.property_holding_and_type);
+
+        // ❌ agent is NOT updated here yet
+      } catch (error) {
+        console.error("Error fetching agent:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
+  useEffect(() => {
+    if (category) {
+      console.log("Category", category);
+    }
+    if (holding) {
+      console.log("Holding", holding);
+    }
+  }, [category, holding]);
+  useEffect(() => {
+    console.log("category");
     if (showModal) {
       document.body.classList.add("modal-open");
     } else {
@@ -87,68 +124,49 @@ const Filters = ({
     return null; // fallback if no subdomain
   };
 
-  const handleCountryClick = async (country) => {
-    try {
-      setLoadingLocationData(true);
-      setSelectedCountry(country);
-      const domain = getSubdomain(); // dynamic domain
 
-      const res = await axios.post(
-        "https://dev-agentv3.propmall.net/graph/param/location",
-        {
-          domain: domain,
-          url_fe: window.location.href,
-          id_country: country.id_country,
-        }
-      );
-      if (res.data?.country) {
-        setLocationTree([res.data.country]);
-        setNavigationStack([res.data.country]);
-      }
-    } catch (err) {
-      console.error("Error fetching states/areas:", err);
-    } finally {
-      setLoadingLocationData(false);
+const handleCountryClick = async (country) => {
+  try {
+    setLoadingLocationData(true);
+    setSelectedCountry(country);
+
+    const domain = getSubdomain(); // dynamically extracted subdomain
+    const url_fe = window.location.href;
+
+    const res = await getLocationTree({
+      domain,
+      url_fe,
+      id_country: country.id_country,
+    });
+
+    if (res.data?.country) {
+      setLocationTree([res.data.country]);
+      setNavigationStack([res.data.country]);
     }
-  };
-
-const handleNodeClick = (node) => {
-  if (node.node_level === 2) {
-    setSelectedState(node);
-    setSelectedAreaIds([]);
-    setSelectedAreaNames([]);
-    setSelectedAreaObjects([]);
-  }
-
-  if (node.node_level === 3) {
-    let parentState = null;
-    for (const country of agent?.listing_country || []) {
-      const match = country.child_list?.find(
-        (state) => state.id === node.parent_id
-      );
-      if (match) {
-        parentState = match;
-        break;
-      }
-    }
-
-    if (!selectedState || selectedState.id !== node.parent_id) {
-      setSelectedState(parentState); // Set full object, including .name
-      setSelectedAreaIds([node.id]);
-      setSelectedAreaNames([node.name]);
-      setSelectedAreaObjects([node]);
-    } else {
-      handleAreaToggle(node);
-    }
-    return;
-  }
-
-  if (node.child_count > 0 && node.child_list?.length > 0) {
-    setNavigationStack((prev) => [...prev, node]);
+  } catch (err) {
+    console.error("Error fetching states/areas:", err);
+  } finally {
+    setLoadingLocationData(false);
   }
 };
 
 
+  const handleNodeClick = (node) => {
+    if (node.node_level === 2) {
+      // Just update selectedState, don't reset checkboxes
+      setSelectedState(node);
+    }
+
+    if (node.node_level === 3) {
+      // This is an area node — do NOT replace the selections
+      handleAreaToggle(node);
+      return; // stop here — don't push to navigation stack
+    }
+
+    if (node.child_count > 0 && node.child_list?.length > 0) {
+      setNavigationStack((prev) => [...prev, node]);
+    }
+  };
 
   const handleBack = () => {
     if (navigationStack.length > 1) {
@@ -157,126 +175,107 @@ const handleNodeClick = (node) => {
   };
 
   const handleAreaToggle = (area) => {
-  const isSelected = selectedAreaIds.includes(area.id);
-  if (isSelected) {
-    setSelectedAreaIds((prev) => prev.filter((id) => id !== area.id));
-    setSelectedAreaNames((prev) => prev.filter((name) => name !== area.name));
-    setSelectedAreaObjects((prev) =>
-      prev.filter((obj) => obj.id !== area.id)
-    );
-  } else {
-    setSelectedAreaIds((prev) => [...prev, area.id]);
-    setSelectedAreaNames((prev) => [...prev, area.name]);
-    setSelectedAreaObjects((prev) => [...prev, area]);
-  }
-};
+    const isSelected = selectedAreaIds.includes(area.id);
 
+    if (isSelected) {
+      setSelectedAreaIds((prev) => prev.filter((id) => id !== area.id));
+      setSelectedAreaNames((prev) => prev.filter((name) => name !== area.name));
+      setSelectedAreaObjects((prev) =>
+        prev.filter((obj) => obj.id !== area.id)
+      );
+    } else {
+      // Optional check: enforce same-state selection only
+      const parentStateId = area.parent_id;
+      const isSameState =
+        !selectedAreaObjects.length ||
+        selectedAreaObjects[0].parent_id === parentStateId;
+
+      if (isSameState) {
+        setSelectedAreaIds((prev) => [...prev, area.id]);
+        setSelectedAreaNames((prev) => [...prev, area.name]);
+        setSelectedAreaObjects((prev) => [...prev, area]);
+      } else {
+        // clear previous and add new area if different state
+        setSelectedAreaIds([area.id]);
+        setSelectedAreaNames([area.name]);
+        setSelectedAreaObjects([area]);
+      }
+    }
+  };
 
   const handleApply = () => {
     const countryName = selectedCountry?.name || "";
     const stateName = selectedState?.name || "";
     const areaNames = selectedAreaNames.join(", ");
-    setSelectedLocation(`${countryName}, ${stateName}, ${areaNames}`);
+    setSelectedLocation(`${stateName}, ${areaNames}`);
     setShowModal(false);
     setNavigationStack([]);
     setLocationTree([]);
   };
 
-  const handleSearch = async () => {
-    try {
-      const hostname = window.location.hostname; // e.g., "prohartanah.my"
-      const domain = hostname.replace(/^www\./, "").split(".")[0]; // e.g., "prohartanah"
-      const response = await axios.post(
-        "https://dev-agentv3.propmall.net/graph/me/listing/search",
-        {
-          domain: domain,
-          url_fe: window.location.href,
-          listing_search: {
-            page_num: 1,
-            page_size: 10,
-            search_text: searchTerm || null,
-            search_fields: {
-              title: true,
-              description: true,
-            },
-            search_filters: {
-              objective: {
-                sale: true,
-                rent: true,
-                project: true,
-                auction: true,
-              },
-              location: {
-                id_country: selectedCountry?.id_country || null,
-                id_state: selectedState?.id || null,
-                id_area: selectedAreaIds.length ? selectedAreaIds : [],
-                id_province: [],
-                id_cities: [],
-              },
-              property_category: null,
-              property_holding: null,
-              property_lot_type: null,
-              room: { min: null, max: null },
-              bathroom: { min: null, max: null },
-              price: { min: null, max: null },
-            },
-          },
-        }
-      );
+ const handleSearch = async () => {
+  try {
+    const hostname = window.location.hostname;
+    const domain = hostname.replace(/^www\./, "").split(".")[0];
+    const url_fe = window.location.href;
 
-      // Navigate to /search with state
-      navigate("/search", {
-        state: {
-          products: response.data.listing_search.listing_rows,
-          selectedLocationName: selectedState?.name,
-          selectedLocationId: selectedState?.id,
-          searchType: activeTab,
+    const payload = {
+      domain,
+      url_fe,
+      listing_search: {
+        page_num: 1,
+        page_size: 10,
+        search_text: searchTerm || null,
+        search_fields: {
+          title: true,
+          description: true,
         },
-      });
-    } catch (error) {
-      console.error("Error fetching listings:", error);
-    }
-  };
+        search_filters: {
+          objective: {
+            sale: true,
+            rent: true,
+            project: true,
+            auction: true,
+          },
+          location: {
+            id_country: selectedCountry?.id_country || null,
+            id_state: selectedState?.id || null,
+            id_area: selectedAreaIds.length ? selectedAreaIds : [],
+            id_province: [],
+            id_cities: [],
+          },
+          property_category: selectedCategory || null,
+          property_holding: selectedHolding || null,
+          property_lot_type: null,
+          room: { min: null, max: null },
+          bathroom: { min: null, max: null },
+          price: { min: null, max: null },
+        },
+      },
+    };
+
+    const response = await getListings(payload);
+
+    navigate("/search", {
+      state: {
+        products: response.data.listing_search.listing_rows,
+        selectedLocationName: selectedState?.name,
+        selectedLocationId: selectedState?.id,
+        searchType: activeTab,
+      },
+    });
+  } catch (error) {
+    console.error("Error fetching listings:", error);
+  }
+};
   const currentLevel = navigationStack[navigationStack.length - 1];
   const displayList = currentLevel?.child_list || [];
   const filters = {
-    "All Categories": [
-      "Apartmen/Condo (Highrise)",
-      "House/Bungalow (Landed)",
-      "Commercial/Office/Industry/Building",
-      "Land",
-      "Hotel/Resort/Homestay",
-    ],
-    "All Holding Types": [
-      "Freehold",
-      "Leasehold",
-      "Non-Bumi",
-      "Bumi",
-      "Malay Reserve",
-      "Customary Land",
-      "Freehold & Non-Bumi",
-      "Freehold & Bumi",
-      "Freehold & Malay Reserve",
-      "Freehold & Customary Land",
-      "Leasehold & Non-Bumi",
-      "Leasehold & Bumi",
-      "Leasehold & Malay Reserve",
-      "Leasehold & Customary Land",
-    ],
-    "Price Ranges (RM)": [
-      "Any",
-      "Up to RM 250k",
-      "Above RM 250k to RM 500k",
-      "Above RM 500k to RM 750k",
-      "Above RM 750k to RM 1m",
-      "Above RM 1m to RM 2.5m",
-      "Above RM 2.5m to RM 5m",
-      "Above RM 5m to RM 7.5m",
-      "Above RM 7.5m to RM 10m",
-      "Above RM 10m",
-    ],
-    "Bedroom(s)": ["Any", "1-3", "4-6", "7-10", ">10"],
-    "Bathroom(s)": ["Any", "1-3", "4-6", "7-10", ">10"],
+    "All Categories": category, // array from props/state
+    "All Holding Types": holding, // array from props/state
+    "Price Ranges (RM)": [], // now triggers modal
+    "Bedroom(s)": ["Custom Range..."],
+    "Bathroom(s)": ["Custom Range..."],
   };
 
   const toggleDropdown = (label) => {
@@ -368,6 +367,8 @@ const handleNodeClick = (node) => {
                     cursor: "pointer",
                     backgroundColor: "#fff",
                     fontFamily: "Poppins",
+                    padding: "0 16px", // add some padding
+                    overflow: "hidden",
                   }}
                 >
                   <span
@@ -375,23 +376,56 @@ const handleNodeClick = (node) => {
                       fontFamily: "Poppins",
                       fontSize: "20px",
                       fontWeight: 400,
+                      whiteSpace: "nowrap",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      flex: 1,
                     }}
                   >
-                    {selectedLocation || "Select Location"}
+                    {selectedLocation || "All States"}
                   </span>
-                  <span style={{ fontSize: "0.8rem" }}>▼</span>
+                  <span
+                    style={{
+                      fontSize: "0.8rem",
+                      marginLeft: "8px",
+                      flexShrink: 0,
+                    }}
+                  >
+                    ▼
+                  </span>
                 </div>
               </div>
               <div className="col-12 col-md-9">
                 <div className="d-flex flex-column flex-md-row gap-3">
-                  <input
-                    type="text"
-                    className="form-control"
-                    placeholder="Search"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    style={{ height: "60px" }}
-                  />
+                  <div className="position-relative flex-grow-1">
+                    <FaSearch
+                      style={{
+                        position: "absolute",
+                        left: "16px",
+                        top: "50%",
+                        transform: "translateY(-50%)",
+                        fontSize: "20px",
+                        color: "#999",
+                      }}
+                    />
+                    <input
+                      type="text"
+                      className="form-control"
+                      placeholder="Search"
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      style={{
+                        height: "60px",
+                        paddingLeft: "48px", // room for the icon
+                        fontFamily: "Poppins",
+                        fontSize: "20px",
+                        fontStyle: "normal",
+                        fontWeight: 400,
+                        lineHeight: "normal",
+                      }}
+                    />
+                  </div>
+
                   <button
                     className="btn btn-primary"
                     onClick={handleSearch}
@@ -417,6 +451,7 @@ const handleNodeClick = (node) => {
                     style={{ position: "relative", width: "100%" }}
                   >
                     <button
+                      onClick={() => toggleDropdown(label)}
                       className="btn p-0 d-flex align-items-center"
                       style={{
                         justifyContent: "space-between",
@@ -428,65 +463,125 @@ const handleNodeClick = (node) => {
                         color: "white",
                         textDecoration: "none",
                       }}
-                      onClick={() => toggleDropdown(label)}
                     >
-                      <span style={{ flexGrow: 1, textAlign: "left" }}>
-                        {label}
-                      </span>
-                      <span
-                        style={{
-                          marginLeft: "6px",
-                          fontSize: "0.7rem",
-                          flexShrink: 0,
-                        }}
-                      >
+                      <span>{label}</span>
+                      <span style={{ marginLeft: "6px", fontSize: "0.7rem" }}>
                         ▼
                       </span>
                     </button>
 
                     {openDropdown === label && (
-                      <ul
+                      <div
                         style={{
-                          listStyle: "none",
-                          margin: 0,
-                          padding: "10px",
                           position: "absolute",
                           top: "100%",
-                          left: 0,
                           width: "100%",
                           background: "white",
-                          color: "#333",
-                          borderRadius: "8px",
-                          boxShadow: "0 4px 8px rgba(0,0,0,0.15)",
                           zIndex: 1000,
-                          maxHeight: "300px",
-                          overflowY: "auto",
+                          borderRadius: "8px",
+                          padding: "10px",
+                          boxShadow: "0 4px 8px rgba(0,0,0,0.15)",
                         }}
                       >
-                        {options.map((item, index) => (
-                          <li
-                            key={index}
-                            style={{
-                              padding: "6px 10px",
-                              cursor: "pointer",
-                              fontFamily: "Poppins",
-                              fontSize: "14px",
-                            }}
+                        {label === "Price Ranges (RM)" ? (
+                          <button
+                            className="btn btn-primary w-100 py-2"
                             onClick={() => {
-                              console.log(`Selected: ${item}`);
+                              setPriceModalOpen(true);
                               setOpenDropdown(null);
                             }}
-                            onMouseEnter={(e) =>
-                              (e.currentTarget.style.background = "#f1f1f1")
-                            }
-                            onMouseLeave={(e) =>
-                              (e.currentTarget.style.background = "transparent")
-                            }
                           >
-                            {item}
-                          </li>
-                        ))}
-                      </ul>
+                            Set Price Range...
+                          </button>
+                        ) : label === "Bedroom(s)" ||
+                          label === "Bathroom(s)" ? (
+                          <>
+                            <div className="mb-2">
+                              Enter {label.toLowerCase()} range:
+                            </div>
+                            <div className="d-flex gap-2">
+                              <input
+                                type="number"
+                                placeholder="Min"
+                                value={
+                                  label === "Bedroom(s)"
+                                    ? roomRange.min || ""
+                                    : bathroomRange.min || ""
+                                }
+                                onChange={(e) => {
+                                  const v = e.target.value
+                                    ? +e.target.value
+                                    : null;
+                                  label === "Bedroom(s)"
+                                    ? setRoomRange((r) => ({ ...r, min: v }))
+                                    : setBathroomRange((r) => ({
+                                        ...r,
+                                        min: v,
+                                      }));
+                                }}
+                                className="form-control"
+                              />
+                              <input
+                                type="number"
+                                placeholder="Max"
+                                value={
+                                  label === "Bedroom(s)"
+                                    ? roomRange.max || ""
+                                    : bathroomRange.max || ""
+                                }
+                                onChange={(e) => {
+                                  const v = e.target.value
+                                    ? +e.target.value
+                                    : null;
+                                  label === "Bedroom(s)"
+                                    ? setRoomRange((r) => ({ ...r, max: v }))
+                                    : setBathroomRange((r) => ({
+                                        ...r,
+                                        max: v,
+                                      }));
+                                }}
+                                className="form-control"
+                              />
+                            </div>
+                            <button
+                              className="btn btn-success mt-2"
+                              onClick={() => setOpenDropdown(null)}
+                            >
+                              Apply
+                            </button>
+                          </>
+                        ) : (
+                          <ul
+                            style={{ listStyle: "none", padding: 0, margin: 0 }}
+                          >
+                            {options.map((item, i) => (
+                              <li
+                                key={i}
+                                style={{ cursor: "pointer", padding: "6px 0" }}
+                              >
+                                <label>
+                                  <text>{item.desc}</text>
+                                  <input
+                                    type="checkbox"
+                                    onChange={() => {
+                                      if (label === "All Categories")
+                                        setSelectedCategory(item);
+                                      else setSelectedHolding(item);
+                                    }}
+                                    checked={
+                                      label === "All Categories"
+                                        ? selectedCategory?.id === item.id
+                                        : selectedHolding?.id === item.id
+                                    }
+                                    className="me-2"
+                                  />
+                                  {item.desc}
+                                </label>
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+                      </div>
                     )}
                   </div>
                 ))}
@@ -643,39 +738,85 @@ const handleNodeClick = (node) => {
                         <span>&#x276F;</span>
                       </div>
                     ))}
-                  {navigationStack.length > 0 &&
-                    displayList.map((node) => (
-                      <div
-                        key={node.id}
-                        className="py-2 d-flex align-items-center"
-                        style={{ cursor: "pointer" }}
-                        onClick={() => handleNodeClick(node)}
-                      >
-                        {node.node_level === 3 ? (
-                          <>
-                            <input
-                              type={"radio"}
-                              className="form-check-input"
-                              checked={selectedAreaIds.includes(node.id)}
-                              onChange={() => handleAreaToggle(node)}
-                              onClick={(e) => e.stopPropagation()}
-                              style={{ marginRight: "2%" }}
-                            />
-                            <span>{node.name}</span>
-                          </>
-                        ) : (
-                          <div
-                            key={node.id}
-                            className="py-2 d-flex align-items-center justify-content-between w-100"
-                            style={{ cursor: "pointer" }}
-                            onClick={() => handleNodeClick(node)}
-                          >
-                            <span>{node.name}</span>
-                            <span>&#x276F;</span>
-                          </div>
-                        )}
-                      </div>
-                    ))}
+                  {navigationStack.length > 0 && (
+                    <>
+                      {/* ✅ Select All Checkbox (only for area list) */}
+                      {currentLevel?.node_level === 2 && (
+                        <div
+                          className="py-2 d-flex align-items-center"
+                          style={{ cursor: "pointer" }}
+                          onClick={() => {
+                            const allAreaIds = displayList.map(
+                              (area) => area.id
+                            );
+                            const allAreaObjects = displayList;
+
+                            const isAllSelected = allAreaIds.every((id) =>
+                              selectedAreaIds.includes(id)
+                            );
+
+                            if (isAllSelected) {
+                              setSelectedAreaIds([]);
+                              setSelectedAreaNames([]);
+                              setSelectedAreaObjects([]);
+                            } else {
+                              setSelectedAreaIds(allAreaIds);
+                              setSelectedAreaNames(
+                                allAreaObjects.map((a) => a.name)
+                              );
+                              setSelectedAreaObjects(allAreaObjects);
+                            }
+                          }}
+                        >
+                          <input
+                            type="checkbox"
+                            className="form-check-input"
+                            style={{ marginRight: "2%" }}
+                            checked={
+                              displayList.length > 0 &&
+                              displayList.every((area) =>
+                                selectedAreaIds.includes(area.id)
+                              )
+                            }
+                            readOnly
+                          />
+                          <span>Select All</span>
+                        </div>
+                      )}
+
+                      {/* ✅ Area & Node Listing */}
+                      {displayList.map((node) => (
+                        <div
+                          key={node.id}
+                          className="py-2 d-flex align-items-center"
+                          style={{ cursor: "pointer" }}
+                          onClick={() => handleNodeClick(node)}
+                        >
+                          {node.node_level === 3 ? (
+                            <>
+                              <input
+                                type={"checkbox"}
+                                className="form-check-input"
+                                checked={selectedAreaIds.includes(node.id)}
+                                onChange={() => handleAreaToggle(node)}
+                                onClick={(e) => e.stopPropagation()}
+                                style={{ marginRight: "2%" }}
+                              />
+                              <span>{node.name}</span>
+                            </>
+                          ) : (
+                            <div
+                              className="py-2 d-flex align-items-center justify-content-between w-100"
+                              style={{ cursor: "pointer" }}
+                            >
+                              <span>{node.name}</span>
+                              <span>&#x276F;</span>
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </>
+                  )}
                 </>
               )}
             </div>
@@ -708,6 +849,49 @@ const handleNodeClick = (node) => {
                 </button>
               </div>
             )}
+          </div>
+        </div>
+      )}
+      {priceModalOpen && (
+        <div className="modal-overlay" onClick={() => setPriceModalOpen(false)}>
+          <div className="modal-box" onClick={(e) => e.stopPropagation()}>
+            <h5>Select Price Range (RM)</h5>
+            <div className="d-flex gap-2 my-3">
+              <input
+                type="number"
+                placeholder="Min"
+                className="form-control"
+                value={priceRange.min || ""}
+                onChange={(e) =>
+                  setPriceRange((p) => ({
+                    ...p,
+                    min: e.target.value ? +e.target.value : null,
+                  }))
+                }
+              />
+              <input
+                type="number"
+                placeholder="Max"
+                className="form-control"
+                value={priceRange.max || ""}
+                onChange={(e) =>
+                  setPriceRange((p) => ({
+                    ...p,
+                    max: e.target.value ? +e.target.value : null,
+                  }))
+                }
+              />
+            </div>
+            {/* Slider can be added here */}
+            <button
+              className="btn btn-primary"
+              onClick={() => {
+                setPriceModalOpen(false);
+                setOpenDropdown(null);
+              }}
+            >
+              Apply
+            </button>
           </div>
         </div>
       )}

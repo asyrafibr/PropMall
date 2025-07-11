@@ -45,7 +45,7 @@ const Navbar = () => {
   }, [agent, category]);
 
   return (
-    <nav className="navbar navbar-expand-lg bg-white px-3">
+    <nav className="navbar navbar-expand-lg bg-white px-3" style={{backgroundColor:'#F8F9FA'}}>
       <div className="container-fluid">
         <a
           href="/"
@@ -74,7 +74,8 @@ const Navbar = () => {
         </button>
 
         <div
-          className="collapse navbar-collapse fs-6 fw-normal bg-light-subtle p-2"
+          className="collapse navbar-collapse fs-6 fw-normal p-2"
+          
           id="navcol-2"
         >
           <ul className="navbar-nav ms-auto align-items-xl-center">

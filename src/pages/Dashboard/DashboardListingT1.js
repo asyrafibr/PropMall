@@ -140,113 +140,115 @@ const DashboardListingT1 = ({ listings, handleViewDetails }) => {
                   className="col-12 col-md-4 mb-4 d-flex"
                 >
                   <div className="card h-100 d-flex flex-column border-0 shadow-sm w-100">
-            <div
-  className="position-relative"
-  style={{
-    overflow: "hidden", // ✅ Ensures the ribbon does not overflow the image container
-    borderRadius: "6px", // Optional: match design
-    height: "260px",     // Match the image height
-  }}
->
-  <img
-    src={card.photos?.[0] || "https://via.placeholder.com/300x200"}
-    className="card-img-top"
-    alt={card.ads_title}
-    style={{
-      height: "100%",
-      width: "100%",
-      objectFit: "cover",
-      cursor: "pointer",
-    }}
-    onClick={() => openModal(card.photos || [], 0)}
-  />
+                    <div
+                      className="position-relative"
+                      style={{
+                        overflow: "hidden", // ✅ Ensures the ribbon does not overflow the image container
+                        borderRadius: "6px", // Optional: match design
+                        height: "260px", // Match the image height
+                      }}
+                    >
+                      <img
+                        src={
+                          card.photos?.[0] ||
+                          "https://via.placeholder.com/300x200"
+                        }
+                        className="card-img-top"
+                        alt={card.ads_title}
+                        style={{
+                          height: "100%",
+                          width: "100%",
+                          objectFit: "cover",
+                          cursor: "pointer",
+                        }}
+                        onClick={() => openModal(card.photos || [], 0)}
+                      />
 
-  {/* Tag Badges */}
-  {(showTag || belowMarket) && (
-    <div
-      className="position-absolute top-0 start-0 m-2 d-flex flex-column gap-1"
-      style={{ zIndex: 2 }}
-    >
-      {showTag && (
-        <div
-          style={{
-            backgroundColor: statusColor,
-            width: "100px",
-            height: "32px",
-            borderRadius: "4px",
-            color: "white",
-            fontSize: "0.9rem",
-            padding: "8px 16px",
-            display: "flex",
-            fontFamily: "Poppins",
-            alignItems: "center",
-            justifyContent: "center",
-            fontWeight: 600,
-            fontSize: "16px",
-          }}
-        >
-          {statusText}
-        </div>
-      )}
-      {belowMarket && (
-        <div
-          style={{
-            display: "flex",
-            padding: "4px 12px",
-            justifyContent: "center",
-            alignItems: "flex-start",
-            borderRadius: "4px",
-            backgroundColor: "#7C9A2C",
-            width: "150px",
-            height: "30px",
-            color: "#FAFAFA",
-            fontFamily: "Poppins",
-            fontSize: "14px",
-            fontWeight: 600,
-          }}
-        >
-          Below Market
-        </div>
-      )}
-    </div>
-  )}
+                      {/* Tag Badges */}
+                      {(showTag || belowMarket) && (
+                        <div
+                          className="position-absolute top-0 start-0 m-2 d-flex flex-column gap-1"
+                          style={{ zIndex: 2 }}
+                        >
+                          {showTag && (
+                            <div
+                              style={{
+                                backgroundColor: statusColor,
+                                width: "100px",
+                                height: "32px",
+                                borderRadius: "4px",
+                                color: "white",
+                                fontSize: "0.9rem",
+                                padding: "8px 16px",
+                                display: "flex",
+                                fontFamily: "Poppins",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                fontWeight: 600,
+                                fontSize: "16px",
+                              }}
+                            >
+                              {statusText}
+                            </div>
+                          )}
+                          {belowMarket && (
+                            <div
+                              style={{
+                                display: "flex",
+                                padding: "4px 12px",
+                                justifyContent: "center",
+                                alignItems: "flex-start",
+                                borderRadius: "4px",
+                                backgroundColor: "#7C9A2C",
+                                width: "150px",
+                                height: "30px",
+                                color: "#FAFAFA",
+                                fontFamily: "Poppins",
+                                fontSize: "14px",
+                                fontWeight: 600,
+                              }}
+                            >
+                              Below Market
+                            </div>
+                          )}
+                        </div>
+                      )}
 
-  {/* Exclusive Ribbon */}
-  {card.exclusive === "Y" && (
-    <div
-      style={{
-        position: "absolute",
-        top: "2rem",
-        right: "-3rem", // push outside to rotate cleanly
-        transform: "rotate(45deg)",
-        backgroundColor: "#f6b400",
-        color: "white",
-        width: "200px",
-        height: "30px",
-        textAlign: "center",
-        fontWeight: "bold",
-        fontSize: "0.85rem",
-        zIndex: 3,
-        overflow: "hidden",
-        whiteSpace: "nowrap",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        fontFamily: "Poppins",
-        pointerEvents: "none",
-      }}
-    >
-      Exclusive
-    </div>
-  )}
+                      {/* Exclusive Ribbon */}
+                      {card.exclusive === "Y" && (
+                        <div
+                          style={{
+                            position: "absolute",
+                            top: "2rem",
+                            right: "-3rem", // push outside to rotate cleanly
+                            transform: "rotate(45deg)",
+                            backgroundColor: "#f6b400",
+                            color: "white",
+                            width: "200px",
+                            height: "30px",
+                            textAlign: "center",
+                            fontWeight: "bold",
+                            fontSize: "0.85rem",
+                            zIndex: 3,
+                            overflow: "hidden",
+                            whiteSpace: "nowrap",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            fontFamily: "Poppins",
+                            pointerEvents: "none",
+                          }}
+                        >
+                          Exclusive
+                        </div>
+                      )}
 
-  {/* Photo count icon */}
-  <span className="position-absolute bottom-0 end-0 m-2 text-white small">
-    <i className="bi bi-camera-fill me-1"></i>
-    {card.photos_count ?? 0}
-  </span>
-</div>
-
+                      {/* Photo count icon */}
+                      <span className="position-absolute bottom-0 end-0 m-2 text-white small">
+                        <i className="bi bi-camera-fill me-1"></i>
+                        {card.photos_count ?? 0}
+                      </span>
+                    </div>
 
                     <div className="card-body d-flex flex-column flex-grow-1">
                       <h5 className="card-title fw-bold text-dark">
@@ -258,7 +260,6 @@ const DashboardListingT1 = ({ listings, handleViewDetails }) => {
                         {card.location_area}
                       </p>
                       <p className="text-muted small mb-2">
-                        {card.property_type_description} |{" "}
                         {card.category_type_title_holding_lottype_storey}
                         <br />
                         {card.built_size && (
@@ -301,7 +302,6 @@ const DashboardListingT1 = ({ listings, handleViewDetails }) => {
                         )}
                         {card.built_size && card.land_size && (
                           <>
-                        
                             <div>
                               Land Size: {card.land_size} {card.land_size_unit}
                               {["acre", "hectar"].includes(

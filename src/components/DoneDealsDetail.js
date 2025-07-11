@@ -7,6 +7,8 @@ import "bootstrap-icons/font/bootstrap-icons.css";
 import { FaBed, FaBath } from "react-icons/fa";
 import AgentBox from "../components/AgentBox";
 import SimilarListing from "./SimilarListingCard";
+import { getDoneDealDetail,getListingInfo  } from "../api/axiosApi"; // adjust the path as needed
+
 const DoneDealDetail = (id) => {
   const { productId } = useParams();
   const [listingDetail, setListingDetail] = useState(null);
@@ -23,63 +25,49 @@ const DoneDealDetail = (id) => {
   console.log("Received id_listing:", id_listing);
 
   // ✅ Fetch Done Deal Detail
-  useEffect(() => {
-    const fetchDoneDealDetail = async () => {
-      try {
-        const response = await axios.post(
-          "https://dev-agentv3.propmall.net/graph/me/donedeal/info",
-          { id_listing }, // Just the ID here
-          {
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
-        setListingDetail(response.data.donedeal_info);
-      } catch (err) {
-        setError(err.message || "Something went wrong");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (id_listing || productId) {
-      fetchDoneDealDetail();
+useEffect(() => {
+  const fetchDoneDealDetail = async () => {
+    try {
+      const response = await getDoneDealDetail({ id_listing });
+      setListingDetail(response.data.donedeal_info);
+    } catch (err) {
+      setError(err.message || "Something went wrong");
+    } finally {
+      setLoading(false);
     }
-  }, [id_listing, productId]);
+  };
+
+  if (id_listing || productId) {
+    fetchDoneDealDetail();
+  }
+}, [id_listing, productId]);
 
   // ✅ Fetch Listing Info (for console.log only)
-  useEffect(() => {
-    const fetchListingInfo = async () => {
-      try {
-             const hostname = window.location.hostname; // e.g., "prohartanah.my"
-    const domain = hostname.replace(/^www\./, "").split(".")[0]; // e.g., "prohartanah"
-        const response = await axios.post(
-          "https://dev-agentv3.propmall.net/graph/me/listing/info",
-          {
-            domain: domain,
-            url_fe: window.location.href,
-            id_listing: productId,
-          },
-          {
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
+ useEffect(() => {
+  const fetchListingInfo = async () => {
+    try {
+      const hostname = window.location.hostname; // e.g., "prohartanah.my"
+      const domain = hostname.replace(/^www\./, "").split(".")[0]; // e.g., "prohartanah"
+      const url_fe = window.location.href;
 
-        if (response.data.status === "ok") {
-          console.log("Listing Info:", response.data.listing_info);
-        }
-      } catch (err) {
-        console.error("Error fetching listing info:", err);
+      const response = await getListingInfo({
+        id_listing: productId,
+        domain,
+        url_fe,
+      });
+
+      if (response.data.status === "ok") {
+        console.log("Listing Info:", response.data.listing_info);
       }
-    };
-
-    if (productId) {
-      fetchListingInfo();
+    } catch (err) {
+      console.error("Error fetching listing info:", err);
     }
-  }, [productId]);
+  };
+
+  if (productId) {
+    fetchListingInfo();
+  }
+}, [productId]);
   const whatsappMessage = `Hello My Lovely Agent,\nI'm interested in the property that you advertise at website\n${window.location.href}\nand I would love to visit this property.\nMy name is:`;
 
   if (loading) return <p>Loading...</p>;
