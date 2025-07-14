@@ -4,10 +4,15 @@ import AgentBox from "../components/AgentBox";
 import axios from "axios";
 import { getAgent } from "../api/axiosApi";
 import { useNavigate } from "react-router-dom"; // at top
-import { FaSearch } from "react-icons/fa";  
+import { FaSearch } from "react-icons/fa";
 // import getSubdomain from "../utils/getSubdomain"; // if you’ve extracted it to a helper
 
-import { getCategory, getHolding,getLocationTree ,getListings} from "../api/axiosApi";
+import {
+  getCategory,
+  getHolding,
+  getLocationTree,
+  getListings,
+} from "../api/axiosApi";
 const Filters = ({
   selectedLocation,
   setSelectedLocation,
@@ -32,7 +37,10 @@ const Filters = ({
   const [category, setCategory] = useState({});
   const [holding, setHolding] = useState({});
   const [priceRange, setPriceRange] = useState({ min: null, max: null });
-
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [priceRangeDisplay, setPriceRangeDisplay] = useState(null);
+  const [bedroomDisplay, setBedroomDisplay] = useState(null);
+  const [bathroomDisplay, setBathroomDisplay] = useState(null);
   const [selectedCountry, setSelectedCountry] = useState(null);
   const [selectedState, setSelectedState] = useState(null);
   const [selectedAreaObjects, setSelectedAreaObjects] = useState([]);
@@ -124,32 +132,30 @@ const Filters = ({
     return null; // fallback if no subdomain
   };
 
+  const handleCountryClick = async (country) => {
+    try {
+      setLoadingLocationData(true);
+      setSelectedCountry(country);
 
-const handleCountryClick = async (country) => {
-  try {
-    setLoadingLocationData(true);
-    setSelectedCountry(country);
+      const domain = getSubdomain(); // dynamically extracted subdomain
+      const url_fe = window.location.href;
 
-    const domain = getSubdomain(); // dynamically extracted subdomain
-    const url_fe = window.location.href;
+      const res = await getLocationTree({
+        domain,
+        url_fe,
+        id_country: country.id_country,
+      });
 
-    const res = await getLocationTree({
-      domain,
-      url_fe,
-      id_country: country.id_country,
-    });
-
-    if (res.data?.country) {
-      setLocationTree([res.data.country]);
-      setNavigationStack([res.data.country]);
+      if (res.data?.country) {
+        setLocationTree([res.data.country]);
+        setNavigationStack([res.data.country]);
+      }
+    } catch (err) {
+      console.error("Error fetching states/areas:", err);
+    } finally {
+      setLoadingLocationData(false);
     }
-  } catch (err) {
-    console.error("Error fetching states/areas:", err);
-  } finally {
-    setLoadingLocationData(false);
-  }
-};
-
+  };
 
   const handleNodeClick = (node) => {
     if (node.node_level === 2) {
@@ -213,61 +219,70 @@ const handleCountryClick = async (country) => {
     setLocationTree([]);
   };
 
- const handleSearch = async () => {
-  try {
-    const hostname = window.location.hostname;
-    const domain = hostname.replace(/^www\./, "").split(".")[0];
-    const url_fe = window.location.href;
+  const handleSearch = async () => {
+    try {
+      const hostname = window.location.hostname;
+      const domain = hostname.replace(/^www\./, "").split(".")[0];
+      const url_fe = window.location.href;
 
-    const payload = {
-      domain,
-      url_fe,
-      listing_search: {
-        page_num: 1,
-        page_size: 10,
-        search_text: searchTerm || null,
-        search_fields: {
-          title: true,
-          description: true,
-        },
-        search_filters: {
-          objective: {
-            sale: true,
-            rent: true,
-            project: true,
-            auction: true,
+      const payload = {
+        domain,
+        url_fe,
+        listing_search: {
+          page_num: 1,
+          page_size: 10,
+          search_text: searchTerm || null,
+          search_fields: {
+            title: true,
+            description: true,
           },
-          location: {
-            id_country: selectedCountry?.id_country || null,
-            id_state: selectedState?.id || null,
-            id_area: selectedAreaIds.length ? selectedAreaIds : [],
-            id_province: [],
-            id_cities: [],
+          search_filters: {
+            objective: {
+              sale: true,
+              rent: true,
+              project: true,
+              auction: true,
+            },
+            location: {
+              id_country: selectedCountry?.id_country || null,
+              id_state: selectedState?.id || null,
+              id_area: selectedAreaIds.length ? selectedAreaIds : [],
+              id_province: [],
+              id_cities: [],
+            },
+            property_category: selectedCategory || null,
+            property_holding: selectedHolding || null,
+            property_lot_type: null,
+            room: {
+              min: roomRange?.min || null,
+              max: roomRange?.max || null,
+            },
+            bathroom: {
+              min: bathroomRange?.min || null,
+              max: bathroomRange?.max || null,
+            },
+            price: {
+              min: priceRange?.min || null,
+              max: priceRange?.max || null,
+            },
           },
-          property_category: selectedCategory || null,
-          property_holding: selectedHolding || null,
-          property_lot_type: null,
-          room: { min: null, max: null },
-          bathroom: { min: null, max: null },
-          price: { min: null, max: null },
         },
-      },
-    };
+      };
 
-    const response = await getListings(payload);
+      const response = await getListings(payload);
 
-    navigate("/search", {
-      state: {
-        products: response.data.listing_search.listing_rows,
-        selectedLocationName: selectedState?.name,
-        selectedLocationId: selectedState?.id,
-        searchType: activeTab,
-      },
-    });
-  } catch (error) {
-    console.error("Error fetching listings:", error);
-  }
-};
+      navigate("/search", {
+        state: {
+          products: response.data.listing_search.listing_rows,
+          selectedLocationName: selectedState?.name,
+          selectedLocationId: selectedState?.id,
+          searchType: activeTab,
+        },
+      });
+    } catch (error) {
+      console.error("Error fetching listings:", error);
+    }
+  };
   const currentLevel = navigationStack[navigationStack.length - 1];
   const displayList = currentLevel?.child_list || [];
   const filters = {
@@ -284,6 +299,9 @@ const handleCountryClick = async (country) => {
   const handleClear = () => {
     setSelectedAreaIds([]);
   };
+  console.log("select category", selectedCategory);
+  console.log("select holding", selectedHolding);
+
   return (
     <div>
       <div className="order-1 order-md-2 w-100 w-md-auto">
@@ -435,6 +453,7 @@ const handleCountryClick = async (country) => {
                       height: "60px",
                       minWidth: "160px",
                       fontFamily: "Poppins",
+                      borderWidth: 0,
                     }}
                   >
                     Search
@@ -464,7 +483,19 @@ const handleCountryClick = async (country) => {
                         textDecoration: "none",
                       }}
                     >
-                      <span>{label}</span>
+                      <span>
+                        {label === "All Categories"
+                          ? selectedCategory?.name || label
+                          : label === "All Holding Types"
+                          ? selectedHolding?.name || label
+                          : label === "Price Ranges (RM)"
+                          ? priceRangeDisplay || label
+                          : label === "Bedroom(s)"
+                          ? bedroomDisplay || label
+                          : label === "Bathroom(s)"
+                          ? bathroomDisplay || label
+                          : label}
+                      </span>
                       <span style={{ marginLeft: "6px", fontSize: "0.7rem" }}>
                         ▼
                       </span>
@@ -484,71 +515,227 @@ const handleCountryClick = async (country) => {
                         }}
                       >
                         {label === "Price Ranges (RM)" ? (
-                          <button
-                            className="btn btn-primary w-100 py-2"
-                            onClick={() => {
-                              setPriceModalOpen(true);
-                              setOpenDropdown(null);
-                            }}
-                          >
-                            Set Price Range...
-                          </button>
+                          <>
+                            <div
+                              className="mb-2"
+                              style={{ color: "black", fontFamily: "Poppins" }}
+                            >
+                              Set Price Range (RM):
+                            </div>
+                            <div className="d-flex gap-2">
+                              <div style={{ flex: 1 }}>
+                                <div
+                                  style={{
+                                    fontSize: "12px",
+                                    fontFamily: "Poppins",
+                                    color: "black",
+                                  }}
+                                >
+                                  Min
+                                </div>
+                                <input
+                                  type="number"
+                                  placeholder="Min"
+                                  value={priceRange.min || ""}
+                                  onChange={(e) => {
+                                    const v = e.target.value
+                                      ? +e.target.value
+                                      : null;
+                                    setPriceRange((r) => ({ ...r, min: v }));
+                                  }}
+                                  className="form-control"
+                                />
+                              </div>
+                              <div style={{ flex: 1 }}>
+                                <div
+                                  style={{
+                                    fontSize: "12px",
+                                    fontFamily: "Poppins",
+                                    color: "black",
+                                  }}
+                                >
+                                  Max
+                                </div>
+                                <input
+                                  type="number"
+                                  placeholder="Max"
+                                  value={priceRange.max || ""}
+                                  onChange={(e) => {
+                                    const v = e.target.value
+                                      ? +e.target.value
+                                      : null;
+                                    setPriceRange((r) => ({ ...r, max: v }));
+                                  }}
+                                  className="form-control"
+                                />
+                              </div>
+                            </div>
+                            <div className="d-flex gap-2 mt-2">
+                              <button
+                                className="btn mt-2 ms-2"
+                                onClick={() => {
+                                  setPriceRange({ min: null, max: null });
+                                  setPriceRangeDisplay("Price Ranges (RM)");
+                                  setOpenDropdown(null);
+                                }}
+                                style={{
+                                  backgroundColor: "#6c757d",
+                                  color: "white",
+                                  fontFamily: "Poppins",
+                                }}
+                              >
+                                Clear
+                              </button>
+                              <button
+                                className="btn mt-2"
+                                onClick={() => {
+                                  const display = `RM ${
+                                    priceRange.min || 0
+                                  } - RM ${priceRange.max || 0}`;
+                                  setPriceRangeDisplay(display);
+                                  setOpenDropdown(null);
+                                }}
+                                style={{ backgroundColor: "#F4980E" }}
+                              >
+                                <text
+                                  style={{
+                                    fontFamily: "Poppins",
+                                    color: "white",
+                                  }}
+                                >
+                                  Apply
+                                </text>
+                              </button>
+                            </div>
+                          </>
                         ) : label === "Bedroom(s)" ||
                           label === "Bathroom(s)" ? (
                           <>
-                            <div className="mb-2">
+                            <div
+                              className="mb-2"
+                              style={{ color: "black", fontFamily: "Poppins" }}
+                            >
                               Enter {label.toLowerCase()} range:
                             </div>
                             <div className="d-flex gap-2">
-                              <input
-                                type="number"
-                                placeholder="Min"
-                                value={
-                                  label === "Bedroom(s)"
-                                    ? roomRange.min || ""
-                                    : bathroomRange.min || ""
-                                }
-                                onChange={(e) => {
-                                  const v = e.target.value
-                                    ? +e.target.value
-                                    : null;
-                                  label === "Bedroom(s)"
-                                    ? setRoomRange((r) => ({ ...r, min: v }))
-                                    : setBathroomRange((r) => ({
+                              <div style={{ flex: 1 }}>
+                                <div
+                                  style={{
+                                    fontSize: "12px",
+                                    fontFamily: "Poppins",
+                                    color: "black",
+                                  }}
+                                >
+                                  Min
+                                </div>
+                                <input
+                                  type="number"
+                                  placeholder="Min"
+                                  value={
+                                    label === "Bedroom(s)"
+                                      ? roomRange.min || ""
+                                      : bathroomRange.min || ""
+                                  }
+                                  onChange={(e) => {
+                                    const v = e.target.value
+                                      ? +e.target.value
+                                      : null;
+                                    if (label === "Bedroom(s)") {
+                                      setRoomRange((r) => ({ ...r, min: v }));
+                                    } else {
+                                      setBathroomRange((r) => ({
                                         ...r,
                                         min: v,
                                       }));
-                                }}
-                                className="form-control"
-                              />
-                              <input
-                                type="number"
-                                placeholder="Max"
-                                value={
-                                  label === "Bedroom(s)"
-                                    ? roomRange.max || ""
-                                    : bathroomRange.max || ""
-                                }
-                                onChange={(e) => {
-                                  const v = e.target.value
-                                    ? +e.target.value
-                                    : null;
-                                  label === "Bedroom(s)"
-                                    ? setRoomRange((r) => ({ ...r, max: v }))
-                                    : setBathroomRange((r) => ({
+                                    }
+                                  }}
+                                  className="form-control"
+                                />
+                              </div>
+                              <div style={{ flex: 1 }}>
+                                <div
+                                  style={{
+                                    fontSize: "12px",
+                                    fontFamily: "Poppins",
+                                    color: "black",
+                                  }}
+                                >
+                                  Max
+                                </div>
+                                <input
+                                  type="number"
+                                  placeholder="Max"
+                                  value={
+                                    label === "Bedroom(s)"
+                                      ? roomRange.max || ""
+                                      : bathroomRange.max || ""
+                                  }
+                                  onChange={(e) => {
+                                    const v = e.target.value
+                                      ? +e.target.value
+                                      : null;
+                                    if (label === "Bedroom(s)") {
+                                      setRoomRange((r) => ({ ...r, max: v }));
+                                    } else {
+                                      setBathroomRange((r) => ({
                                         ...r,
                                         max: v,
                                       }));
-                                }}
-                                className="form-control"
-                              />
+                                    }
+                                  }}
+                                  className="form-control"
+                                />
+                              </div>
                             </div>
-                            <button
-                              className="btn btn-success mt-2"
-                              onClick={() => setOpenDropdown(null)}
-                            >
-                              Apply
-                            </button>
+                            <div className="d-flex gap-2 mt-2">
+                              <button
+                                className="btn mt-2 ms-2"
+                                onClick={() => {
+                                  if (label === "Bedroom(s)") {
+                                    setRoomRange({ min: null, max: null });
+                                    setBedroomDisplay("Bedroom(s)");
+                                  } else {
+                                    setBathroomRange({ min: null, max: null });
+                                    setBathroomDisplay("Bathroom(s)");
+                                  }
+                                  setOpenDropdown(null);
+                                }}
+                                style={{
+                                  backgroundColor: "#6c757d",
+                                  color: "white",
+                                  fontFamily: "Poppins",
+                                }}
+                              >
+                                Clear
+                              </button>
+                              <button
+                                className="btn mt-2"
+                                onClick={() => {
+                                  if (label === "Bedroom(s)") {
+                                    const display = `${roomRange.min || 0} - ${
+                                      roomRange.max || 0
+                                    } Bedroom(s)`;
+                                    setBedroomDisplay(display);
+                                  } else {
+                                    const display = `${
+                                      bathroomRange.min || 0
+                                    } - ${bathroomRange.max || 0} Bathroom(s)`;
+                                    setBathroomDisplay(display);
+                                  }
+                                  setOpenDropdown(null);
+                                }}
+                                style={{ backgroundColor: "#F4980E" }}
+                              >
+                                <text
+                                  style={{
+                                    fontFamily: "Poppins",
+                                    color: "white",
+                                  }}
+                                >
+                                  Apply
+                                </text>{" "}
+                              </button>
+                            </div>
                           </>
                         ) : (
                           <ul
@@ -558,24 +745,51 @@ const handleCountryClick = async (country) => {
                               <li
                                 key={i}
                                 style={{ cursor: "pointer", padding: "6px 0" }}
+                                onClick={() => {
+                                  if (label === "All Categories") {
+                                    setSelectedCategory({
+                                      id: item.id,
+                                      name: item.desc,
+                                    });
+                                    setOpenDropdown(null);
+                                  }
+                                }}
                               >
-                                <label>
-                                  <text>{item.desc}</text>
-                                  <input
-                                    type="checkbox"
-                                    onChange={() => {
-                                      if (label === "All Categories")
-                                        setSelectedCategory(item);
-                                      else setSelectedHolding(item);
+                                <label
+                                  style={{
+                                    display: "flex",
+                                    justifyContent: "space-between",
+                                    alignItems: "center",
+                                    width: "100%",
+                                  }}
+                                >
+                                  <span
+                                    style={{
+                                      fontFamily: "Poppins",
+                                      fontSize: "16px",
+                                      fontStyle: "normal",
+                                      fontWeight: 400,
+                                      lineHeight: "normal",
+                                      color: "black",
                                     }}
-                                    checked={
-                                      label === "All Categories"
-                                        ? selectedCategory?.id === item.id
-                                        : selectedHolding?.id === item.id
-                                    }
-                                    className="me-2"
-                                  />
-                                  {item.desc}
+                                  >
+                                    {item.desc}
+                                  </span>
+
+                                  {label === "All Holding Types" && (
+                                    <input
+                                      type="checkbox"
+                                      onChange={(e) => {
+                                        e.stopPropagation();
+                                        setSelectedHolding({
+                                          id: item.id,
+                                          name: item.desc,
+                                        });
+                                        setOpenDropdown(null);
+                                      }}
+                                      checked={selectedHolding?.id === item.id}
+                                    />
+                                  )}
                                 </label>
                               </li>
                             ))}
