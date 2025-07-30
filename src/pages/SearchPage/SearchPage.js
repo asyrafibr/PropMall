@@ -82,6 +82,7 @@ const SearchPage = () => {
           search: searchQuery,
         });
         setProducts(response.data.listings);
+        console.log('Product Data',products)
       } catch (error) {
         console.error("Error fetching listings:", error);
       } finally {

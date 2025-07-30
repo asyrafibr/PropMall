@@ -4,5 +4,5 @@ export const getBaseURL = () => {
   const cleanHost = hostname.replace(/^www\./, "");
   const subdomain = cleanHost.split(".")[0] || "agentv3";
 
-  return `https://dev-agentv3-${subdomain}.propmall.net`;
+  return `http://dev-agentv3-${subdomain}.propmall.net`;
 };

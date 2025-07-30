@@ -275,7 +275,7 @@ const Filters = ({
       };
 
       const response = await getListings(payload);
-      console.log("Payload", selectedCategory);
+      // console.log("Payload", selectedCategory);
       navigate("/search", {
         state: {
           products: response.data.listing_search.listing_rows,

@@ -118,7 +118,7 @@ const Dashboard = () => {
 
     const payload = {
       domain: "dev-agentv3.propmall.net",
-      url_fe: "https://dev-agentv3.propmall.net",
+      url_fe: "http://dev-agentv3.propmall.net",
       search: {
         page_num: 1,
         page_size: 10,
