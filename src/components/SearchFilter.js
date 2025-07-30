@@ -1,5 +1,6 @@
 import React from "react";
 import AgentBox from "./AgentBox";
+import agentBoxbg from "../image/Landing_HeroAgent.jpg";
 
 const SearchFilter = ({
   locations,
@@ -19,13 +20,16 @@ const SearchFilter = ({
     <div style={{ width: "100%", display: "flex", justifyContent: "center" }}>
       <div style={{ width: "100%", maxWidth: "1300px", position: "relative", zIndex: 2 }}>
         {/* ✅ AgentBox with full-width container (not sticky) */}
-                    <AgentBox />
+                    {/* <AgentBox /> */}
 
 
         {/* ✅ Sticky Filters Box */}
         <div
           style={{
-         
+          // backgroundImage: `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url(${agentBoxbg})`,
+          //   backgroundSize: "cover",
+          //   backgroundRepeat: "no-repeat",
+          //   backgroundPosition: "center center",
             backgroundColor: "#FAFAFA",
             borderRadius: "8px",
             padding: "20px 15px",

@@ -45,7 +45,10 @@ const Navbar = () => {
   }, [agent, category]);
 
   return (
-    <nav className="navbar navbar-expand-lg bg-white px-3" style={{backgroundColor:'#F8F9FA'}}>
+    <nav
+      className="navbar navbar-expand-lg bg-white px-3"
+      style={{ backgroundColor: "#F8F9FA" }}
+    >
       <div className="container-fluid">
         <a
           href="/"
@@ -75,7 +78,6 @@ const Navbar = () => {
 
         <div
           className="collapse navbar-collapse fs-6 fw-normal p-2"
-          
           id="navcol-2"
         >
           <ul className="navbar-nav ms-auto align-items-xl-center">
@@ -230,7 +232,7 @@ const Navbar = () => {
                   <li>
                     <Link
                       className="dropdown-item"
-                      to="/rent"
+                      to="/buy"
                       style={{
                         fontSize: "16px",
                         fontWeight: 400,
@@ -246,7 +248,8 @@ const Navbar = () => {
                   <li>
                     <Link
                       className="dropdown-item"
-                      to="/sell"
+                      to="/saleprops"
+                      onClick={() => handleNavigate("/saleprops")}
                       style={{
                         fontSize: "16px",
                         fontWeight: 400,
@@ -259,14 +262,15 @@ const Navbar = () => {
                   <li>
                     <Link
                       className="dropdown-item"
-                      to="/sell"
+                      to="/saleprops"
+                      onClick={() => handleNavigate("/saleprops")}
                       style={{
                         fontSize: "16px",
                         fontWeight: 400,
                         fontFamily: "Poppins",
                       }}
                     >
-                      Let a Property (WTL)
+                      Buy a Property (WTB)
                     </Link>
                   </li>
                 </ul>

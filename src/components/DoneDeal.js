@@ -22,7 +22,7 @@ const DoneDeal = () => {
         const doneDealRes = await getDoneDeal();
         const data = doneDealRes.data.donedeal_search.donedeal_rows;
         setDoneDeal(data);
-
+        console.log("data123", data);
         const initialIndexes = {};
         data.forEach((card) => {
           initialIndexes[card.id_listing] = 0;
@@ -36,6 +36,137 @@ const DoneDeal = () => {
     };
     fetchFilterData();
   }, []);
+  // Helper: ordinal suffix (1st, 2nd, 3rd, 4th, …)
+  // --- Helpers ---
+  function ordinalSuffix(n) {
+    const j = n % 10,
+      k = n % 100;
+    if (k >= 11 && k <= 13) return "th";
+    if (j === 1) return "st";
+    if (j === 2) return "nd";
+    if (j === 3) return "rd";
+    return "th";
+  }
+
+  function formatPostedDate(date, { timeZone } = {}) {
+    // Format month name with Intl; fall back if needed
+    const day = date.getDate();
+    const year = date.getFullYear();
+
+    let month;
+    try {
+      month = new Intl.DateTimeFormat("en-GB", {
+        month: "long",
+        timeZone: timeZone || undefined,
+      }).format(date);
+    } catch {
+      month = date.toLocaleString("en-US", { month: "long" });
+    }
+
+    return `${day}${ordinalSuffix(day)} ${month} ${year}`;
+  }
+
+  // --- Main ---
+  /**
+   * postedOn("3 days ago at 7:31 PM") -> "Posted on 24th August 2024"
+   * postedOn("Saturday 26th July 2025") -> "Posted on 26th July 2025"
+   *
+   * Supports:
+   *  - "X days ago", "yesterday", "today", "X hours ago", "X minutes ago"
+   *  - "26th July 2025" or "Saturday 26th July 2025" (day name optional)
+   *  - Fallback to Date(...) for other absolute formats
+   *
+   * @param {string} input
+   * @param {Object} options
+   * @param {Date}   options.now        (optional) override "now" for testing
+   * @param {string} options.timeZone   (optional) e.g. "Asia/Kuala_Lumpur" to format in MYT
+   * @returns {string} e.g. "Posted on 26th July 2025" or "" if invalid
+   */
+  function postedOn(input, { now, timeZone } = {}) {
+    if (!input || typeof input !== "string") return "";
+    const nowDate = now instanceof Date ? new Date(now) : new Date();
+    const raw = input.trim();
+
+    // Normalize for matching (but keep original for parsing numbers)
+    const txt = raw.toLowerCase();
+
+    let target = new Date(nowDate);
+
+    // 1) X days ago
+    let m = txt.match(/^(\d+)\s*days?\s*ago(?:\s+at\s+.+)?$/i);
+    if (m) {
+      target.setDate(target.getDate() - parseInt(m[1], 10));
+      return `Posted on ${formatPostedDate(target, { timeZone })}`;
+    }
+
+    // 2) yesterday
+    if (/^yesterday(?:\s+at\s+.+)?$/i.test(txt)) {
+      target.setDate(target.getDate() - 1);
+      return `Posted on ${formatPostedDate(target, { timeZone })}`;
+    }
+
+    // 3) today
+    if (/^today(?:\s+at\s+.+)?$/i.test(txt)) {
+      return `Posted on ${formatPostedDate(target, { timeZone })}`;
+    }
+
+    // 4) X hours ago
+    m = txt.match(/^(\d+)\s*hours?\s*ago(?:\s+at\s+.+)?$/i);
+    if (m) {
+      target.setHours(target.getHours() - parseInt(m[1], 10));
+      return `Posted on ${formatPostedDate(target, { timeZone })}`;
+    }
+
+    // 5) X minutes ago
+    m = txt.match(/^(\d+)\s*minutes?\s*ago(?:\s+at\s+.+)?$/i);
+    if (m) {
+      target.setMinutes(target.getMinutes() - parseInt(m[1], 10));
+      return `Posted on ${formatPostedDate(target, { timeZone })}`;
+    }
+
+    // 6) Absolute: "Saturday 26th July 2025" OR "26th July 2025" (day name optional & ignored)
+    //    Capture groups: day, month word, year
+    m = raw.match(
+      /^(?:[A-Za-z]+,\s*|[A-Za-z]+\s+)?(\d{1,2})(?:st|nd|rd|th)?\s+([A-Za-z]+)\s+(\d{4})$/
+    );
+    if (m) {
+      const dayNum = parseInt(m[1], 10);
+      const monthName = m[2].toLowerCase();
+      const yearNum = parseInt(m[3], 10);
+
+      const monthIndex = {
+        january: 0,
+        february: 1,
+        march: 2,
+        april: 3,
+        may: 4,
+        june: 5,
+        july: 6,
+        august: 7,
+        september: 8,
+        october: 9,
+        november: 10,
+        december: 11,
+      }[monthName];
+
+      if (monthIndex !== undefined) {
+        // Construct at local midnight; formatting can be forced to a timeZone via Intl
+        const abs = new Date(yearNum, monthIndex, dayNum, 0, 0, 0, 0);
+        if (!isNaN(abs.getTime())) {
+          return `Posted on ${formatPostedDate(abs, { timeZone })}`;
+        }
+      }
+    }
+
+    // 7) Fallback: let Date parse other absolute formats (ISO, etc.)
+    const parsed = new Date(raw);
+    if (!isNaN(parsed.getTime())) {
+      return `Posted on ${formatPostedDate(parsed, { timeZone })}`;
+    }
+
+    // If nothing matched, return empty or original text
+    return "";
+  }
 
   const handleOpenModal = (photos, index, listingId) => {
     setModalImages(photos);
@@ -114,10 +245,10 @@ const DoneDeal = () => {
         <p
           style={{
             color: "#212529",
-            fontSize: "16px",
+            fontSize: "20px",
             fontFamily: "Poppins",
             fontWeight: 600,
-            margin: 0,
+            marginBottom: 40,
           }}
         >
           Done Deals
@@ -140,9 +271,9 @@ const DoneDeal = () => {
                   ? "For Rent"
                   : "";
                 const statusColor = isForSale
-                  ? "#1E6754"
+                  ? "#FF7A00"
                   : isForRental
-                  ? "#8ECA48"
+                  ? "#007B83"
                   : "#ccc";
                 const belowMarket = card.below_market === "Y";
 
@@ -154,6 +285,19 @@ const DoneDeal = () => {
                     className="col-12 col-md-4 mb-4 d-flex"
                   >
                     <div className="card h-100 d-flex flex-column border-0 shadow-sm w-100">
+                      <div
+                        className="mb-1"
+                        style={{
+                          fontFamily: "Poppins",
+                          fontSize: "16px",
+                          fontWeight: 400,
+                          padding: "12px",
+                        }}
+                      >
+                        {postedOn(card.deal_dt, {
+                          timeZone: "Asia/Kuala_Lumpur",
+                        })}
+                      </div>
                       <div
                         className="position-relative image-carousel"
                         style={{ overflow: "hidden", height: "260px" }}
@@ -180,7 +324,12 @@ const DoneDeal = () => {
 
                         <div
                           className="done-deal-banner"
-                          style={{ paddingLeft: "20px" }}
+                          style={{
+                            paddingLeft: "20px",
+                            fontSize: "16px",
+                            fontFamily: "Poppins",
+                            fontWeight: 600,
+                          }}
                         >
                           Done Deals
                         </div>
@@ -201,7 +350,15 @@ const DoneDeal = () => {
                               justifyContent: "center",
                             }}
                           >
-                            {statusText}
+                            <text
+                              style={{
+                                fontSize: "16px",
+                                fontFamily: "Poppins",
+                                fontWeight: 600,
+                              }}
+                            >
+                              {statusText}
+                            </text>
                           </div>
                         )}
 
@@ -218,112 +375,173 @@ const DoneDeal = () => {
                       </div>
 
                       <div className="card-body d-flex flex-column flex-grow-1">
-                        <h5 className="card-title fw-bold text-dark">
-                          {card.monetary_currency} {card.price}
+                        <h5
+                          style={{
+                            fontSize: "20px",
+                            fontWeight: 600,
+                            fontFamily: "Poppins",
+                          }}
+                        >
+                          RM {card.price}
                         </h5>
-                        <p className="text-muted small mb-1">
-                          ({card.built_price_per_sqft} per sqft)
-                          <br />
-                          <strong>{card.ads_title}</strong>
-                          <br />
-                          {card.location_area}, {card.location_state}
-                        </p>
-                        <p className="text-muted small mb-2">
-                          {card.property_type_description} |
-                          {card.category_type_title_holding_lottype_storey}
-                          <br />
-                          Built-up Size: {card.built_size}=
-                          {card.built_size_unit}
-                        </p>
-                        <div className="mt-auto pt-3 border-top">
-                          {/* Bed & Bath Info (left-aligned) */}
-                          <div
-                            className="d-flex align-items-center gap-4 flex-wrap"
+                        <p className="text-muted mb-1">
+                          <text
                             style={{
-                              fontSize: "16px",
-                              color: "#444",
-                              justifyContent: "flex-start",
+                              fontSize: "20px",
+                              fontWeight: 400,
+                              fontFamily: "Poppins",
                             }}
                           >
-                            {card.room && (
-                              <span
-                                className="d-flex align-items-center"
-                                style={{ gap: "6px" }}
-                              >
-                                <FaBed />
-                                {card.room} beds
-                              </span>
-                            )}
-                            {card.bathroom && (
-                              <span
-                                className="d-flex align-items-center"
-                                style={{ gap: "6px" }}
-                              >
-                                <FaBath />
-                                {card.bathroom} baths
-                              </span>
-                            )}
-                          </div>
-
-                          {/* Center-aligned buttons */}
-                          <div className="d-flex justify-content-center mt-3">
-                            <div className="d-flex align-items-center gap-3 flex-wrap justify-content-center">
-                              <button
-                                className="btn btn-outline-primary d-flex align-items-center justify-content-center"
+                            {card.ads_title}
+                          </text>
+                          <br />
+                          <text
+                            style={{
+                              fontSize: "16px",
+                              fontWeight: 400,
+                              fontFamily: "Poppins",
+                            }}
+                          >
+                            {card.location_area}
+                          </text>
+                        </p>
+                        <p className="text-muted mb-2">
+                          <text
+                            style={{
+                              fontSize: "16px",
+                              fontWeight: 400,
+                              fontFamily: "Poppins",
+                            }}
+                          >
+                            {card.category_type_title_holding_lottype_storey}
+                          </text>
+                          <br />
+                          {card.built_size && (
+                            <div>
+                              <text
                                 style={{
-                                  width: "153px",
-                                  height: "40px",
-                                  gap: "6px",
-                                  color: "#737373",
-                                  borderColor: "#999999",
-                                  fontSize: "13px",
-                                  padding: "0",
+                                  fontSize: "16px",
+                                  fontWeight: 400,
+                                  fontFamily: "Poppins",
                                 }}
                               >
-                                <i className="bi bi-whatsapp"></i> Whatsapp
-                              </button>
-
-                              <button
-                                className="btn btn-outline-primary d-flex align-items-center justify-content-center"
-                                onClick={() =>
-                                  handleViewDetails(
-                                    card.id_listing,
-                                    card.ads_title,
-                                    card.location
-                                  )
-                                }
-                                style={{
-                                  width: "153px",
-                                  height: "40px",
-                                  gap: "6px",
-                                  color: "#737373",
-                                  borderColor: "#999999",
-                                  fontSize: "13px",
-                                  padding: "0",
-                                }}
-                              >
-                                View Details
-                              </button>
+                                Built-up Size: {card.built_size}
+                                {card.built_size_unit}
+                                {!card.land_size &&
+                                  card.built_price_per_unit && (
+                                    <>
+                                      ({card.monetary_currency}
+                                      {card.built_price_per_unit} per sqft)
+                                    </>
+                                  )}
+                              </text>
                             </div>
+                          )}
+                          {!card.built_size && card.land_size && (
+                            <div>
+                              <text
+                                style={{
+                                  fontSize: "16px",
+                                  fontWeight: 400,
+                                  fontFamily: "Poppins",
+                                }}
+                              >
+                                Land Size: {card.land_size}{" "}
+                                {card.land_size_unit}
+                              </text>
+                              {["acre", "hectar"].includes(
+                                card.land_size_unit?.toLowerCase()
+                              ) &&
+                                card.land_price_per_unit && (
+                                  <>
+                                    ({card.monetary_currency}{" "}
+                                    {card.land_price_per_unit} per{" "}
+                                    {card.land_size_unit})
+                                  </>
+                                )}
+                              {["sqft", "sqm"].includes(
+                                card.land_size_unit?.toLowerCase()
+                              ) &&
+                                card.land_price_per_sqft && (
+                                  <>
+                                    ({card.monetary_currency}{" "}
+                                    {card.land_price_per_sqft} per sqft)
+                                  </>
+                                )}
+                            </div>
+                          )}
+                          {card.built_size && card.land_size && (
+                            <>
+                              <div>
+                                <text
+                                  style={{
+                                    fontSize: "16px",
+                                    fontWeight: 400,
+                                    fontFamily: "Poppins",
+                                  }}
+                                >
+                                  Land Size: {card.land_size}
+                                  {card.land_size_unit}
+                                  {["acre", "hectar"].includes(
+                                    card.land_size_unit?.toLowerCase()
+                                  ) &&
+                                    card.land_price_per_unit && (
+                                      <>
+                                        ({card.monetary_currency}
+                                        {card.land_price_per_unit} per
+                                        {card.land_size_unit})
+                                      </>
+                                    )}
+                                  {["sqft", "sqm"].includes(
+                                    card.land_size_unit?.toLowerCase()
+                                  ) &&
+                                    card.land_price_per_sqft && (
+                                      <>
+                                        ({card.monetary_currency}
+                                        {card.land_price_per_sqft} per sqft)
+                                      </>
+                                    )}
+                                </text>
+                              </div>
+                            </>
+                          )}
+                        </p>
+                        <div className="mt-auto">
+                          {card.bathroom && card.room > 0 && (
+                            <div className="d-flex flex-wrap gap-3 mb-3">
+                              <span
+                                className="d-flex align-items-center"
+                                style={{ gap: "6px" }}
+                              >
+                                <FaBed /> {card.room}
+                              </span>
+                              <span
+                                className="d-flex align-items-center"
+                                style={{ gap: "6px" }}
+                              >
+                                <FaBath /> {card.bathroom}
+                              </span>
+                            </div>
+                          )}
+
+                          <div className="d-flex flex-column flex-md-row gap-2">
+                            <button className="btn btn-outline-secondary w-100">
+                              <i className="bi bi-whatsapp me-1"></i> Whatsapp
+                            </button>
+                            <button
+                              onClick={() =>
+                                handleViewDetails(
+                                  card.id_listing,
+                                  card.ads_title,
+                                  card.location
+                                )
+                              }
+                              className="btn btn-outline-secondary w-100"
+                            >
+                              <i className="bi bi-info-circle me-1"></i> Details
+                            </button>
                           </div>
                         </div>
-
-                        {/* <p className="mb-3">
-                          <i className="bi bi-bed me-1"></i> {card.room || "-"}
-                          &nbsp;&nbsp;
-                          <i className="bi bi-droplet me-1"></i> {card.bathroom || "-"}
-                        </p>
-                        <div className="mt-auto pt-2 d-flex flex-column flex-md-row gap-2">
-                          <button className="btn btn-outline-secondary w-100">
-                            <i className="bi bi-whatsapp me-1"></i> Whatsapp
-                          </button>
-                          <button
-                            className="btn btn-outline-secondary w-100"
-                            onClick={() => handleViewDetails(card.id_listing, card.ads_title, card.location)}
-                          >
-                            <i className="bi bi-info-circle me-1"></i> Details
-                          </button>
-                        </div> */}
                       </div>
                     </div>
                   </div>

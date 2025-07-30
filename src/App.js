@@ -19,6 +19,8 @@ import DoneDeal from "./components/DoneDeal";
 import ProductDetailPage from "./pages/ProductDetailPage";
 import DoneDealDetail from "./components/DoneDealsDetail";
 import WTBWTRFormPage from "./pages/WTBWTRFormPage";
+import WTSWTLFormPage from "./pages/WTSWTLFormPage";
+
 import Sale from "./pages/Sale";
 import Rent from "./pages/Rent";
 import NewProject from "./pages/NewProject";
@@ -43,24 +45,24 @@ const Layout = () => {
 
       <Routes>
         <Route path="/" element={<Dashboard />} />
-                <Route path="/home" element={<Dashboard />} />
-
+        <Route path="/home" element={<Dashboard />} />
         <Route path="/search" element={<SearchProduct />} />
         <Route path="/sale" element={<Sale />} />
         <Route path="/rent" element={<Rent />} />
         <Route path="/new-project" element={<NewProject />} />
         <Route path="/auction" element={<Auction />} />
         <Route path="/articles" element={<Articles />} />
-        <Route path="/aboutme" element={<AboutMe/>} />
-        <Route path="/tools" element={<Tools/>} />
+        <Route path="/aboutme" element={<AboutMe />} />
+        <Route path="/tools" element={<Tools />} />
         <Route path="/buy" element={<WTBWTRFormPage mode="buy" />} />
         <Route path="/rent" element={<WTBWTRFormPage mode="rent" />} />
         <Route path="/donedeal/:id" element={<DoneDealDetail />} />
         <Route path="/donedeal" element={<DoneDeal />} />
         <Route path="/property/:slug" element={<ProductDetailPage />} />
         <Route path="/business-card" element={<BusinessCard />} />
-        <Route path="/buy" element={<WTBWTRFormPage mode="buy" />} />
-        <Route path="/rent" element={<WTBWTRFormPage mode="rent" />} />
+        <Route path="/saleprops" element={<WTSWTLFormPage mode="sale" />} />
+        {/* <Route path="/sale" element={<WTSWTLFormPage mode="rent" />} /> */}
+
         {/* Add more routes if needed */}
       </Routes>
 
@@ -70,11 +72,11 @@ const Layout = () => {
 };
 
 const App = () => (
-    <TemplateProvider>
-      <Router>
-        <Layout />
-      </Router>
-    </TemplateProvider>
+  <TemplateProvider>
+    <Router>
+      <Layout />
+    </Router>
+  </TemplateProvider>
 );
 
 export default App;

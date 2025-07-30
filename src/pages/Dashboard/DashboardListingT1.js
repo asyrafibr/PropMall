@@ -139,12 +139,29 @@ const DashboardListingT1 = ({ listings, handleViewDetails }) => {
                   key={card.id_listing}
                   className="col-12 col-md-4 mb-4 d-flex"
                 >
-                  <div className="card h-100 d-flex flex-column border-0 shadow-sm w-100">
+                  <div
+                    className="card h-100 d-flex flex-column w-100"
+                    style={{
+                      borderRadius: "8px",
+                      boxShadow: "2px 2px 15px 0 rgba(0, 0, 0, 0.15)", // added rgba color
+                    }}
+                  >
+                    <div
+                      className="mb-1"
+                      style={{
+                        fontFamily: "Poppins",
+                        fontSize: "16px",
+                        fontWeight: 400,
+                        padding: "12px",
+                      }}
+                    >
+                      Posted on {card.publish_dt}
+                    </div>
+
                     <div
                       className="position-relative"
                       style={{
                         overflow: "hidden", // ✅ Ensures the ribbon does not overflow the image container
-                        borderRadius: "6px", // Optional: match design
                         height: "260px", // Match the image height
                       }}
                     >
@@ -178,7 +195,7 @@ const DashboardListingT1 = ({ listings, handleViewDetails }) => {
                                 height: "32px",
                                 borderRadius: "4px",
                                 color: "white",
-                                fontSize: "0.9rem",
+                                // fontSize: "0.9rem",
                                 padding: "8px 16px",
                                 display: "flex",
                                 fontFamily: "Poppins",
@@ -186,6 +203,7 @@ const DashboardListingT1 = ({ listings, handleViewDetails }) => {
                                 justifyContent: "center",
                                 fontWeight: 600,
                                 fontSize: "16px",
+                                // marginTop: "20px",
                               }}
                             >
                               {statusText}
@@ -204,8 +222,9 @@ const DashboardListingT1 = ({ listings, handleViewDetails }) => {
                                 height: "30px",
                                 color: "#FAFAFA",
                                 fontFamily: "Poppins",
-                                fontSize: "14px",
+                                fontSize: "16px",
                                 fontWeight: 600,
+                                marginTop: "5px",
                               }}
                             >
                               Below Market
@@ -216,31 +235,7 @@ const DashboardListingT1 = ({ listings, handleViewDetails }) => {
 
                       {/* Exclusive Ribbon */}
                       {card.exclusive === "Y" && (
-                        <div
-                          style={{
-                            position: "absolute",
-                            top: "2rem",
-                            right: "-3rem", // push outside to rotate cleanly
-                            transform: "rotate(45deg)",
-                            backgroundColor: "#f6b400",
-                            color: "white",
-                            width: "200px",
-                            height: "30px",
-                            textAlign: "center",
-                            fontWeight: "bold",
-                            fontSize: "0.85rem",
-                            zIndex: 3,
-                            overflow: "hidden",
-                            whiteSpace: "nowrap",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            fontFamily: "Poppins",
-                            pointerEvents: "none",
-                          }}
-                        >
-                          Exclusive
-                        </div>
+                        <div className="corner-ribbon">Exclusive</div>
                       )}
 
                       {/* Photo count icon */}
@@ -251,38 +246,83 @@ const DashboardListingT1 = ({ listings, handleViewDetails }) => {
                     </div>
 
                     <div className="card-body d-flex flex-column flex-grow-1">
-                      <h5 className="card-title fw-bold text-dark">
+                      <h5
+                        style={{
+                          fontSize: "20px",
+                          fontWeight: 600,
+                          fontFamily: "Poppins",
+                        }}
+                      >
                         RM {card.price}
                       </h5>
-                      <p className="text-muted small mb-1">
-                        <strong>{card.ads_title}</strong>
+                      <p className="text-muted mb-1">
+                        <text
+                          style={{
+                            fontSize: "20px",
+                            fontWeight: 400,
+                            fontFamily: "Poppins",
+                          }}
+                        >
+                          {card.ads_title}
+                        </text>
                         <br />
-                        {card.location_area}
+                        <text
+                          style={{
+                            fontSize: "16px",
+                            fontWeight: 400,
+                            fontFamily: "Poppins",
+                          }}
+                        >
+                          {card.location_area}
+                        </text>
                       </p>
-                      <p className="text-muted small mb-2">
-                        {card.category_type_title_holding_lottype_storey}
+                      <p className="text-muted mb-2">
+                        <text
+                          style={{
+                            fontSize: "16px",
+                            fontWeight: 400,
+                            fontFamily: "Poppins",
+                          }}
+                        >
+                          {card.category_type_title_holding_lottype_storey}
+                        </text>
                         <br />
                         {card.built_size && (
                           <div>
-                            Built-up Size: {card.built_size}{" "}
-                            {card.built_size_unit}{" "}
-                            {!card.land_size && card.built_price_per_unit && (
-                              <>
-                                ({card.monetary_currency}{" "}
-                                {card.built_price_per_unit} per sqft)
-                              </>
-                            )}
+                            <text
+                              style={{
+                                fontSize: "16px",
+                                fontWeight: 400,
+                                fontFamily: "Poppins",
+                              }}
+                            >
+                              Built-up Size: {card.built_size}
+                              {card.built_size_unit}
+                              {!card.land_size && card.built_price_per_unit && (
+                                <>
+                                  ({card.monetary_currency}
+                                  {card.built_price_per_unit} per sqft)
+                                </>
+                              )}
+                            </text>
                           </div>
                         )}
                         {!card.built_size && card.land_size && (
                           <div>
-                            Land Size: {card.land_size} {card.land_size_unit}
+                            <text
+                              style={{
+                                fontSize: "16px",
+                                fontWeight: 400,
+                                fontFamily: "Poppins",
+                              }}
+                            >
+                              Land Size: {card.land_size} {card.land_size_unit}
+                            </text>
                             {["acre", "hectar"].includes(
                               card.land_size_unit?.toLowerCase()
                             ) &&
                               card.land_price_per_unit && (
                                 <>
-                                  {" "}
                                   ({card.monetary_currency}{" "}
                                   {card.land_price_per_unit} per{" "}
                                   {card.land_size_unit})
@@ -293,7 +333,6 @@ const DashboardListingT1 = ({ listings, handleViewDetails }) => {
                             ) &&
                               card.land_price_per_sqft && (
                                 <>
-                                  {" "}
                                   ({card.monetary_currency}{" "}
                                   {card.land_price_per_sqft} per sqft)
                                 </>
@@ -303,47 +342,56 @@ const DashboardListingT1 = ({ listings, handleViewDetails }) => {
                         {card.built_size && card.land_size && (
                           <>
                             <div>
-                              Land Size: {card.land_size} {card.land_size_unit}
-                              {["acre", "hectar"].includes(
-                                card.land_size_unit?.toLowerCase()
-                              ) &&
-                                card.land_price_per_unit && (
-                                  <>
-                                    {" "}
-                                    ({card.monetary_currency}{" "}
-                                    {card.land_price_per_unit} per{" "}
-                                    {card.land_size_unit})
-                                  </>
-                                )}
-                              {["sqft", "sqm"].includes(
-                                card.land_size_unit?.toLowerCase()
-                              ) &&
-                                card.land_price_per_sqft && (
-                                  <>
-                                    {" "}
-                                    ({card.monetary_currency}{" "}
-                                    {card.land_price_per_sqft} per sqft)
-                                  </>
-                                )}
+                              <text
+                                style={{
+                                  fontSize: "16px",
+                                  fontWeight: 400,
+                                  fontFamily: "Poppins",
+                                }}
+                              >
+                                Land Size: {card.land_size}
+                                {card.land_size_unit}
+                                {["acre", "hectar"].includes(
+                                  card.land_size_unit?.toLowerCase()
+                                ) &&
+                                  card.land_price_per_unit && (
+                                    <>
+                                      ({card.monetary_currency}
+                                      {card.land_price_per_unit} per
+                                      {card.land_size_unit})
+                                    </>
+                                  )}
+                                {["sqft", "sqm"].includes(
+                                  card.land_size_unit?.toLowerCase()
+                                ) &&
+                                  card.land_price_per_sqft && (
+                                    <>
+                                      ({card.monetary_currency}
+                                      {card.land_price_per_sqft} per sqft)
+                                    </>
+                                  )}
+                              </text>
                             </div>
                           </>
                         )}
                       </p>
                       <div className="mt-auto">
-                        <div className="d-flex flex-wrap gap-3 mb-3">
-                          <span
-                            className="d-flex align-items-center"
-                            style={{ gap: "6px" }}
-                          >
-                            <FaBed /> {card.room}
-                          </span>
-                          <span
-                            className="d-flex align-items-center"
-                            style={{ gap: "6px" }}
-                          >
-                            <FaBath /> {card.bathroom}
-                          </span>
-                        </div>
+                        {card.bathroom && card.room > 0 && (
+                          <div className="d-flex flex-wrap gap-3 mb-3">
+                            <span
+                              className="d-flex align-items-center"
+                              style={{ gap: "6px" }}
+                            >
+                              <FaBed /> {card.room}
+                            </span>
+                            <span
+                              className="d-flex align-items-center"
+                              style={{ gap: "6px" }}
+                            >
+                              <FaBath /> {card.bathroom}
+                            </span>
+                          </div>
+                        )}
 
                         <div className="d-flex flex-column flex-md-row gap-2">
                           <button className="btn btn-outline-secondary w-100">

@@ -5,7 +5,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import { FaBed, FaBath } from "react-icons/fa";
 import AgentBox from "../components/AgentBox";
-import { getAgent, getFeaturedList ,getListingInfo} from "../api/axiosApi";
+import { getAgent, getFeaturedList, getListingInfo } from "../api/axiosApi";
 import sharImage from "../image/ios_share.svg";
 import saveImage from "../image/kid_star.svg";
 import SimilarListing from "../components/SimilarListingCard";
@@ -28,29 +28,29 @@ const ProductDetail = () => {
   const [modalImages, setModalImages] = useState([]);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const thumbnailRefs = useRef([]);
- useEffect(() => {
-  const fetchProductDetails = async () => {
-    try {
-      const hostname = window.location.hostname;
-      const domain = hostname.replace(/^www\./, "").split(".")[0];
-      const url_fe = window.location.href;
+  useEffect(() => {
+    const fetchProductDetails = async () => {
+      try {
+        const hostname = window.location.hostname;
+        const domain = hostname.replace(/^www\./, "").split(".")[0];
+        const url_fe = window.location.href;
 
-      const response = await getListingInfo({
-        id_listing: productId,
-        domain,
-        url_fe,
-      });
+        const response = await getListingInfo({
+          id_listing: productId,
+          domain,
+          url_fe,
+        });
 
-      setProduct(response.data.listing_info);
-    } catch (err) {
-      setError(err.message || "Something went wrong");
-    } finally {
-      setLoading(false);
-    }
-  };
+        setProduct(response.data.listing_info);
+      } catch (err) {
+        setError(err.message || "Something went wrong");
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  if (productId) fetchProductDetails();
-}, [productId]);
+    if (productId) fetchProductDetails();
+  }, [productId]);
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === "Escape") setModalOpen(false);
@@ -133,11 +133,10 @@ const ProductDetail = () => {
     const start = Math.max(0, Math.min(currentImageIndex - 5, total - 10));
     return modalImages.slice(start, start + 10);
   };
+  const hasValue = (v) => v !== null && v !== undefined && v !== "";
+
   return (
     <div>
-      <div>
-        <AgentBox />
-      </div>
       <div style={{ paddingTop: "20px", backgroundColor: "#fff" }}>
         <div
           className="container"
@@ -147,12 +146,50 @@ const ProductDetail = () => {
 
           {/* Title */}
           <div className="pb-4">
-            <p
-              className="fw-bold"
-              style={{ fontSize: "20px", fontFamily: "Poppins" }}
+            <nav aria-label="breadcrumb">
+              <ol
+                className="breadcrumb"
+                style={{ "--bs-breadcrumb-divider": "'›'" }}
+              >
+                <li className="breadcrumb-item">
+                  <a
+                    href="/"
+                    style={{ textDecoration: "none", color: "inherit" }}
+                  >
+                    Home
+                  </a>
+                </li>
+                <li className="breadcrumb-item">
+                  <a
+                    href="/properties"
+                    style={{ textDecoration: "none", color: "inherit" }}
+                  >
+                    Properties
+                  </a>
+                </li>
+                <li className="breadcrumb-item">
+                  <a
+                    href="/properties/kuala-lumpur"
+                    style={{ textDecoration: "none", color: "inherit" }}
+                  >
+                    Kuala Lumpur
+                  </a>
+                </li>
+                <li
+                  className="breadcrumb-item active"
+                  aria-current="page"
+                  style={{ color: "inherit" }} // optional bold for active item
+                >
+                  {product.ads_title}
+                </li>
+              </ol>
+            </nav>
+
+            <text
+              style={{ fontSize: "20px", fontFamily: "Poppins",fontWeight:600 }}
             >
               {product.ads_title}
-            </p>
+            </text>
           </div>
 
           {/* Photos */}
@@ -422,17 +459,28 @@ const ProductDetail = () => {
                       display: "inline-block",
                     }}
                   ></span>
-                  Built-up: {product.built_size} {product.built_size_unit}
+                  {product?.built_size && (
+                    <span>
+                      Built-up: {product.built_size} {product.built_size_unit}
+                    </span>
+                  )}
+                  {product?.land_size && (
+                    <span>
+                      Land-Size:{product.land_price_per_sqft}{" "}
+                      {product.land_size_unit}
+                    </span>
+                  )}
                 </small>
-
-                <div className="d-flex gap-3 mb-2">
-                  <span className="d-flex align-items-center gap-1">
-                    <FaBed /> {product.room} beds
-                  </span>
-                  <span className="d-flex align-items-center gap-1">
-                    <FaBath /> {product.bathroom} baths
-                  </span>
-                </div>
+                {product.room && product.bathroom > 0 && (
+                  <div className="d-flex gap-3 mb-2">
+                    <span className="d-flex align-items-center gap-1">
+                      <FaBed /> {product.room} beds
+                    </span>
+                    <span className="d-flex align-items-center gap-1">
+                      <FaBath /> {product.bathroom} baths
+                    </span>
+                  </div>
+                )}
               </div>
 
               {/* Agent Sidebar */}
@@ -508,37 +556,175 @@ const ProductDetail = () => {
           <div className="row mt-4">
             <div className="col-12">
               <div className="card p-3 shadow-sm mb-3">
-                <h5 className="fw-bold mb-3">Property Details</h5>
+                <text
+                  style={{
+                    fontSize: "20px",
+                    fontFamily: "Poppins",
+                    fontWeight: 600,
+                  }}
+                >
+                  Property Details
+                </text>
+                <div
+                  style={{
+                    width: "100%", // or a fixed width
+                    height: "1px",
+                    backgroundColor: "var(--Grey-2, #DBDBDB)",
+                    marginTop: "20px",
+                    marginBottom: "20px",
+                  }}
+                />
                 <div className="row">
                   <div className="col-6">
-                    <strong>Type:</strong>
+                    <text
+                      style={{
+                        fontSize: "20px",
+                        fontFamily: "Poppins",
+                        fontWeight: 400,
+                      }}
+                    >
+                      Type:
+                    </text>
                     <br />
-                    {product.property_type_description}
+                    <text
+                      style={{
+                        color: "#737373",
+                        fontSize: "16px",
+                        fontFamily: "Poppins",
+                        fontWeight: 400,
+                      }}
+                    >
+                      {" "}
+                      {product.property_type_description}
+                    </text>
                   </div>
                   <div className="col-6">
-                    <strong>Land Title:</strong>
+                    <text
+                      style={{
+                        fontSize: "20px",
+                        fontFamily: "Poppins",
+                        fontWeight: 400,
+                      }}
+                    >
+                      Land Title:
+                    </text>
                     <br />
-                    {product.land_title}
+                    <text
+                      style={{
+                        color: "#737373",
+                        fontSize: "16px",
+                        fontFamily: "Poppins",
+                        fontWeight: 400,
+                      }}
+                    >
+                      {" "}
+                      {product.property_lot_type_description}
+                    </text>
                   </div>
                   <div className="col-6">
-                    <strong>Title Type:</strong>
+                    <text
+                      style={{
+                        fontSize: "20px",
+                        fontFamily: "Poppins",
+                        fontWeight: 400,
+                      }}
+                    >
+                      Title Type:
+                    </text>
                     <br />
-                    {product.property_title}
+                    <text
+                      style={{
+                        color: "#737373",
+                        fontSize: "16px",
+                        fontFamily: "Poppins",
+                        fontWeight: 400,
+                      }}
+                    >
+                      {" "}
+                      {product.property_title}
+                    </text>
                   </div>
                   <div className="col-6">
-                    <strong>Lot:</strong>
+                    <text
+                      style={{
+                        fontSize: "20px",
+                        fontFamily: "Poppins",
+                        fontWeight: 400,
+                      }}
+                    >
+                      Lot:
+                    </text>
                     <br />
-                    {product.property_lot_type_description}
+                    <text
+                      style={{
+                        color: "#737373",
+                        fontSize: "16px",
+                        fontFamily: "Poppins",
+                        fontWeight: 400,
+                      }}
+                    >
+                      {" "}
+                      {product.property_title}
+                    </text>
                   </div>
                   <div className="col-6">
-                    <strong>Tenure:</strong>
+                    <text
+                      style={{
+                        fontSize: "20px",
+                        fontFamily: "Poppins",
+                        fontWeight: 400,
+                      }}
+                    >
+                      Tenure:
+                    </text>
                     <br />
-                    {product.tenure}
+                    <text
+                      style={{
+                        color: "#737373",
+                        fontSize: "16px",
+                        fontFamily: "Poppins",
+                        fontWeight: 400,
+                      }}
+                    >
+                      {" "}
+                      {product.property_holding}
+                    </text>
                   </div>
                   <div className="col-6">
-                    <strong>Size:</strong>
+                    <text
+                      style={{
+                        fontSize: "20px",
+                        fontFamily: "Poppins",
+                        fontWeight: 400,
+                      }}
+                    >
+                      Size:
+                    </text>
                     <br />
-                    {product.built_size} sqft
+                    {hasValue(product?.built_size) ? (
+                      <text
+                        style={{
+                          color: "#737373",
+                          fontSize: "16px",
+                          fontFamily: "Poppins",
+                          fontWeight: 400,
+                        }}
+                      >
+                        {product.built_size} {product.built_size_unit || "sqft"}
+                      </text>
+                    ) : hasValue(product?.land_price_per_sqft) ? (
+                      <text
+                        style={{
+                          color: "#737373",
+                          fontSize: "16px",
+                          fontFamily: "Poppins",
+                          fontWeight: 400,
+                        }}
+                      >
+                        {product.land_price_per_sqft}{" "}
+                        {product.land_size_unit || "sqft"}
+                      </text>
+                    ) : null}{" "}
                   </div>
                 </div>
               </div>
@@ -547,12 +733,29 @@ const ProductDetail = () => {
           {/* Property Description */}
           {product.ads_description && (
             <div className="card p-3 shadow-sm">
-              <h5 className="fw-bold mb-3">Property Description</h5>
+              <text
+                style={{
+                  fontSize: "20px",
+                  fontFamily: "Poppins",
+                  fontWeight: 600,
+                  paddingBottom: "20px",
+                }}
+              >
+                Description
+              </text>
+              <div
+                  style={{
+                    width: "100%", // or a fixed width
+                    height: "1px",
+                    backgroundColor: "var(--Grey-2, #DBDBDB)",
+                    marginBottom: "20px",
+                  }}
+                />
               <p
                 style={{
                   whiteSpace: "pre-line",
                   fontFamily: "Poppins",
-                  fontSize: "16px",
+                  fontSize: "20px",
                 }}
               >
                 {formatAdsDescription(product.ads_description)}

@@ -58,7 +58,7 @@ const MortgageCalculator = ({ product }) => {
 
   return (
     <div className="card p-4 shadow-sm mt-4" style={{ fontFamily: "Poppins" }}>
-      <h5 className="fw-bold mb-4">Mortgage Calculator</h5>
+      <text style={{fontSize:'20px',fontWeight:600}}>Mortgage Calculator</text>
 
       <div className="row">
         {/* LEFT SECTION */}

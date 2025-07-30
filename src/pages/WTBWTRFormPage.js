@@ -1,208 +1,335 @@
 import React, { useState } from "react";
 
-const WTBWTRFormPage = ({ mode }) => {
-  const isBuy = mode === "buy";
+const PropertyRequestForm = () => {
+  const [purpose, setPurpose] = useState("buy");
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
+  const [stateLocation, setStateLocation] = useState("");
+  const [areaLocation, setAreaLocation] = useState("");
+  const [category, setCategory] = useState("");
+  const [type, setType] = useState("");
+  const [planToBuy, setPlanToBuy] = useState(null);
 
-  const [formData, setFormData] = useState([
-    { title: "", location: "", budget: "", notes: "" }, // Card 1
-    { title: "", location: "", budget: "", notes: "" }, // Card 2
-    { title: "", location: "", budget: "", notes: "" }, // Card 3
-    { title: "", location: "", budget: "", notes: "" }, // Card 4
-  ]);
-
-  const stepLabels = [
-    "Base Info",
-    "Enquiry Details",
-    "Location & Purchase Price Budget",
-    "Personal Notes",
-  ];
-
-  const handleChange = (cardIndex, field, value) => {
-    const updatedData = [...formData];
-    updatedData[cardIndex][field] = value;
-    setFormData(updatedData);
+  const inputStyle = {
+    padding: "10px",
+    border: "1px solid #ccc",
+    borderRadius: "4px",
+    width: "100%",
+    fontSize: "14px",
   };
 
-  const isCardComplete = (card) =>
-    card.title && card.location && card.budget && card.notes;
+const rowStyle = {
+  display: "flex",
+  alignItems: "center", // fix alignment
+  width: "100%",
+  gap: "12px",
+};
 
-  const allCardsComplete = formData.every(isCardComplete);
+const labelTextStyle = {
+  width: "200px",
+  fontFamily: "Poppins",
+  fontWeight: "500",
+  fontSize: "14px",
+  flexShrink: 0,
+  textAlign: "left", // ← Align text to the left
+};
 
-  const cardStyle = {
-    display: "flex",
-    width: "1120px",
-    padding: "16px 24px 24px 24px",
-    flexDirection: "column",
-    alignItems: "flex-start",
-    gap: "24px",
-    borderRadius: "8px",
-    border: "1px solid #DBDBDB",
-    background: "#FAFAFA",
-    marginBottom: "24px",
-  };
+const colonStyle = {
+  fontWeight: "500",
+  fontSize: "14px",
+  padding: "0 12px", // ← More spacing around colon
+  flexShrink: 0,
+  textAlign: "center",
+  width: "12px", // fix width to center it nicely
+  display: "inline-block",
+};
 
-  const cardTitleStyle = {
-    fontSize: "18px",
-    fontWeight: "600",
-    fontFamily: "Poppins",
-    marginBottom: "8px",
-  };
-
-  const renderStepper = () => (
-    <div
-      className="d-flex justify-content-between mb-40"
-      style={{ width: "1120px", marginTop: "84px" ,marginBottom:'100px'}}
-    >
-      {formData.map((step, index) => {
-        const isComplete = isCardComplete(step);
-        return (
-          <div
-            key={index}
-            className="d-flex flex-column align-items-center"
-            style={{ flex: 1, position: "relative" }}
-          >
-            {index !== 0 && (
-              <div
-                style={{
-                  position: "absolute",
-                  top: "18px",
-                  left: "-50%",
-                  width: "100%",
-                  height: "2px",
-                  backgroundColor: "#DBDBDB",
-                  zIndex: 0,
-                }}
-              />
-            )}
-            <div
-              style={{
-                width: "36px",
-                height: "36px",
-                borderRadius: "20px",
-                border: isComplete ? "2px solid #F4980E" : "1px solid #3A3A3A",
-                backgroundColor: isComplete ? "#F4980E" : "#FAFAFA",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                zIndex: 1,
-                fontWeight: 600,
-                color: isComplete ? "#fff" : "#3A3A3A",
-              }}
-            >
-              {`0${index + 1}`}
-            </div>
-            <div
-              style={{
-                marginTop: "8px",
-                color: "#3A3A3A",
-                fontSize: "14px",
-                fontFamily: "Poppins",
-                textAlign: "center",
-              }}
-            >
-              {stepLabels[index]}
-            </div>
-          </div>
-        );
-      })}
-    </div>
+  const labelWrapper = (text) => (
+    <>
+      <span style={labelTextStyle}>{text}</span>
+      <span style={colonStyle}>:</span>
+    </>
   );
 
-  const renderFormContent = (index) => (
-    <div className="col-md-12">
-      {/* <div className="mb-4 d-flex justify-content-between align-items-center">
-        <h5>{isBuy ? "Buy a Property (WTB)" : "Rent a Property (WTR)"}</h5>
-        <span className="badge bg-warning text-dark">Prospect Status: Draft</span>
-      </div> */}
+  const propertyTypeOptions = {
+    Landed: [
+      "Terrace",
+      "Townhouse",
+      "Semi- Detached",
+      "Bungalow",
+    ],
+    Highrise: [
+      "Flat",
+      "Apartment",
+      "Condominium",
+      "Penthouse",
+      "Studio (SOHO/ SOFO/ SOVO)",
+    ],
+    Commercial: [
+      "Shop Lot",
+      "Shop House",
+      "Office Space",
+      "Warehouse",
+      "Factory",
+      "En Bloc Building",
+    ],
+    Land: [
+      "Agriculture Land",
+      "Building Land",
+      "Industrial Land",
+      "Not Sure",
+    ],
+  };
 
-      <div className="mb-3">
-        <label className="form-label">Title</label>
-        <input
-          className="form-control"
-          type="text"
-          placeholder="e.g. Looking for landed house"
-          value={formData[index].title}
-          onChange={(e) => handleChange(index, "title", e.target.value)}
-        />
-      </div>
-
-      <div className="mb-3">
-        <label className="form-label">Location</label>
-        <input
-          className="form-control"
-          type="text"
-          placeholder="e.g. Selangor, Puchong"
-          value={formData[index].location}
-          onChange={(e) => handleChange(index, "location", e.target.value)}
-        />
-      </div>
-
-      <div className="mb-3">
-        <label className="form-label">Maximum Budget</label>
-        <input
-          className="form-control"
-          type="number"
-          placeholder="e.g. 500000"
-          value={formData[index].budget}
-          onChange={(e) => handleChange(index, "budget", e.target.value)}
-        />
-      </div>
-
-      <div className="mb-3">
-        <label className="form-label">Notes</label>
-        <textarea
-          className="form-control"
-          rows="4"
-          placeholder="Additional requirements..."
-          value={formData[index].notes}
-          onChange={(e) => handleChange(index, "notes", e.target.value)}
-        ></textarea>
-      </div>
-    </div>
-  );
+  const getTypeOptions = () => {
+    const key = category.split(" ")[0]; // e.g., Landed, Highrise, etc.
+    return propertyTypeOptions[key] || [];
+  };
 
   return (
-    <div className="d-flex flex-column align-items-center py-4" style={{ fontFamily: "Poppins" }}>
-      {renderStepper()}
-
-      {/* Card 1 */}
-      <div style={cardStyle}>
-        <h5 style={cardTitleStyle}>Based Information</h5>
-        {renderFormContent(0)}
-      </div>
-
-      {/* Card 2 */}
-      <div style={cardStyle}>
-        <h5 style={cardTitleStyle}>Enquiry Details</h5>
-        {renderFormContent(1)}
-      </div>
-
-      {/* Card 3 */}
-      <div style={cardStyle}>
-        <h5 style={cardTitleStyle}>Location and Purchase Price Budget</h5>
-        {renderFormContent(2)}
-      </div>
-
-      {/* Card 4 */}
-      <div style={cardStyle}>
-        <h5 style={cardTitleStyle}>Location and Purchase Price Budget</h5>
-        {renderFormContent(3)}
-      </div>
-
-      <div className="text-end" style={{ width: "1120px" }}>
-        <button
-          className="btn btn-primary px-4"
-          disabled={!allCardsComplete}
+    <div
+      style={{
+        minHeight: "100vh",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "space-between",
+        fontFamily: "Poppins",
+        marginTop: "60px",
+      }}
+    >
+      <div style={{ flex: 1 }}>
+        <div
           style={{
-            opacity: allCardsComplete ? 1 : 0.5,
-            cursor: allCardsComplete ? "pointer" : "not-allowed",
+            width: "1120px",
+            margin: "40px auto 0 auto",
           }}
         >
-          Submit
-        </button>
+          <text style={{ fontWeight: "600", marginBottom: "40px" ,fontSize:'20px',fontFamily:'Poppins'}}>
+            Property Request Form
+          </text>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "flex-start",
+              gap: "24px",
+              width: "100%",
+              padding: "24px",
+              background: "#FAFAFA",
+              border: "1px solid #DBDBDB",
+              borderRadius: "8px",
+              paddingTop: 40,
+              paddingBottom: 40,
+              marginBottom: "40px",
+            }}
+          >
+            {/* Purpose */}
+            <div style={rowStyle}>
+              {labelWrapper("*Purpose / Objective")}
+              <div style={{ display: "flex", gap: "12px", flex: 1 }}>
+                <button
+                  onClick={() => setPurpose("buy")}
+                  style={{
+                    flex: 1,
+                    backgroundColor: purpose === "buy" ? "#F4980E" : "#fff",
+                    color: purpose === "buy" ? "#fff" : "#000",
+                    border: "1px solid #ccc",
+                    padding: "10px",
+                    borderRadius: "6px",
+                  }}
+                >
+                  To Buy (WTB)
+                </button>
+                <button
+                  onClick={() => setPurpose("rent")}
+                  style={{
+                    flex: 1,
+                    backgroundColor: purpose === "rent" ? "#F4980E" : "#fff",
+                    color: purpose === "rent" ? "#fff" : "#000",
+                    border: "1px solid #ccc",
+                    padding: "10px",
+                    borderRadius: "6px",
+                  }}
+                >
+                  To Rent (WTR)
+                </button>
+              </div>
+            </div>
+
+            {/* Name */}
+            <div style={rowStyle}>
+              {labelWrapper("*Name")}
+              <input
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                style={inputStyle}
+              />
+            </div>
+
+            {/* Phone + Email */}
+            <div style={{ display: "flex", gap: "20px", width: "100%" }}>
+              <div style={rowStyle}>
+                {labelWrapper("*Phone Number")}
+                <input
+                  type="text"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  style={inputStyle}
+                />
+              </div>
+              <div style={rowStyle}>
+                {labelWrapper("Email")}
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  style={inputStyle}
+                />
+              </div>
+            </div>
+
+            {/* State + Area */}
+            <div style={{ display: "flex", gap: "20px", width: "100%" }}>
+              <div style={rowStyle}>
+                {labelWrapper("*Location State")}
+                <select
+                  value={stateLocation}
+                  onChange={(e) => setStateLocation(e.target.value)}
+                  style={inputStyle}
+                >
+                  <option value="">[Please select a State]</option>
+                  <option value="selangor">Selangor</option>
+                  <option value="kualalumpur">Kuala Lumpur</option>
+                </select>
+              </div>
+              <div style={rowStyle}>
+                {labelWrapper("*Location Area")}
+                <select
+                  value={areaLocation}
+                  onChange={(e) => setAreaLocation(e.target.value)}
+                  disabled={!stateLocation}
+                  style={inputStyle}
+                >
+                  <option value="">
+                    {stateLocation
+                      ? "[Please select an Area]"
+                      : "[Please select a State first]"}
+                  </option>
+                  {stateLocation && (
+                    <>
+                      <option value="puchong">Puchong</option>
+                      <option value="ampang">Ampang</option>
+                    </>
+                  )}
+                </select>
+              </div>
+            </div>
+
+            {/* Property Category */}
+            <div style={rowStyle}>
+              {labelWrapper("*Property Category")}
+              <select
+                value={category}
+                onChange={(e) => {
+                  setCategory(e.target.value);
+                  setType("");
+                }}
+                style={inputStyle}
+              >
+                <option value="">[Please select a property category]</option>
+                <option value="Landed (Terrace/ Semi-D/ Bungalow)">Landed (Terrace/ Semi-D/ Bungalow)</option>
+                <option value="Highrise (Flat/ Apartment/ Condominium)">Highrise (Flat/ Apartment/ Condominium)</option>
+                <option value="Commercial (Shoplot/ Building/ Hotel)">Commercial (Shoplot/ Building/ Hotel)</option>
+                <option value="Land (Vacant Lot/ Plantation/ Farm)">Land (Vacant Lot/ Plantation/ Farm)</option>
+                <option value="Others">Others</option>
+              </select>
+            </div>
+
+            {/* Property Type */}
+            <div style={rowStyle}>
+              {labelWrapper("*Property Type")}
+              <select
+                value={type}
+                onChange={(e) => setType(e.target.value)}
+                style={inputStyle}
+                disabled={getTypeOptions().length === 0}
+              >
+                <option value="">[Please select a property type]</option>
+                {getTypeOptions().map((t) => (
+                  <option key={t} value={t}>
+                    {t}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Plan to Buy */}
+            <div style={rowStyle}>
+              {labelWrapper("*Are you planning to buy the property soon?")}
+              <div style={{ display: "flex", gap: "12px" }}>
+                <button
+                  onClick={() => setPlanToBuy("yes")}
+                  style={{
+                    width: "345px",
+                    backgroundColor: planToBuy === "yes" ? "#F4980E" : "#fff",
+                    color: planToBuy === "yes" ? "#fff" : "#000",
+                    border: "1px solid #ccc",
+                    padding: "8px 12px",
+                    borderRadius: "6px",
+                    fontSize: "14px",
+                    fontWeight: 500,
+                  }}
+                >
+                  Yes
+                </button>
+                <button
+                  onClick={() => setPlanToBuy("no")}
+                  style={{
+                    width: "345px",
+                    backgroundColor: planToBuy === "no" ? "#F4980E" : "#fff",
+                    color: planToBuy === "no" ? "#fff" : "#000",
+                    border: "1px solid #ccc",
+                    padding: "8px 12px",
+                    borderRadius: "6px",
+                    fontSize: "14px",
+                    fontWeight: 500,
+                  }}
+                >
+                  No
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Submit Button */}
+          <div
+            style={{
+              textAlign: "right",
+              width: "1120px",
+              margin: "0 auto",
+              marginTop: "24px",
+              marginBottom: "7%",
+            }}
+          >
+            <button
+              style={{
+                backgroundColor: "#F4980E",
+                color: "#fff",
+                padding: "12px 24px",
+                borderRadius: "6px",
+                border: "none",
+                fontWeight: "600",
+              }}
+            >
+              Submit Now
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );
 };
 
-export default WTBWTRFormPage;
+export default PropertyRequestForm;

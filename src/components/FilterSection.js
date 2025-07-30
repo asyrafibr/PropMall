@@ -12,6 +12,7 @@ import {
   getHolding,
   getLocationTree,
   getListings,
+  getLot,
 } from "../api/axiosApi";
 const Filters = ({
   selectedLocation,
@@ -21,8 +22,9 @@ const Filters = ({
 }) => {
   const navigate = useNavigate();
   const containerRef = useRef(null); // ✅ ref to the whole dropdown group
-  const [selectedCategory, setSelectedCategory] = useState(null);
-  const [selectedHolding, setSelectedHolding] = useState(null);
+  const [selectedCategory, setSelectedCategory] = useState([]);
+  const [selectedHolding, setSelectedHolding] = useState([]);
+
   const [roomRange, setRoomRange] = useState({ min: null, max: null });
   const [bathroomRange, setBathroomRange] = useState({ min: null, max: null });
   const [priceModalOpen, setPriceModalOpen] = useState(false);
@@ -36,6 +38,8 @@ const Filters = ({
   const [domain, setDomain] = useState({});
   const [category, setCategory] = useState({});
   const [holding, setHolding] = useState({});
+  const [lot, setLot] = useState({});
+
   const [priceRange, setPriceRange] = useState({ min: null, max: null });
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [priceRangeDisplay, setPriceRangeDisplay] = useState(null);
@@ -68,7 +72,8 @@ const Filters = ({
         setCategory(categoryList.data.property_category);
 
         const holdingList = await getHolding();
-        setHolding(holdingList.data.property_holding_and_type);
+        const lotList = await getLot();
+        setHolding(holdingList.data.property_holding_and_type || []);
 
         // ❌ agent is NOT updated here yet
       } catch (error) {
@@ -250,8 +255,8 @@ const Filters = ({
               id_province: [],
               id_cities: [],
             },
-            property_category: selectedCategory || null,
-            property_holding: selectedHolding || null,
+            property_category: selectedCategory.id || [],
+            property_holding: selectedHolding.id || [],
             property_lot_type: null,
             room: {
               min: roomRange?.min || null,
@@ -270,7 +275,7 @@ const Filters = ({
       };
 
       const response = await getListings(payload);
-
+      console.log("Payload", selectedCategory);
       navigate("/search", {
         state: {
           products: response.data.listing_search.listing_rows,
@@ -299,8 +304,8 @@ const Filters = ({
   const handleClear = () => {
     setSelectedAreaIds([]);
   };
-  console.log("select category", selectedCategory);
-  console.log("select holding", selectedHolding);
+      // console.log("Payload", selectedHolding.id);
+
 
   return (
     <div>
@@ -741,58 +746,76 @@ const Filters = ({
                           <ul
                             style={{ listStyle: "none", padding: 0, margin: 0 }}
                           >
-                            {options.map((item, i) => (
+                            {(options && Array.isArray(options) ? options : [])
+                              .length === 0 ? (
                               <li
-                                key={i}
-                                style={{ cursor: "pointer", padding: "6px 0" }}
-                                onClick={() => {
-                                  if (label === "All Categories") {
-                                    setSelectedCategory({
-                                      id: item.id,
-                                      name: item.desc,
-                                    });
-                                    setOpenDropdown(null);
-                                  }
+                                style={{
+                                  padding: "6px 0",
+                                  color: "gray",
+                                  fontFamily: "Poppins",
                                 }}
                               >
-                                <label
+                                No options available.
+                              </li>
+                            ) : (
+                              (options || []).map((item, i) => (
+                                <li
+                                  key={i}
                                   style={{
-                                    display: "flex",
-                                    justifyContent: "space-between",
-                                    alignItems: "center",
-                                    width: "100%",
+                                    cursor: "pointer",
+                                    padding: "6px 0",
+                                  }}
+                                  onClick={() => {
+                                    if (label === "All Categories") {
+                                      setSelectedCategory({
+                                        id: item.id,
+                                        name: item.desc,
+                                      });
+                                      setOpenDropdown(null);
+                                    }
                                   }}
                                 >
-                                  <span
+                                  <label
                                     style={{
-                                      fontFamily: "Poppins",
-                                      fontSize: "16px",
-                                      fontStyle: "normal",
-                                      fontWeight: 400,
-                                      lineHeight: "normal",
-                                      color: "black",
+                                      display: "flex",
+                                      justifyContent: "space-between",
+                                      alignItems: "center",
+                                      width: "100%",
                                     }}
                                   >
-                                    {item.desc}
-                                  </span>
-
-                                  {label === "All Holding Types" && (
-                                    <input
-                                      type="checkbox"
-                                      onChange={(e) => {
-                                        e.stopPropagation();
-                                        setSelectedHolding({
-                                          id: item.id,
-                                          name: item.desc,
-                                        });
-                                        setOpenDropdown(null);
+                                    <span
+                                      style={{
+                                        fontFamily: "Poppins",
+                                        fontSize: "16px",
+                                        fontStyle: "normal",
+                                        fontWeight: 400,
+                                        lineHeight: "normal",
+                                        color: "black",
                                       }}
-                                      checked={selectedHolding?.id === item.id}
-                                    />
-                                  )}
-                                </label>
-                              </li>
-                            ))}
+                                    >
+                                      {item.desc}
+                                    </span>
+
+                                    {label === "All Holding Types" && (
+                                      <input
+                                        type="checkbox"
+                                        onChange={(e) => {
+                                          e.stopPropagation();
+                                          setSelectedHolding({
+                                            id: item.id,
+                                            name: item.desc,
+                                          });
+                                          setOpenDropdown(null);
+                                        }}
+                                        checked={
+                                          selectedHolding?.id === item.id
+                                        }
+                                      />
+                                    )}
+                                  </label>
+                                </li>
+                              ))
+                            )}
                           </ul>
                         )}
                       </div>
@@ -875,6 +898,7 @@ const Filters = ({
                     fontWeight: "600",
                     fontSize: "16px",
                     fontFamily: "Poppins",
+                    marginBottom:'5px'
                   }}
                 >
                   {currentLevel?.node_level === 0

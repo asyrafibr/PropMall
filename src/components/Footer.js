@@ -1,10 +1,28 @@
 // src/components/Footer.js
-import React from "react";
+import React, { useState,useEffect } from "react";
 import { useTemplate } from "../context/TemplateContext";
+import { getAgent } from "../api/axiosApi";
 
 const Footer = () => {
-    const { template } = useTemplate();
+    const [domain,setDomain]=useState()
 
+    const { template } = useTemplate();
+  useEffect(() => {
+    const fetchAgentData = async () => {
+      try {
+        const agentRes = await getAgent();
+        setDomain(agentRes.data.domain);
+      } catch (error) {
+        console.error("Error fetching agent:", error);
+      }
+    };
+    fetchAgentData();
+  }, []);
+    useEffect(() => {
+      if (domain) {
+        console.log("domain123", domain);
+      }
+    }, [domain]);
   return (
     <footer
       style={{
@@ -28,13 +46,13 @@ const Footer = () => {
         }}
       >
         <div style={{ display: "flex", gap: "25px", flexWrap: "wrap" }}>
-          <span>For sale tab</span>
-          <span>For rental tab</span>
-          <span>Want to buy tab</span>
-          <span>Want to rent tab</span>
-          <span>Articles tab</span>
+          <span>Sale</span>
+          <span>Rent</span>
+          <span>Want To Buy</span>
+          <span>Want To Rent</span>
+          <span>Articles</span>
         </div>
-        <div style={{ fontSize: 20, fontWeight: 600 }}>HomesMatchKL.com</div>
+        <div style={{ fontSize: 20, fontWeight: 600 }}></div>
       </div>
 
       {/* Divider line */}
@@ -56,7 +74,7 @@ const Footer = () => {
           <span style={{ cursor: "pointer" }}>Privacy policy tab</span>
         </div>
         <div>
-          Copyright © HomesMatchKL.co. All Rights Reserved. Powered by PropMall.co.
+          Copyright ©  All Rights Reserved. Powered by PropMall.co
         </div>
       </div>
     </footer>
