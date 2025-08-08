@@ -171,7 +171,7 @@ const Navbar = () => {
               </Link>
             </li>
 
-            {agent.i_want_to && (
+            {/* {agent.i_want_to && (
               <li className="nav-item dropdown">
                 <a
                   href="#"
@@ -252,7 +252,7 @@ const Navbar = () => {
                   </li>
                 </ul>
               </li>
-            )}
+            )} */}
             {agent.tools && (
               <li className="nav-item">
                 <Link
