@@ -211,7 +211,7 @@ const LegalFeeCalculator = () => {
               <label style={styles.textTitle}>Purchase Price</label>
               <input
                 style={styles.input}
-                value={`RM ${price}`}
+                value={price}
                 onChange={(e) => setPrice(e.target.value)}
               />
 
@@ -844,6 +844,7 @@ const styles = {
     padding: "20px",
     marginBottom: "30px",
     boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
+    backgroundColor:'#FAFAFA'
   },
   textTitle: {
     fontFamily: "Poppins",

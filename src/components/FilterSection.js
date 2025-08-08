@@ -78,7 +78,7 @@ const Filters = ({
         const holdingList = await getHolding();
         const lotList = await getLot();
         setHolding(holdingList.data.property_holding_and_type || []);
-
+        console.log("lot", lotList);
         // ❌ agent is NOT updated here yet
       } catch (error) {
         console.error("Error fetching agent:", error);
@@ -1079,7 +1079,6 @@ const Filters = ({
                 </div>
               ) : (
                 <>
-               
                   {navigationStack.length > 0 && (
                     <>
                       {/* ✅ Select All Checkbox (only for area list) */}

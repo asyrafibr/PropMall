@@ -65,7 +65,7 @@ export const getCategory = (payload) =>
   API.post("/graph/param/property/category", payload);
 //Holding
 export const getHolding = (payload) =>
-  API.post("/graph/param/property/holdingandlottype", payload);
+  API.post("/graph/param/property/holding", payload);
 //Lot
 export const getLot = (payload) =>
   API.post("/graph/param/property/lottype", payload);
