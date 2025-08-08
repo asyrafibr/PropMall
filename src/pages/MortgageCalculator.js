@@ -14,7 +14,6 @@ const MortgageCalculator = ({ product }) => {
 
   useEffect(() => {
     calculateMortgage();
-    console.log("Product price is:", productList);
   }, [propertyPrice, loanAmount, interestRate, loanTenure]);
   useEffect(() => {
     const rawPrice = product?.price;
@@ -22,7 +21,6 @@ const MortgageCalculator = ({ product }) => {
       const clean = String(rawPrice).replace(/,/g, "");
       const parsed = Number(clean);
 
-      console.log("Cleaned price:", clean, "→ Parsed:", parsed);
 
       if (!isNaN(parsed)) {
         setPropertyPrice(parsed);

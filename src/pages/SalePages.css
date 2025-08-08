@@ -1,0 +1,203 @@
+/* DoneDeal.css */
+
+/* Image carousel wrapper ensures banner and arrows stay contained */
+.image-carousel {
+  position: relative;
+  overflow: hidden; /* Clipping the excess banner */
+  height: 260px; /* fix height so images fit */
+}
+
+/* Done Deal Banner */
+.done-deal-banner {
+  position: absolute;
+  top: 1rem;
+  right: -3.5rem;
+  background-color: #0057D9;
+  color: white;
+  transform: rotate(45deg);
+  width: 220px;
+  height: 30px; /* Ensure enough height for vertical centering */
+  text-align: center;
+  font-weight: bold;
+  font-size: 0.85rem;
+  z-index: 2;
+  overflow: hidden;
+  white-space: nowrap;
+  display: flex;             /* Use flex to center */
+  align-items: center;       /* Vertical centering */
+  justify-content: center;   /* Horizontal centering */
+  pointer-events: none;
+}
+
+/* Carousel arrows */
+.carousel-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0, 0, 0, 0.4);
+  color: white;
+  border: none;
+  font-size: 1.5rem;
+  padding: 6px 12px;
+  cursor: pointer;
+  z-index: 3;
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+
+.carousel-arrow:hover {
+  background: rgba(0, 0, 0, 0.6);
+}
+
+.carousel-arrow.left {
+  left: 10px;
+}
+
+.carousel-arrow.right {
+  right: 10px;
+}
+
+/* Responsive banner size adjustments */
+@media (min-width: 992px) {
+  .done-deal-banner {
+    width: 220px;
+    font-size: 0.85rem;
+    top: 1.2rem;
+    right: -3.5rem;
+  }
+}
+
+@media (max-width: 991.98px) {
+  .done-deal-banner {
+    width: 200px;
+    font-size: 0.75rem;
+    right: -3.4rem;
+  }
+}
+
+@media (max-width: 767.98px) {
+  .done-deal-banner {
+    width: 190px;
+    font-size: 0.72rem;
+    right: -3.2rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .done-deal-banner {
+    width: 180px;
+    font-size: 0.7rem;
+    right: -3rem;
+  }
+}
+
+@media (max-width: 400px) {
+  .done-deal-banner {
+    width: 170px;
+    font-size: 0.68rem;
+    right: -2.8rem;
+  }
+}
+
+/* --- Sliding Carousel Styles --- */
+.image-carousel-inner {
+  display: flex;
+  height: 260px;
+  width: 100%;
+  transition: transform 0.5s ease-in-out;
+}
+
+.image-carousel-inner img {
+  flex-shrink: 0;
+  width: 100%;
+  object-fit: cover;
+  height: 260px;
+  user-select: none;
+  pointer-events: none;
+}
+
+/* Animation for sliding */
+
+/* Slide Out Left */
+.slide-out-left {
+  animation: slideOutLeft 0.25s forwards;
+}
+
+/* Slide Out Right */
+.slide-out-right {
+  animation: slideOutRight 0.25s forwards;
+}
+
+/* Slide In Left */
+.slide-in-left {
+  animation: slideInLeft 0.25s forwards;
+}
+
+/* Slide In Right */
+.slide-in-right {
+  animation: slideInRight 0.25s forwards;
+}
+
+@keyframes slideOutLeft {
+  0% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+}
+
+@keyframes slideOutRight {
+  0% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+@keyframes slideInLeft {
+  0% {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideInRight {
+  0% {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}.skeleton-line {
+  border-radius: 4px;
+  animation: pulse 1.5s infinite;
+}
+
+.skeleton-image {
+  border-radius: 4px 4px 0 0;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    background-color: #e0e0e0;
+  }
+  50% {
+    background-color: #f0f0f0;
+  }
+  100% {
+    background-color: #e0e0e0;
+  }
+}

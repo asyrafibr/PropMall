@@ -22,7 +22,6 @@ const DoneDeal = () => {
         const doneDealRes = await getDoneDeal();
         const data = doneDealRes.data.donedeal_search.donedeal_rows;
         setDoneDeal(data);
-        console.log("data123", data);
         const initialIndexes = {};
         data.forEach((card) => {
           initialIndexes[card.id_listing] = 0;

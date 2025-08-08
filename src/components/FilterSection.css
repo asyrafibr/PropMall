@@ -1,3 +1,20 @@
 .hover-bg:hover {
   background-color: #f8f9fa;
 }
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999999; /* keep this higher than headers/ribbons */
+}
+
+.modal-box {
+  background: #fff;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+  overflow: auto;
+}

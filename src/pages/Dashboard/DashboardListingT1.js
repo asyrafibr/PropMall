@@ -423,14 +423,12 @@ const DashboardListingT1 = ({ listings, handleViewDetails }) => {
         <div
           className="modal-overlay"
           onClick={(e) => {
-            console.log("Overlay clicked"); // ✅ Test log
             closeModal();
           }}
         >
           <div
             className="modal-content"
             onClick={(e) => {
-              console.log("Modal content clicked"); // ✅ Test log
               e.stopPropagation();
             }}
           >

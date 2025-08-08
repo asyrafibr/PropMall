@@ -22,7 +22,6 @@ const DoneDealDetail = (id) => {
 
   const id_listing = location.state;
 
-  console.log("Received id_listing:", id_listing);
 
   // ✅ Fetch Done Deal Detail
 useEffect(() => {
@@ -57,7 +56,6 @@ useEffect(() => {
       });
 
       if (response.data.status === "ok") {
-        console.log("Listing Info:", response.data.listing_info);
       }
     } catch (err) {
       console.error("Error fetching listing info:", err);

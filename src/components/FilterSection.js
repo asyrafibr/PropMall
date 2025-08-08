@@ -6,7 +6,9 @@ import { getAgent } from "../api/axiosApi";
 import { useNavigate } from "react-router-dom"; // at top
 import { FaSearch } from "react-icons/fa";
 // import getSubdomain from "../utils/getSubdomain"; // if you’ve extracted it to a helper
-
+import { createPortal } from "react-dom";
+import { useTemplate } from "../context/TemplateContext"; // ✅ Import Template Context
+import RangeSliderModal from "./RangeSliderModal";
 import {
   getCategory,
   getHolding,
@@ -14,6 +16,7 @@ import {
   getListings,
   getLot,
 } from "../api/axiosApi";
+
 const Filters = ({
   selectedLocation,
   setSelectedLocation,
@@ -28,17 +31,18 @@ const Filters = ({
   const [roomRange, setRoomRange] = useState({ min: null, max: null });
   const [bathroomRange, setBathroomRange] = useState({ min: null, max: null });
   const [priceModalOpen, setPriceModalOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState("rent");
+  const [activeTab, setActiveTab] = useState("Buy");
   const [showModal, setShowModal] = useState(false);
   const [locationTree, setLocationTree] = useState([]);
   const [navigationStack, setNavigationStack] = useState([]);
   const [selectedAreaIds, setSelectedAreaIds] = useState([]);
   const [selectedAreaNames, setSelectedAreaNames] = useState([]);
-  const [agent, setAgent] = useState({});
+  // const [agent, setAgent] = useState({});
   const [domain, setDomain] = useState({});
-  const [category, setCategory] = useState({});
+  const [categoryData, setCategory] = useState({});
   const [holding, setHolding] = useState({});
   const [lot, setLot] = useState({});
+  const { agent, category } = useTemplate();
 
   const [priceRange, setPriceRange] = useState({ min: null, max: null });
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -83,16 +87,8 @@ const Filters = ({
 
     fetchData();
   }, []);
+
   useEffect(() => {
-    if (category) {
-      console.log("Category", category);
-    }
-    if (holding) {
-      console.log("Holding", holding);
-    }
-  }, [category, holding]);
-  useEffect(() => {
-    console.log("category");
     if (showModal) {
       document.body.classList.add("modal-open");
     } else {
@@ -108,23 +104,6 @@ const Filters = ({
     return () => document.head.removeChild(style);
   }, []);
 
-  useEffect(() => {
-    const fetchAgentData = async () => {
-      try {
-        const agentRes = await getAgent();
-        setAgent(agentRes.data.domain.config);
-        setDomain(agentRes.data.domain);
-      } catch (error) {
-        console.error("Error fetching agent:", error);
-      }
-    };
-    fetchAgentData();
-  }, []);
-  useEffect(() => {
-    if (domain) {
-      console.log("domain", domain);
-    }
-  }, [domain]);
   const getSubdomain = () => {
     const hostname = window.location.hostname; // e.g., "prohartanah.myhartanah.co"
     const parts = hostname.split(".");
@@ -161,7 +140,109 @@ const Filters = ({
       setLoadingLocationData(false);
     }
   };
+  // Reusable Modal
+  const BUY_AMOUNTS = [
+    0, 100000, 200000, 300000, 400000, 500000, 600000, 700000, 800000, 900000,
+    1000000, 1100000, 1200000, 1300000, 1400000, 1500000, 2000000, 2500000,
+    3000000, 4000000, 5000000, 10000000, 20000000, 30000000, 40000000, 50000000,
+    100000000, 200000000, 300000000, 400000000, 500000000, 1000000000,
+  ];
 
+  const RENT_AMOUNTS = [
+    0, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200, 1300,
+    1400, 1500, 2000, 2500, 3000, 4000, 5000, 10000, 20000, 30000, 40000, 50000,
+    100000, 200000, 300000, 400000, 500000, 1000000,
+  ];
+
+  const ROOM_COUNTS = Array.from({ length: 21 }, (_, i) => i); // 0..20
+
+  // === Helpers ===
+  const nearestIndex = (arr, n) => {
+    if (n == null || Number.isNaN(n)) return 0;
+    let best = 0,
+      diff = Infinity;
+    for (let i = 0; i < arr.length; i++) {
+      const d = Math.abs(arr[i] - n);
+      if (d < diff) {
+        best = i;
+        diff = d;
+      }
+    }
+    return best;
+  };
+
+  const formatRM = (n) => (n == null ? "" : n.toLocaleString("en-MY"));
+
+  // === Reusable Modal (same-file), with optional Portal ===
+  function Modal({
+    title,
+    isOpen,
+    onClose,
+    children,
+    width = 750,
+    height = 360,
+    usePortal = true,
+  }) {
+    const [mounted, setMounted] = React.useState(false);
+
+    React.useEffect(() => setMounted(true), []);
+
+    React.useEffect(() => {
+      if (!isOpen) return;
+      const onKey = (e) => e.key === "Escape" && onClose?.();
+      window.addEventListener("keydown", onKey);
+      const prevOverflow = document.body.style.overflow;
+      document.body.style.overflow = "hidden";
+      return () => {
+        window.removeEventListener("keydown", onKey);
+        document.body.style.overflow = prevOverflow;
+      };
+    }, [isOpen, onClose]);
+
+    if (!isOpen) return null;
+
+    const node = (
+      <div
+        className="modal-overlay"
+        role="dialog"
+        aria-modal="true"
+        aria-label={typeof title === "string" ? title : "Modal"}
+        // ✅ Only close if the click is on the overlay itself
+        onMouseDown={(e) => {
+          if (e.target === e.currentTarget) onClose?.();
+        }}
+      >
+        <div
+          className="modal-box"
+          style={{
+            width,
+            maxWidth: "95vw",
+            height,
+            maxHeight: "85vh",
+            borderRadius: 8,
+            backgroundColor: "white",
+            padding: 20,
+          }}
+          // ✅ Prevent events inside the box from bubbling to the overlay
+          onMouseDown={(e) => e.stopPropagation()}
+          onClick={(e) => e.stopPropagation()}
+        >
+          {title ? (
+            <h5 className="mb-3" style={{ fontFamily: "Poppins" }}>
+              {title}
+            </h5>
+          ) : null}
+          {children}
+        </div>
+      </div>
+    );
+
+    if (usePortal && mounted && typeof document !== "undefined") {
+      const { createPortal } = require("react-dom");
+      return createPortal(node, document.body);
+    }
+    return node;
+  }
   const handleNodeClick = (node) => {
     if (node.node_level === 2) {
       // Just update selectedState, don't reset checkboxes
@@ -242,12 +323,8 @@ const Filters = ({
             description: true,
           },
           search_filters: {
-            objective: {
-              sale: true,
-              rent: true,
-              project: true,
-              auction: true,
-            },
+            objective: objectiveMap[activeTab] || {},
+
             location: {
               id_country: selectedCountry?.id_country || null,
               id_state: selectedState?.id || null,
@@ -275,7 +352,7 @@ const Filters = ({
       };
 
       const response = await getListings(payload);
-      // console.log("Payload", selectedCategory);
+      console.log("Payload", payload);
       navigate("/search", {
         state: {
           products: response.data.listing_search.listing_rows,
@@ -288,10 +365,22 @@ const Filters = ({
       console.error("Error fetching listings:", error);
     }
   };
+  const objectiveMap = {
+    Buy: { sale: true },
+    Rent: { rent: true },
+    "New Project": { project: true },
+    Auction: { auction: true },
+  };
+  const tabMap = [
+    { label: "Buy", key: "sale" },
+    { label: "Rent", key: "rent" },
+    { label: "New Project", key: "project" },
+    { label: "Auction", key: "auction" },
+  ];
   const currentLevel = navigationStack[navigationStack.length - 1];
   const displayList = currentLevel?.child_list || [];
   const filters = {
-    "All Categories": category, // array from props/state
+    "All Categories": categoryData, // array from props/state
     "All Holding Types": holding, // array from props/state
     "Price Ranges (RM)": [], // now triggers modal
     "Bedroom(s)": ["Custom Range..."],
@@ -304,8 +393,7 @@ const Filters = ({
   const handleClear = () => {
     setSelectedAreaIds([]);
   };
-      // console.log("Payload", selectedHolding.id);
-
+  // console.log("Payload", selectedHolding.id);
 
   return (
     <div>
@@ -352,27 +440,28 @@ const Filters = ({
             }}
           >
             <div className="d-flex">
-              {["Buy", "Rent", "New Project", "Auction"].map((tab) => (
-                <button
-                  key={tab}
-                  className="btn text-white me-3"
-                  onClick={() => setActiveTab(tab)}
-                  style={{
-                    background: "transparent",
-                    fontSize: "16px",
-                    fontFamily: "Poppins",
-                    borderBottom:
-                      activeTab === tab
-                        ? "3px solid #F4980E"
-                        : "3px solid transparent",
-                    borderRadius: 0,
-                  }}
-                >
-                  {tab}
-                </button>
-              ))}
+              {tabMap
+                .filter(({ key }) => category[key]) // only include true items
+                .map(({ label }) => (
+                  <button
+                    key={label}
+                    className="btn text-white me-3"
+                    onClick={() => setActiveTab(label)}
+                    style={{
+                      background: "transparent",
+                      fontSize: "16px",
+                      fontFamily: "Poppins",
+                      borderBottom:
+                        activeTab === label
+                          ? "3px solid #F4980E"
+                          : "3px solid transparent",
+                      borderRadius: 0,
+                    }}
+                  >
+                    {label}
+                  </button>
+                ))}
             </div>
-
             <div
               style={{
                 borderBottom: "2px solid #3A3A3A",
@@ -506,243 +595,24 @@ const Filters = ({
                       </span>
                     </button>
 
-                    {openDropdown === label && (
-                      <div
-                        style={{
-                          position: "absolute",
-                          top: "100%",
-                          width: "100%",
-                          background: "white",
-                          zIndex: 1000,
-                          borderRadius: "8px",
-                          padding: "10px",
-                          boxShadow: "0 4px 8px rgba(0,0,0,0.15)",
-                        }}
-                      >
-                        {label === "Price Ranges (RM)" ? (
-                          <>
-                            <div
-                              className="mb-2"
-                              style={{ color: "black", fontFamily: "Poppins" }}
-                            >
-                              Set Price Range (RM):
-                            </div>
-                            <div className="d-flex gap-2">
-                              <div style={{ flex: 1 }}>
-                                <div
-                                  style={{
-                                    fontSize: "12px",
-                                    fontFamily: "Poppins",
-                                    color: "black",
-                                  }}
-                                >
-                                  Min
-                                </div>
-                                <input
-                                  type="number"
-                                  placeholder="Min"
-                                  value={priceRange.min || ""}
-                                  onChange={(e) => {
-                                    const v = e.target.value
-                                      ? +e.target.value
-                                      : null;
-                                    setPriceRange((r) => ({ ...r, min: v }));
-                                  }}
-                                  className="form-control"
-                                />
-                              </div>
-                              <div style={{ flex: 1 }}>
-                                <div
-                                  style={{
-                                    fontSize: "12px",
-                                    fontFamily: "Poppins",
-                                    color: "black",
-                                  }}
-                                >
-                                  Max
-                                </div>
-                                <input
-                                  type="number"
-                                  placeholder="Max"
-                                  value={priceRange.max || ""}
-                                  onChange={(e) => {
-                                    const v = e.target.value
-                                      ? +e.target.value
-                                      : null;
-                                    setPriceRange((r) => ({ ...r, max: v }));
-                                  }}
-                                  className="form-control"
-                                />
-                              </div>
-                            </div>
-                            <div className="d-flex gap-2 mt-2">
-                              <button
-                                className="btn mt-2 ms-2"
-                                onClick={() => {
-                                  setPriceRange({ min: null, max: null });
-                                  setPriceRangeDisplay("Price Ranges (RM)");
-                                  setOpenDropdown(null);
-                                }}
-                                style={{
-                                  backgroundColor: "#6c757d",
-                                  color: "white",
-                                  fontFamily: "Poppins",
-                                }}
-                              >
-                                Clear
-                              </button>
-                              <button
-                                className="btn mt-2"
-                                onClick={() => {
-                                  const display = `RM ${
-                                    priceRange.min || 0
-                                  } - RM ${priceRange.max || 0}`;
-                                  setPriceRangeDisplay(display);
-                                  setOpenDropdown(null);
-                                }}
-                                style={{ backgroundColor: "#F4980E" }}
-                              >
-                                <text
-                                  style={{
-                                    fontFamily: "Poppins",
-                                    color: "white",
-                                  }}
-                                >
-                                  Apply
-                                </text>
-                              </button>
-                            </div>
-                          </>
-                        ) : label === "Bedroom(s)" ||
-                          label === "Bathroom(s)" ? (
-                          <>
-                            <div
-                              className="mb-2"
-                              style={{ color: "black", fontFamily: "Poppins" }}
-                            >
-                              Enter {label.toLowerCase()} range:
-                            </div>
-                            <div className="d-flex gap-2">
-                              <div style={{ flex: 1 }}>
-                                <div
-                                  style={{
-                                    fontSize: "12px",
-                                    fontFamily: "Poppins",
-                                    color: "black",
-                                  }}
-                                >
-                                  Min
-                                </div>
-                                <input
-                                  type="number"
-                                  placeholder="Min"
-                                  value={
-                                    label === "Bedroom(s)"
-                                      ? roomRange.min || ""
-                                      : bathroomRange.min || ""
-                                  }
-                                  onChange={(e) => {
-                                    const v = e.target.value
-                                      ? +e.target.value
-                                      : null;
-                                    if (label === "Bedroom(s)") {
-                                      setRoomRange((r) => ({ ...r, min: v }));
-                                    } else {
-                                      setBathroomRange((r) => ({
-                                        ...r,
-                                        min: v,
-                                      }));
-                                    }
-                                  }}
-                                  className="form-control"
-                                />
-                              </div>
-                              <div style={{ flex: 1 }}>
-                                <div
-                                  style={{
-                                    fontSize: "12px",
-                                    fontFamily: "Poppins",
-                                    color: "black",
-                                  }}
-                                >
-                                  Max
-                                </div>
-                                <input
-                                  type="number"
-                                  placeholder="Max"
-                                  value={
-                                    label === "Bedroom(s)"
-                                      ? roomRange.max || ""
-                                      : bathroomRange.max || ""
-                                  }
-                                  onChange={(e) => {
-                                    const v = e.target.value
-                                      ? +e.target.value
-                                      : null;
-                                    if (label === "Bedroom(s)") {
-                                      setRoomRange((r) => ({ ...r, max: v }));
-                                    } else {
-                                      setBathroomRange((r) => ({
-                                        ...r,
-                                        max: v,
-                                      }));
-                                    }
-                                  }}
-                                  className="form-control"
-                                />
-                              </div>
-                            </div>
-                            <div className="d-flex gap-2 mt-2">
-                              <button
-                                className="btn mt-2 ms-2"
-                                onClick={() => {
-                                  if (label === "Bedroom(s)") {
-                                    setRoomRange({ min: null, max: null });
-                                    setBedroomDisplay("Bedroom(s)");
-                                  } else {
-                                    setBathroomRange({ min: null, max: null });
-                                    setBathroomDisplay("Bathroom(s)");
-                                  }
-                                  setOpenDropdown(null);
-                                }}
-                                style={{
-                                  backgroundColor: "#6c757d",
-                                  color: "white",
-                                  fontFamily: "Poppins",
-                                }}
-                              >
-                                Clear
-                              </button>
-                              <button
-                                className="btn mt-2"
-                                onClick={() => {
-                                  if (label === "Bedroom(s)") {
-                                    const display = `${roomRange.min || 0} - ${
-                                      roomRange.max || 0
-                                    } Bedroom(s)`;
-                                    setBedroomDisplay(display);
-                                  } else {
-                                    const display = `${
-                                      bathroomRange.min || 0
-                                    } - ${bathroomRange.max || 0} Bathroom(s)`;
-                                    setBathroomDisplay(display);
-                                  }
-                                  setOpenDropdown(null);
-                                }}
-                                style={{ backgroundColor: "#F4980E" }}
-                              >
-                                <text
-                                  style={{
-                                    fontFamily: "Poppins",
-                                    color: "white",
-                                  }}
-                                >
-                                  Apply
-                                </text>{" "}
-                              </button>
-                            </div>
-                          </>
-                        ) : (
+                    {/* --- Keep dropdown ONLY for All Categories / All Holding Types --- */}
+                    {openDropdown === label &&
+                      (label === "All Categories" ||
+                        label === "All Holding Types") && (
+                        <div
+                          style={{
+                            position: "absolute",
+                            top: "100%",
+                            width: "100%",
+                            // width: "750px",
+                            // height: "500px",
+                            background: "white",
+                            zIndex: 1000,
+                            borderRadius: "8px",
+                            padding: "10px",
+                            boxShadow: "0 4px 8px rgba(0,0,0,0.15)",
+                          }}
+                        >
                           <ul
                             style={{ listStyle: "none", padding: 0, margin: 0 }}
                           >
@@ -786,7 +656,7 @@ const Filters = ({
                                     <span
                                       style={{
                                         fontFamily: "Poppins",
-                                        fontSize: "16px",
+                                        fontSize: 16,
                                         fontStyle: "normal",
                                         fontWeight: 400,
                                         lineHeight: "normal",
@@ -817,9 +687,254 @@ const Filters = ({
                               ))
                             )}
                           </ul>
-                        )}
-                      </div>
-                    )}
+                        </div>
+                      )}
+
+                    {/* {(label === "Price Ranges (RM)" ||
+                      label === "Bedroom(s)" ||
+                      label === "Bathroom(s)") && (
+                      <Modal
+                        isOpen={openDropdown === label}
+                        onClose={() => setOpenDropdown(null)}
+                        title={
+                          label === "Price Ranges (RM)"
+                            ? "Select Price Range (RM)"
+                            : `Enter ${label.toLowerCase()} range`
+                        }
+                        width={750}
+                        height={380}
+                      >
+                       
+                        <RangeSliderModal
+                          label="Price"
+                          scale={
+                            activeTab === "Buy" ? BUY_AMOUNTS : RENT_AMOUNTS
+                          }
+                          range={priceRange}
+                          setRange={setPriceRange}
+                          setRangeDisplay={setPriceRangeDisplay}
+                          handleSearch={handleSearch}
+                          setOpenDropdown={setOpenDropdown}
+                        />
+
+                        {label === "Bedroom(s)" || label === "Bathroom(s)"
+                          ? (() => {
+                              const isBedroom = label === "Bedroom(s)";
+                              const scale = ROOM_COUNTS;
+
+                              const cur = isBedroom ? roomRange : bathroomRange;
+                              const setCur = isBedroom
+                                ? setRoomRange
+                                : setBathroomRange;
+                              const setDisplay = isBedroom
+                                ? setBedroomDisplay
+                                : setBathroomDisplay;
+
+                              const minIdx = nearestIndex(scale, cur?.min ?? 0);
+                              const maxIdx = nearestIndex(scale, cur?.max ?? 0);
+
+                              const setMinFromNumber = (num) => {
+                                const idx = nearestIndex(scale, num);
+                                const v = scale[idx];
+                                setCur((r) => {
+                                  const nextMax =
+                                    r?.max == null ? v : Math.max(v, r.max);
+                                  return { ...(r || {}), min: v, max: nextMax };
+                                });
+                              };
+
+                              const setMaxFromNumber = (num) => {
+                                const idx = nearestIndex(scale, num);
+                                const v = scale[idx];
+                                setCur((r) => {
+                                  const nextMin =
+                                    r?.min == null ? v : Math.min(v, r.min);
+                                  return { ...(r || {}), min: nextMin, max: v };
+                                });
+                              };
+
+                              return (
+                                <div
+                                  style={{
+                                    display: "flex",
+                                    flexDirection: "column",
+                                    gap: 16,
+                                  }}
+                                >
+                                  <div
+                                    style={{
+                                      display: "flex",
+                                      flexDirection: "column",
+                                      gap: 8,
+                                    }}
+                                  >
+                                    <div
+                                      style={{
+                                        fontSize: 12,
+                                        fontFamily: "Poppins",
+                                        color: "black",
+                                      }}
+                                    >
+                                      Min
+                                    </div>
+                                    <input
+                                      type="number"
+                                      placeholder="Min"
+                                      className="form-control"
+                                      value={cur?.min ?? ""}
+                                      onChange={(e) => {
+                                        const raw = e.target.value
+                                          ? +e.target.value
+                                          : null;
+                                        if (raw == null)
+                                          setCur((r) => ({
+                                            ...(r || {}),
+                                            min: null,
+                                          }));
+                                        else setMinFromNumber(raw);
+                                      }}
+                                    />
+                                    <input
+                                      type="range"
+                                      min={0}
+                                      max={scale.length - 1}
+                                      step={1}
+                                      value={minIdx}
+                                      onChange={(e) => {
+                                        const v = scale[+e.target.value];
+                                        setCur((r) => {
+                                          const nextMax =
+                                            r?.max == null
+                                              ? v
+                                              : Math.max(v, r.max);
+                                          return {
+                                            ...(r || {}),
+                                            min: v,
+                                            max: nextMax,
+                                          };
+                                        });
+                                      }}
+                                    />
+                                    <div
+                                      style={{
+                                        fontSize: 12,
+                                        fontFamily: "Poppins",
+                                      }}
+                                    >
+                                      {scale[minIdx]}
+                                    </div>
+                                  </div>
+
+                                  <div
+                                    style={{
+                                      display: "flex",
+                                      flexDirection: "column",
+                                      gap: 8,
+                                    }}
+                                  >
+                                    <div
+                                      style={{
+                                        fontSize: 12,
+                                        fontFamily: "Poppins",
+                                        color: "black",
+                                      }}
+                                    >
+                                      Max
+                                    </div>
+                                    <input
+                                      type="number"
+                                      placeholder="Max"
+                                      className="form-control"
+                                      value={cur?.max ?? ""}
+                                      onChange={(e) => {
+                                        const raw = e.target.value
+                                          ? +e.target.value
+                                          : null;
+                                        if (raw == null)
+                                          setCur((r) => ({
+                                            ...(r || {}),
+                                            max: null,
+                                          }));
+                                        else setMaxFromNumber(raw);
+                                      }}
+                                    />
+                                    <input
+                                      type="range"
+                                      min={0}
+                                      max={scale.length - 1}
+                                      step={1}
+                                      value={maxIdx}
+                                      onChange={(e) => {
+                                        const v = scale[+e.target.value];
+                                        setCur((r) => {
+                                          const nextMin =
+                                            r?.min == null
+                                              ? v
+                                              : Math.min(v, r.min);
+                                          return {
+                                            ...(r || {}),
+                                            min: nextMin,
+                                            max: v,
+                                          };
+                                        });
+                                      }}
+                                    />
+                                    <div
+                                      style={{
+                                        fontSize: 12,
+                                        fontFamily: "Poppins",
+                                      }}
+                                    >
+                                      {scale[maxIdx]}
+                                    </div>
+                                  </div>
+
+                                  <div
+                                    className="d-flex"
+                                    style={{
+                                      justifyContent: "space-between",
+                                      marginTop: 8,
+                                    }}
+                                  >
+                                    <button
+                                      className="btn"
+                                      onClick={() => {
+                                        setCur({ min: null, max: null });
+                                        setDisplay(label);
+                                        setOpenDropdown(null);
+                                      }}
+                                      style={{
+                                        backgroundColor: "#6c757d",
+                                        color: "white",
+                                        fontFamily: "Poppins",
+                                      }}
+                                    >
+                                      Clear
+                                    </button>
+                                    <button
+                                      className="btn"
+                                      onClick={() => {
+                                        const display = `${cur?.min ?? 0} - ${
+                                          cur?.max ?? 0
+                                        } ${label}`;
+                                        setDisplay(display);
+                                        setOpenDropdown(null);
+                                      }}
+                                      style={{
+                                        backgroundColor: "#F4980E",
+                                        color: "white",
+                                        fontFamily: "Poppins",
+                                      }}
+                                    >
+                                      Apply
+                                    </button>
+                                  </div>
+                                </div>
+                              );
+                            })()
+                          : null}
+                      </Modal>
+                    )} */}
                   </div>
                 ))}
               </div>
@@ -898,7 +1013,7 @@ const Filters = ({
                     fontWeight: "600",
                     fontSize: "16px",
                     fontFamily: "Poppins",
-                    marginBottom:'5px'
+                    marginBottom: "5px",
                   }}
                 >
                   {currentLevel?.node_level === 0
@@ -944,7 +1059,7 @@ const Filters = ({
                   style={{
                     border: "none",
                     background: "transparent",
-                    color: "white",
+                    color: "black",
                   }}
                 >
                   ✕
@@ -964,18 +1079,7 @@ const Filters = ({
                 </div>
               ) : (
                 <>
-                  {navigationStack.length === 0 &&
-                    agent?.listing_country?.map((country) => (
-                      <div
-                        key={country.id_country}
-                        className="py-2 d-flex justify-content-between align-items-center"
-                        style={{ cursor: "pointer" }}
-                        onClick={() => handleCountryClick(country)}
-                      >
-                        <span>{country.name}</span>
-                        <span>&#x276F;</span>
-                      </div>
-                    ))}
+               
                   {navigationStack.length > 0 && (
                     <>
                       {/* ✅ Select All Checkbox (only for area list) */}

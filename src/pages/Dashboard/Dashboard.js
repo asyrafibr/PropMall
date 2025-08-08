@@ -13,13 +13,15 @@ import { type } from "@testing-library/user-event/dist/type";
 import { useTemplate } from "../../context/TemplateContext";
 import DashboardListingT1 from "./DashboardListingT1";
 import FilterT2 from "./DashboardT2";
+
 const data = {};
 const Dashboard = () => {
   const navigate = useNavigate();
   const { template } = useTemplate();
+  const { agent, category } = useTemplate();
 
   const [locations, setLocations] = useState([]);
-  const [agent, setAgent] = useState([]);
+  // const [agent, setAgent] = useState([]);
   const [featuredList, setFeaturedList] = useState([]);
   const [years, setYears] = useState([]);
   const [searchList, setSearchList] = useState([]);
@@ -27,20 +29,17 @@ const Dashboard = () => {
   const [selectedLocation, setSelectedLocation] = useState("");
   const [selectedYear, setSelectedYear] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
-  const [activeTab, setActiveTab] = useState("rent");
+  const [activeTab, setActiveTab] = useState("Buy");
 
   useEffect(() => {
     const fetchFilterData = async () => {
       try {
-        const agentRes = await getAgent();
-        setAgent(agentRes.data.agent);
-
         const feaListRes = await getFeaturedList();
         setFeaturedList(feaListRes.data.featured_search);
-        console.log("TEST", feaListRes);
 
         const locationRes = await getLocations();
         setLocations(locationRes.data.states);
+        console.log('location',locationRes)
       } catch (error) {
         console.error("Error fetching filters:", error);
       }
@@ -48,66 +47,9 @@ const Dashboard = () => {
     fetchFilterData();
   }, []);
 
-  // useEffect(() => {
-  //   const fetchSearchList = async () => {
-  //     try {
-  //       const response = await axios.post(
-  //         "https://dev-agentv3.propmall.net/graph/me/listing/search",
-  //         {
-  //           search: {
-  //             page_num: 1,
-  //             page_size: 10,
-  //             search_text: null,
-  //             search_fields: {
-  //               title: true,
-  //               description: true,
-  //             },
-  //             search_filters: {
-  //               objective: {
-  //                 sale: true,
-  //                 rent: true,
-  //                 project: true,
-  //               },
-  //               location: {
-  //                 id_country: 1,
-  //                 id_province: [],
-  //                 id_state: [],
-  //                 id_cities: [],
-  //                 id_area: [],
-  //               },
-  //               property_category: null,
-  //               property_holding: null,
-  //               property_lot_type: null,
-  //               room: {
-  //                 min: null,
-  //                 max: null,
-  //               },
-  //               bathroom: {
-  //                 min: null,
-  //                 max: null,
-  //               },
-  //               price: {
-  //                 min: null,
-  //                 max: null,
-  //               },
-  //             },
-  //           },
-  //         },
-  //         {
-  //           headers: {
-  //             "Content-Type": "application/json",
-  //           },
-  //         }
-  //       );
-  //       setSearchList(response.data.listing_search);
-  //       console.log("Search results:", response.data.listing_search);
-  //     } catch (error) {
-  //       console.error("Error fetching search list:", error);
-  //     }
-  //   };
+// useEffect(() => {
 
-  //   fetchSearchList();
-  // }, []);
+//   }, []);
 
   const handleSearch = async () => {
     const locationId = selectedLocation;
@@ -152,10 +94,8 @@ const Dashboard = () => {
 
     try {
       const response = await getListings(payload);
-      console.log("response", response.data);
 
       const stingtype = String(locationId);
-      console.log("response", response.data.listing_search);
 
       //
 

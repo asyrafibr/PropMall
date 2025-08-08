@@ -71,6 +71,8 @@ const ListingCard = ({ product, handleViewDetails }) => {
                   flexDirection: "column",
                   gap: "8px",
                   zIndex: 2,
+                  fontWeight: 600,
+                  fontSize: "16px",
                 }}
               >
                 {statusText && (
@@ -80,10 +82,10 @@ const ListingCard = ({ product, handleViewDetails }) => {
                       color: "white",
                       borderRadius: "4px",
                       padding: "4px 12px",
-                      fontSize: "14px",
+                      fontSize: "16px",
                       fontWeight: 600,
                       textAlign: "left",
-                      maxWidth: "80px",
+                      maxWidth: "100px",
                     }}
                   >
                     {statusText}
@@ -96,7 +98,7 @@ const ListingCard = ({ product, handleViewDetails }) => {
                       color: "white",
                       borderRadius: "4px",
                       padding: "4px 12px",
-                      fontSize: "14px",
+                      fontSize: "16px",
                       fontWeight: 600,
                       textAlign: "center",
                       minWidth: "90px",
@@ -129,6 +131,7 @@ const ListingCard = ({ product, handleViewDetails }) => {
                 alignItems: "center",
                 justifyContent: "center",
                 pointerEvents: "none",
+                fontSize:'16px'
               }}
             >
               Exclusive

@@ -12,6 +12,7 @@ import SimilarListing from "../components/SimilarListingCard";
 import "./ProductDetail.css";
 import { FiCamera } from "react-icons/fi";
 import MortgageCalculator from "./MortgageCalculator";
+import { useTemplate } from "../context/TemplateContext"; // ✅ Import Template Context
 
 const ProductDetail = () => {
   const [product, setProduct] = useState(null);
@@ -21,7 +22,8 @@ const ProductDetail = () => {
   const productId = location.state?.productId;
   const [previewImage, setPreviewImage] = useState(null);
   const [similarListing, setSimilarListing] = useState([]);
-  const [agent, setAgent] = useState({});
+  // const [agent, setAgent] = useState({});
+  const { agent, category,mainAgent } = useTemplate();
 
   const whatsappMessage = `Hello My Lovely Agent,\nI'm interested in the property that you advertise at website\n${window.location.href}\nand I would love to visit this property.\nMy name is:`;
   const [modalOpen, setModalOpen] = useState(false);
@@ -58,17 +60,6 @@ const ProductDetail = () => {
     if (modalOpen) document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, [modalOpen]);
-  useEffect(() => {
-    const fetchAgentData = async () => {
-      try {
-        const agentRes = await getAgent();
-        setAgent(agentRes.data.agent);
-      } catch (error) {
-        console.error("Error fetching agent:", error);
-      }
-    };
-    fetchAgentData();
-  }, []);
 
   useEffect(() => {
     const fetchFeaturedList = async () => {

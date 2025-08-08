@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect ,useCallback} from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import Filters from "../components/FilterSection";
@@ -121,7 +121,6 @@ const ProductList = () => {
 
   // Navigate to product details
   const handleViewDetails = (productId, title, location) => {
-    console.log("data test",productId,title,location)
     const titleSlug = slugify(title);
     // navigate(`/property/${titleSlug}`, {
     //   state: {

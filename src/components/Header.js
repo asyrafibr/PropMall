@@ -12,37 +12,14 @@ const Navbar = () => {
     e.preventDefault();
     navigate("/");
   };
-  const [agent, setAgent] = useState({});
-  const [category, setCategory] = useState({});
+  // const [agent, setAgent] = useState({});
+  // const [category, setCategory] = useState({});
+  const { agent, category,mainAgent } = useTemplate();
 
   const handleNavigate = (path) => {
     // You can also add logic here if needed before navigating
     navigate(path);
   };
-  useEffect(() => {
-    const fetchAgentData = async () => {
-      try {
-        const agentRes = await getAgent();
-
-        setAgent(agentRes.data.domain.config); // ✅ schedules agent update
-        setCategory(agentRes.data.domain.config.listing_category); // ✅ schedules agent update
-
-        // ❌ agent is NOT updated here yet
-      } catch (error) {
-        console.error("Error fetching agent:", error);
-      }
-    };
-
-    fetchAgentData();
-  }, []);
-  useEffect(() => {
-    if (agent) {
-      console.log("testing", agent);
-    }
-    if (category) {
-      console.log("category", category);
-    }
-  }, [agent, category]);
 
   return (
     <nav
@@ -84,7 +61,7 @@ const Navbar = () => {
             <li className="nav-item">
               <Link
                 className="nav-link text-nowrap"
-                to="/home"
+                to="/"
                 style={{
                   fontSize: "16px",
                   fontWeight: 400,
@@ -183,7 +160,7 @@ const Navbar = () => {
             <li className="nav-item">
               <Link
                 className="nav-link text-nowrap"
-                to="/aboutme"
+                to="/business-card"
                 style={{
                   fontSize: "16px",
                   fontWeight: 400,

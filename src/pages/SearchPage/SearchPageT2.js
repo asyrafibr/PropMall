@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
-import "./FilterT2.css";
-import bgImage from "../../image/template2bg.png";
+import "../Dashboard/FilterT2.css";
+import bgImage from "../../image/Template2_Sky_Footer.png";
 import RangeSliderModal from "../../components/RangeSliderModal";
 import {
   getCategory,
@@ -29,17 +29,16 @@ const DashboardT2 = ({
   searchTerm,
   setSelectedLocation,
   selectedLocation,
-
+  activeTab,
   setSearchTerm,
   handleSearch,
-  activeTab,
+
   setActiveTab,
 }) => {
   const { agent, category } = useTemplate();
   const [locationTree, setLocationTree] = useState([]);
 
   const [isMdScreen, setIsMdScreen] = useState(window.innerWidth >= 768);
-  const [isBuy, setIsBuy] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState([]);
   const [selectedHolding, setSelectedHolding] = useState([]);
   const [priceRangeDisplay, setPriceRangeDisplay] = useState(null);
@@ -65,6 +64,7 @@ const DashboardT2 = ({
   const [selectedState, setSelectedState] = useState(null);
 
   useEffect(() => {
+    console.log("activetab123", activeTab);
     if (activeTab && buttonRefs.current[activeTab]) {
       const btn = buttonRefs.current[activeTab];
       setHighlightStyle({
@@ -303,44 +303,80 @@ const DashboardT2 = ({
   return (
     <>
       {/* Hero Section */}
+
       <div
-        className="hero-section d-flex flex-column align-items-center justify-content-center text-center"
+        // className="hero-section position-relative d-flex flex-column justify-content-center"
         style={{
           backgroundImage: `url(${bgImage})`,
           backgroundSize: "cover",
           backgroundPosition: "center",
-          padding: "100px 20px",
-          height: "400px",
+          padding: "50px 20px",
+          height: "200px",
           color: "#333",
         }}
       >
-        <h2
+        {/* Breadcrumb positioned at top left */}
+        <div
           style={{
+            position: "absolute",
+            top: "20px",
+            left: "20px",
             fontFamily: "Poppins",
-            fontSize: "35px",
-            fontWeight: 500,
-            marginTop: "-100px",
           }}
         >
-          <span style={{ fontWeight: 600 }}>Browse</span> the most <br /> recent
-          property listings
-        </h2>
+          <nav aria-label="breadcrumb">
+            <ol
+              className="breadcrumb mb-0"
+              style={{
+                "--bs-breadcrumb-divider": "'›'",
+                background: "transparent",
+                padding: 0,
+              }}
+            >
+              <li className="breadcrumb-item">
+                <a
+                  href="/"
+                  style={{ textDecoration: "none", color: "inherit" }}
+                >
+                  Home
+                </a>
+              </li>
+              <li className="breadcrumb-item">
+                <a
+                  href="/properties"
+                  style={{ textDecoration: "none", color: "inherit" }}
+                >
+                  For {activeTab}
+                </a>
+              </li>
+              <li className="breadcrumb-item">
+                <a
+                  href="/properties/kuala-lumpur"
+                  style={{ textDecoration: "none", color: "inherit" }}
+                >
+                  Kuala Lumpur
+                </a>
+              </li>
+            </ol>
+          </nav>
+        </div>
       </div>
 
       {/* Filter Box */}
       <div
         className="container"
         style={{
-          marginTop: "-60px",
-          background: "#00000099",
+          marginTop: "-100px",
+          backgroundColor: "#00000099",
           borderRadius: "16px",
           padding: "24px",
           position: "relative",
           zIndex: 10,
+          maxWidth: "1000px",
         }}
       >
         {/* Toggle Buy / Rent */}
-      
+
         <div className="d-flex justify-content-center mb-3">
           <div
             className="position-relative"
@@ -395,7 +431,7 @@ const DashboardT2 = ({
             border: "1px solid #ccc",
             height: "60px",
             fontFamily: "Poppins",
-            borderRadius:'16px'
+            borderRadius: "16px",
           }}
         >
           {/* Dropdown */}

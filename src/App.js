@@ -1,12 +1,11 @@
-// App.js
-import React from "react";
+import React, { useEffect } from "react";
 import {
   BrowserRouter as Router,
   Routes,
   Route,
   useLocation,
 } from "react-router-dom";
-import { TemplateProvider } from "./context/TemplateContext";
+import { TemplateProvider, useTemplate } from "./context/TemplateContext";
 
 import ProductList from "./pages/ProductList";
 import ProductDetail from "./pages/ProductDetail";
@@ -28,16 +27,41 @@ import Auction from "./pages/Auction";
 import Articles from "./pages/Articles";
 import AboutMe from "./pages/Aboutme";
 import Tools from "./pages/Tools";
+import AgentBox from "./components/AgentBox";
 
-import "bootstrap-icons/font/bootstrap-icons.css";
-import "bootstrap/dist/css/bootstrap.min.css";
-import "./index.css";
+// remove the static CSS import here
+// import "./index.css";
 
 const Layout = () => {
   const location = useLocation();
+  const { loading, template } = useTemplate();
 
-  // Hide header/footer ONLY for /business-card route
+  // Dynamically load CSS file based on template
+useEffect(() => {
+  let link = document.querySelector("#dynamic-template-style");
+
+  if (!link) {
+    link = document.createElement("link");
+    link.rel = "stylesheet";
+    link.id = "dynamic-template-style";
+    document.head.appendChild(link);
+  }
+
+  // change path if files are in public/
+  link.href = template === "template2" ? "/index2.css" : "/index.css";
+}, [template]);
+
   const hideHeaderFooter = location.pathname === "/business-card";
+
+  if (loading) {
+    return (
+      <div className="d-flex justify-content-center align-items-center vh-100">
+        <div className="spinner-border text-primary" role="status">
+          <span className="visually-hidden">Loading...</span>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -61,9 +85,6 @@ const Layout = () => {
         <Route path="/property/:slug" element={<ProductDetailPage />} />
         <Route path="/business-card" element={<BusinessCard />} />
         <Route path="/saleprops" element={<WTSWTLFormPage mode="sale" />} />
-        {/* <Route path="/sale" element={<WTSWTLFormPage mode="rent" />} /> */}
-
-        {/* Add more routes if needed */}
       </Routes>
 
       {!hideHeaderFooter && <Footer />}
