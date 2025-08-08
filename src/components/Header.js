@@ -253,7 +253,7 @@ const Navbar = () => {
                 </ul>
               </li>
             )} */}
-            {agent.tools && (
+            {/* {agent.tools && (
               <li className="nav-item">
                 <Link
                   className="nav-link text-nowrap"
@@ -267,7 +267,7 @@ const Navbar = () => {
                   Tools
                 </Link>
               </li>
-            )}
+            )} */}
 
             {/* ✅ Template Switch Dropdown */}
             <li className="nav-item ms-3">
