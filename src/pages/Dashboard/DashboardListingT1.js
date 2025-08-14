@@ -185,7 +185,7 @@ const DashboardListingT1 = ({ listings, handleViewDetails }) => {
                       {(showTag || belowMarket) && (
                         <div
                           className="position-absolute top-0 start-0 m-2 d-flex flex-column gap-1"
-                          style={{ zIndex: 2 }}
+                          style={{ zIndex: 1 }}
                         >
                           {showTag && (
                             <div
@@ -203,6 +203,7 @@ const DashboardListingT1 = ({ listings, handleViewDetails }) => {
                                 justifyContent: "center",
                                 fontWeight: 600,
                                 fontSize: "16px",
+                                zIndex:1
                                 // marginTop: "20px",
                               }}
                             >

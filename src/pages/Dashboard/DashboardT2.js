@@ -37,6 +37,8 @@ const DashboardT2 = ({
 }) => {
   const { agent, category } = useTemplate();
   const [locationTree, setLocationTree] = useState([]);
+  const [displayList, setDisplayList] = useState([]);
+  const [currentLevel, setCurrentLevel] = useState(0);
 
   const [isMdScreen, setIsMdScreen] = useState(window.innerWidth >= 768);
   const [isBuy, setIsBuy] = useState(true);
@@ -63,6 +65,8 @@ const DashboardT2 = ({
   const [selectedAreaObjects, setSelectedAreaObjects] = useState([]);
   const [selectedCountry, setSelectedCountry] = useState(null);
   const [selectedState, setSelectedState] = useState(null);
+  const [openModalLabel, setOpenModalLabel] = useState(null);
+  const [priceModalOpen, setPriceModalOpen] = useState(false);
 
   useEffect(() => {
     if (activeTab && buttonRefs.current[activeTab]) {
@@ -73,7 +77,29 @@ const DashboardT2 = ({
       });
     }
   }, [activeTab, visibleTabs]);
+useEffect(() => {
+  const fetchData = async () => {
+    try {
+      const categoryList = await getCategory();
+      setCategory(categoryList.data.property_category);
 
+      const holdingList = await getHolding();
+      const lotList = await getLot();
+
+      const merged = [
+        ...(holdingList?.data?.property_holding || []),
+        ...(lotList?.data?.property_lot_type || []),
+      ];
+
+      console.log("Merged holding data", merged);
+      setHolding(merged);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
+  fetchData();
+}, []);
   useEffect(() => {
     const activeTabs = tabMap.filter((tab) => category[tab.key]);
     setVisibleTabs(activeTabs);
@@ -90,7 +116,18 @@ const DashboardT2 = ({
     const index = visibleTabs.findIndex((tab) => tab.label === activeTab);
     return `${6 + index * (220 / visibleTabs.length)}px`;
   };
-
+  const handleButtonClick = (label) => {
+    
+    if (
+      label === "Price Ranges (RM)" ||
+      label === "Bedroom(s)" ||
+      label === "Bathroom(s)"
+    ) {
+      setOpenModalLabel(label); // open modal for that label
+    } else {
+      toggleDropdown(label); // old dropdown logic
+    }
+  };
   const BUY_AMOUNTS = [
     0, 100000, 200000, 300000, 400000, 500000, 600000, 700000, 800000, 900000,
     1000000, 1100000, 1200000, 1300000, 1400000, 1500000, 2000000, 2500000,
@@ -104,25 +141,38 @@ const DashboardT2 = ({
     100000, 200000, 300000, 400000, 500000, 1000000,
   ];
   const ROOM_COUNTS = Array.from({ length: 21 }, (_, i) => i); // 0..20
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const categoryList = await getCategory();
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const categoryList = await getCategory();
 
-        setCategory(categoryList.data.property_category);
+  //       setCategory(categoryList.data.property_category);
 
-        const holdingList = await getHolding();
-        const lotList = await getLot();
-        setHolding(holdingList.data.property_holding_and_type || []);
+  //       const holdingList = await getHolding();
+  //       const lotList = await getLot();
+  //       setHolding(holdingList.data.property_holding_and_type || []);
 
-        // ❌ agent is NOT updated here yet
-      } catch (error) {
-        console.error("Error fetching agent:", error);
-      }
-    };
+  //       // ❌ agent is NOT updated here yet
+  //     } catch (error) {
+  //       console.error("Error fetching agent:", error);
+  //     }
+  //   };
 
-    fetchData();
-  }, []);
+  //   fetchData();
+  // }, []);
+    useEffect(() => {
+      const handleClickOutside = (event) => {
+        if (
+          containerRef.current &&
+          !containerRef.current.contains(event.target)
+        ) {
+          setOpenDropdown(null);
+        }
+      };
+  
+      document.addEventListener("mousedown", handleClickOutside);
+      return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
   const filters = {
     "All Categories": categoryData, // array from props/state
     "All Holding Types": holding, // array from props/state
@@ -143,68 +193,147 @@ const DashboardT2 = ({
     }
     return best;
   };
-  const currentLevel = navigationStack[navigationStack.length - 1];
-  const displayList = currentLevel?.child_list || [];
-  const handleAreaToggle = (area) => {
-    const isSelected = selectedAreaIds.includes(area.id);
+    const getSubdomain = () => {
+    const hostname = window.location.hostname; // e.g., "prohartanah.myhartanah.co"
+    const parts = hostname.split(".");
 
-    if (isSelected) {
-      setSelectedAreaIds((prev) => prev.filter((id) => id !== area.id));
-      setSelectedAreaNames((prev) => prev.filter((name) => name !== area.name));
-      setSelectedAreaObjects((prev) =>
-        prev.filter((obj) => obj.id !== area.id)
-      );
-    } else {
-      // Optional check: enforce same-state selection only
-      const parentStateId = area.parent_id;
-      const isSameState =
-        !selectedAreaObjects.length ||
-        selectedAreaObjects[0].parent_id === parentStateId;
+    // Handle localhost (e.g., "localhost" or "localhost:3000")
+    if (hostname.includes("localhost")) return "localhost";
 
-      if (isSameState) {
-        setSelectedAreaIds((prev) => [...prev, area.id]);
-        setSelectedAreaNames((prev) => [...prev, area.name]);
-        setSelectedAreaObjects((prev) => [...prev, area]);
-      } else {
-        // clear previous and add new area if different state
-        setSelectedAreaIds([area.id]);
-        setSelectedAreaNames([area.name]);
-        setSelectedAreaObjects([area]);
-      }
-    }
+    // e.g. ["prohartanah", "myhartanah", "co"]
+    if (parts.length > 2) return parts[0]; // "prohartanah"
+    return null; // fallback if no subdomain
   };
-
-  const handleApply = () => {
-    const countryName = selectedCountry?.name || "";
-    const stateName = selectedState?.name || "";
-    const areaNames = selectedAreaNames.join(", ");
-    setSelectedLocation(`${stateName}, ${areaNames}`);
-    setShowModal(false);
-    setNavigationStack([]);
-    setLocationTree([]);
-  };
-  const handleNodeClick = (node) => {
-    if (node.node_level === 2) {
-      // Just update selectedState, don't reset checkboxes
-      setSelectedState(node);
-    }
-
-    if (node.node_level === 3) {
-      // This is an area node — do NOT replace the selections
-      handleAreaToggle(node);
-      return; // stop here — don't push to navigation stack
-    }
-
-    if (node.child_count > 0 && node.child_list?.length > 0) {
-      setNavigationStack((prev) => [...prev, node]);
-    }
-  };
-
-  const handleBack = () => {
-    if (navigationStack.length > 1) {
-      setNavigationStack((prev) => prev.slice(0, -1));
-    }
-  };
+  // const currentLevel = navigationStack[navigationStack.length - 1];
+  // const displayList = currentLevel?.child_list || [];
+   const handleNodeClick = (node) => {
+     // If node has a child_list and that child_list has its own child_list
+     if (node.child_list && node.child_list.length > 0) {
+       // If you want to skip directly to grandchild_list:
+       const grandChildList = node.child_list[0]?.child_list || null;
+ 
+       if (grandChildList && grandChildList.length > 0) {
+         setDisplayList(grandChildList);
+         setNavigationStack((prev) => [
+           ...prev,
+           {
+             node_level: (node.node_level || 0) + 2,
+             name: node.name,
+             child_list: grandChildList,
+           },
+         ]);
+         setCurrentLevel((prev) =>
+           typeof prev === "object" ? (prev.node_level || 0) + 2 : prev + 2
+         );
+         return;
+       }
+ 
+       // Otherwise just go to normal child_list
+       setDisplayList(node.child_list);
+       setNavigationStack((prev) => [
+         ...prev,
+         {
+           node_level: (node.node_level || 0) + 1,
+           name: node.name,
+           child_list: node.child_list,
+         },
+       ]);
+       setCurrentLevel((prev) =>
+         typeof prev === "object" ? (prev.node_level || 0) + 1 : prev + 1
+       );
+     }
+   };
+ 
+   // --- Area Toggle ---
+   const handleAreaToggle = (area) => {
+     const isSelected = selectedAreaIds.includes(area.id);
+ 
+     if (isSelected) {
+       setSelectedAreaIds((prev) => prev.filter((id) => id !== area.id));
+       setSelectedAreaNames((prev) => prev.filter((name) => name !== area.name));
+       setSelectedAreaObjects((prev) =>
+         prev.filter((obj) => obj.id !== area.id)
+       );
+     } else {
+       const parentStateId = area.parent_id;
+       const isSameState =
+         !selectedAreaObjects.length ||
+         selectedAreaObjects[0].parent_id === parentStateId;
+ 
+       if (isSameState) {
+         setSelectedAreaIds((prev) => [...prev, area.id]);
+         setSelectedAreaNames((prev) => [...prev, area.name]);
+         setSelectedAreaObjects((prev) => [...prev, area]);
+       } else {
+         setSelectedAreaIds([area.id]);
+         setSelectedAreaNames([area.name]);
+         setSelectedAreaObjects([area]);
+       }
+     }
+   };
+ 
+   // --- Back Navigation ---
+   const handleBack = () => {
+     setNavigationStack((prev) => {
+       if (prev.length <= 1) return prev;
+ 
+       const newStack = prev.slice(0, -1);
+       const lastNode = newStack[newStack.length - 1];
+ 
+       // Restore previous level's children
+       setDisplayList(lastNode.child_list || []);
+       setCurrentLevel(lastNode);
+ 
+       return newStack;
+     });
+   };
+ 
+   // --- Initial Load of Countries ---
+   useEffect(() => {
+     if (showModal) {
+       // Example: fetch countries list here
+       fetchRootCountries();
+     }
+   }, [showModal]);
+ 
+   const fetchRootCountries = async () => {
+     try {
+       setLoadingLocationData(true);
+ 
+       const domain = getSubdomain();
+       const url_fe = window.location.href;
+ 
+       const res = await getLocationTree({ domain, url_fe, id_country: 1 });
+       if (res.data?.country) {
+         const countries = Array.isArray(res.data.country.child_list)
+           ? res.data.country.child_list
+           : [];
+ 
+         setDisplayList(countries);
+ 
+         setNavigationStack([
+           { node_level: 0, name: "Countries", child_list: countries },
+         ]);
+ 
+         setCurrentLevel({ node_level: 0 });
+       }
+     } catch (err) {
+       console.error("Error fetching countries:", err);
+     } finally {
+       setLoadingLocationData(false);
+     }
+   };
+ 
+   const handleApply = () => {
+     const countryName = selectedCountry?.name || "";
+     const stateName = selectedState?.name || "";
+     const areaNames = selectedAreaNames.join(", ");
+     setSelectedLocation(`${areaNames}`);
+     setShowModal(false);
+     setNavigationStack([]);
+     setLocationTree([]);
+   };
+ 
   useEffect(() => {
     if (showModal) {
       document.body.classList.add("modal-open");
@@ -465,7 +594,7 @@ const DashboardT2 = ({
             {Object.entries(filters).map(([label, options]) => (
               <div key={label} style={{ position: "relative", width: "100%" }}>
                 <button
-                  onClick={() => toggleDropdown(label)}
+                      onClick={() => handleButtonClick(label)}
                   className="btn p-0 d-flex align-items-center"
                   style={{
                     justifyContent: "space-between",
@@ -498,590 +627,577 @@ const DashboardT2 = ({
 
                 {/* --- Keep dropdown ONLY for All Categories / All Holding Types --- */}
                 {openDropdown === label &&
-                  (label === "All Categories" ||
-                    label === "All Holding Types") && (
-                    <div
-                      style={{
-                        position: "absolute",
-                        top: "100%",
-                        width: "100%",
-                        // width: "750px",
-                        // height: "500px",
-                        background: "white",
-                        zIndex: 1000,
-                        borderRadius: "8px",
-                        padding: "10px",
-                        boxShadow: "0 4px 8px rgba(0,0,0,0.15)",
-                      }}
-                    >
-                      <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
-                        {(options && Array.isArray(options) ? options : [])
-                          .length === 0 ? (
-                          <li
-                            style={{
-                              padding: "6px 0",
-                              color: "gray",
-                              fontFamily: "Poppins",
-                            }}
+                      (label === "All Categories" ||
+                        label === "All Holding Types") && (
+                        <div
+                          style={{
+                            position: "absolute",
+                            top: "100%",
+                            width: "100%",
+                            // width: "750px",
+                            // height: "500px",
+                            background: "white",
+                            zIndex: 1000,
+                            borderRadius: "8px",
+                            padding: "10px",
+                            boxShadow: "0 4px 8px rgba(0,0,0,0.15)",
+                          }}
+                        >
+                          <ul
+                            style={{ listStyle: "none", padding: 0, margin: 0 }}
                           >
-                            No options available.
-                          </li>
-                        ) : (
-                          (options || []).map((item, i) => (
-                            <li
-                              key={i}
-                              style={{
-                                cursor: "pointer",
-                                padding: "6px 0",
-                              }}
-                              onClick={() => {
-                                if (label === "All Categories") {
-                                  setSelectedCategory({
-                                    id: item.id,
-                                    name: item.desc,
-                                  });
-                                  setOpenDropdown(null);
-                                }
-                              }}
-                            >
-                              <label
+                            {(options && Array.isArray(options) ? options : [])
+                              .length === 0 ? (
+                              <li
                                 style={{
-                                  display: "flex",
-                                  justifyContent: "space-between",
-                                  alignItems: "center",
-                                  width: "100%",
+                                  padding: "6px 0",
+                                  color: "gray",
+                                  fontFamily: "Poppins",
                                 }}
                               >
-                                <span
+                                No options available.
+                              </li>
+                            ) : (
+                              (options || []).map((item, i) => (
+                                <li
+                                  key={i}
                                   style={{
-                                    fontFamily: "Poppins",
-                                    fontSize: 16,
-                                    fontStyle: "normal",
-                                    fontWeight: 400,
-                                    lineHeight: "normal",
-                                    color: "black",
+                                    cursor: "pointer",
+                                    padding: "6px 0",
                                   }}
-                                >
-                                  {item.desc}
-                                </span>
-
-                                {label === "All Holding Types" && (
-                                  <input
-                                    type="checkbox"
-                                    onChange={(e) => {
-                                      e.stopPropagation();
-                                      setSelectedHolding({
+                                  onClick={() => {
+                                    if (label === "All Categories") {
+                                      setSelectedCategory({
                                         id: item.id,
                                         name: item.desc,
                                       });
                                       setOpenDropdown(null);
+                                    }
+                                  }}
+                                >
+                                  <label
+                                    style={{
+                                      display: "flex",
+                                      justifyContent: "space-between",
+                                      alignItems: "center",
+                                      width: "100%",
                                     }}
-                                    checked={selectedHolding?.id === item.id}
-                                  />
-                                )}
-                              </label>
-                            </li>
-                          ))
-                        )}
-                      </ul>
-                    </div>
-                  )}
+                                  >
+                                    <span
+                                      style={{
+                                        fontFamily: "Poppins",
+                                        fontSize: 16,
+                                        fontStyle: "normal",
+                                        fontWeight: 400,
+                                        lineHeight: "normal",
+                                        color: "black",
+                                      }}
+                                    >
+                                      {item.desc}
+                                    </span>
+
+                                    {label === "All Holding Types" && (
+                                      <label
+                                        style={{
+                                          position: "relative",
+                                          display: "inline-flex",
+                                          alignItems: "center",
+                                          cursor: "pointer",
+                                        }}
+                                      >
+                                        <input
+                                          type="checkbox"
+                                          onChange={(e) => {
+                                            e.stopPropagation();
+                                            setSelectedHolding((prev) => {
+                                              const isChecked =
+                                                e.target.checked;
+                                              if (isChecked) {
+                                                return [
+                                                  ...prev,
+                                                  {
+                                                    id: item.id,
+                                                    name: item.desc,
+                                                  },
+                                                ];
+                                              } else {
+                                                return prev.filter(
+                                                  (holding) =>
+                                                    holding.id !== item.id
+                                                );
+                                              }
+                                            });
+                                          }}
+                                          checked={selectedHolding.some(
+                                            (holding) => holding.id === item.id
+                                          )}
+                                          style={{ display: "none" }} // hide native checkbox
+                                        />
+                                        <span
+                                          style={{
+                                            width: "18px",
+                                            height: "18px",
+                                            border: "2px solid #F4980E",
+                                            borderRadius: "3px",
+                                            display: "inline-block",
+                                            backgroundColor:
+                                              selectedHolding.some(
+                                                (holding) =>
+                                                  holding.id === item.id
+                                              )
+                                                ? "#F4980E"
+                                                : "#fff",
+                                            position: "relative",
+                                            transition: "all 0.2s ease",
+                                          }}
+                                        >
+                                          {selectedHolding.some(
+                                            (holding) => holding.id === item.id
+                                          ) && (
+                                            <svg
+                                              xmlns="http://www.w3.org/2000/svg"
+                                              viewBox="0 0 16 16"
+                                              fill="white"
+                                              width="14"
+                                              height="14"
+                                              style={{
+                                                position: "absolute",
+                                                top: "50%",
+                                                left: "50%",
+                                                transform:
+                                                  "translate(-50%, -50%)",
+                                              }}
+                                            >
+                                              <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7.25 7.25a.5.5 0 0 1-.708 0l-3.25-3.25a.5.5 0 1 1 .708-.708L6.25 10.043l6.896-6.897a.5.5 0 0 1 .708 0z" />
+                                            </svg>
+                                          )}
+                                        </span>
+                                      </label>
+                                    )}
+                                  </label>
+                                </li>
+                              ))
+                            )}
+                          </ul>
+                        </div>
+                      )}
 
                 {(label === "Price Ranges (RM)" ||
-                  label === "Bedroom(s)" ||
-                  label === "Bathroom(s)") && (
-                  <Modal
-                    isOpen={openDropdown === label}
-                    onClose={() => setOpenDropdown(null)}
-                    title={
-                      label === "Price Ranges (RM)"
-                        ? "Select Price Range (RM)"
-                        : `Enter ${label.toLowerCase()} range`
-                    }
-                    width={750}
-                    height={380}
-                  >
-                    <RangeSliderModal
-                      label="Price"
-                      scale={activeTab === "Buy" ? BUY_AMOUNTS : RENT_AMOUNTS}
-                      range={priceRange}
-                      setRange={setPriceRange}
-                      setRangeDisplay={setPriceRangeDisplay}
-                      handleSearch={handleSearch}
-                      setOpenDropdown={setOpenDropdown}
-                    />
+                      label === "Bedroom(s)" ||
+                      label === "Bathroom(s)") &&
+                       openModalLabel === label && (
+                        <div
+                          className="modal-overlay"
+                          onClick={() => setPriceModalOpen(false)}
+                        >
+                          <div
+                            // className="modal-box"
+                            style={{background:'#fff',
+                              borderRadius:12,
+                              padding:35,
+                              boxShadow:`0 10px 30px rgba(0, 0, 0, 0.25)`,
+                              overflow:'auto',
+                              zIndex:2,
+                              height:400,
+                              width:1000
+                            }}
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <h5 style={{color:'black'}}>
+                              {label === "Price Ranges (RM)"
+                                ? "Select Price Range (RM)"
+                                : label === "Bedroom(s)"
+                                ? "Select Bedroom Range"
+                                : "Select Bathroom Range"}
+                            </h5>
 
-                    {label === "Bedroom(s)" || label === "Bathroom(s)"
-                      ? (() => {
-                          const isBedroom = label === "Bedroom(s)";
-                          const scale = ROOM_COUNTS;
+                            <RangeSliderModal
+                              label={label}
+                              setOpenModalLabel={setOpenModalLabel}
+                              scale={
+                                label === "Price Ranges (RM)"
+                                  ? activeTab === "Buy"
+                                    ? BUY_AMOUNTS
+                                    : RENT_AMOUNTS
+                                  : ROOM_COUNTS
+                              }
+                              range={
+                                label === "Price Ranges (RM)"
+                                  ? priceRange
+                                  : label === "Bedroom(s)"
+                                  ? roomRange
+                                  : bathroomRange
+                              }
+                              setRange={
+                                label === "Price Ranges (RM)"
+                                  ? setPriceRange
+                                  : label === "Bedroom(s)"
+                                  ? setRoomRange
+                                  : setBathroomRange
+                              }
+                              setRangeDisplay={
+                                label === "Price Ranges (RM)"
+                                  ? setPriceRangeDisplay
+                                  : label === "Bedroom(s)"
+                                  ? setBedroomDisplay
+                                  : setBathroomDisplay
+                              }
+                              handleSearch={handleSearch}
+                              setOpenDropdown={setOpenDropdown}
+                            />
 
-                          const cur = isBedroom ? roomRange : bathroomRange;
-                          const setCur = isBedroom
-                            ? setRoomRange
-                            : setBathroomRange;
-                          const setDisplay = isBedroom
-                            ? setBedroomDisplay
-                            : setBathroomDisplay;
-
-                          const minIdx = nearestIndex(scale, cur?.min ?? 0);
-                          const maxIdx = nearestIndex(scale, cur?.max ?? 0);
-
-                          const setMinFromNumber = (num) => {
-                            const idx = nearestIndex(scale, num);
-                            const v = scale[idx];
-                            setCur((r) => {
-                              const nextMax =
-                                r?.max == null ? v : Math.max(v, r.max);
-                              return { ...(r || {}), min: v, max: nextMax };
-                            });
-                          };
-
-                          const setMaxFromNumber = (num) => {
-                            const idx = nearestIndex(scale, num);
-                            const v = scale[idx];
-                            setCur((r) => {
-                              const nextMin =
-                                r?.min == null ? v : Math.min(v, r.min);
-                              return { ...(r || {}), min: nextMin, max: v };
-                            });
-                          };
-
-                          return (
-                            <div
-                              style={{
-                                display: "flex",
-                                flexDirection: "column",
-                                gap: 16,
-                              }}
-                            >
-                              <div
-                                style={{
-                                  display: "flex",
-                                  flexDirection: "column",
-                                  gap: 8,
-                                }}
-                              >
-                                <div
-                                  style={{
-                                    fontSize: 12,
-                                    fontFamily: "Poppins",
-                                    color: "black",
-                                  }}
-                                >
-                                  Min
-                                </div>
-                                <input
-                                  type="number"
-                                  placeholder="Min"
-                                  className="form-control"
-                                  value={cur?.min ?? ""}
-                                  onChange={(e) => {
-                                    const raw = e.target.value
-                                      ? +e.target.value
-                                      : null;
-                                    if (raw == null)
-                                      setCur((r) => ({
-                                        ...(r || {}),
-                                        min: null,
-                                      }));
-                                    else setMinFromNumber(raw);
-                                  }}
-                                />
-                                <input
-                                  type="range"
-                                  min={0}
-                                  max={scale.length - 1}
-                                  step={1}
-                                  value={minIdx}
-                                  onChange={(e) => {
-                                    const v = scale[+e.target.value];
-                                    setCur((r) => {
-                                      const nextMax =
-                                        r?.max == null ? v : Math.max(v, r.max);
-                                      return {
-                                        ...(r || {}),
-                                        min: v,
-                                        max: nextMax,
-                                      };
-                                    });
-                                  }}
-                                />
-                                <div
-                                  style={{
-                                    fontSize: 12,
-                                    fontFamily: "Poppins",
-                                  }}
-                                >
-                                  {scale[minIdx]}
-                                </div>
-                              </div>
-
-                              <div
-                                style={{
-                                  display: "flex",
-                                  flexDirection: "column",
-                                  gap: 8,
-                                }}
-                              >
-                                <div
-                                  style={{
-                                    fontSize: 12,
-                                    fontFamily: "Poppins",
-                                    color: "black",
-                                  }}
-                                >
-                                  Max
-                                </div>
-                                <input
-                                  type="number"
-                                  placeholder="Max"
-                                  className="form-control"
-                                  value={cur?.max ?? ""}
-                                  onChange={(e) => {
-                                    const raw = e.target.value
-                                      ? +e.target.value
-                                      : null;
-                                    if (raw == null)
-                                      setCur((r) => ({
-                                        ...(r || {}),
-                                        max: null,
-                                      }));
-                                    else setMaxFromNumber(raw);
-                                  }}
-                                />
-                                <input
-                                  type="range"
-                                  min={0}
-                                  max={scale.length - 1}
-                                  step={1}
-                                  value={maxIdx}
-                                  onChange={(e) => {
-                                    const v = scale[+e.target.value];
-                                    setCur((r) => {
-                                      const nextMin =
-                                        r?.min == null ? v : Math.min(v, r.min);
-                                      return {
-                                        ...(r || {}),
-                                        min: nextMin,
-                                        max: v,
-                                      };
-                                    });
-                                  }}
-                                />
-                                <div
-                                  style={{
-                                    fontSize: 12,
-                                    fontFamily: "Poppins",
-                                  }}
-                                >
-                                  {scale[maxIdx]}
-                                </div>
-                              </div>
-
-                              <div
-                                className="d-flex"
-                                style={{
-                                  justifyContent: "space-between",
-                                  marginTop: 8,
-                                }}
-                              >
-                                <button
-                                  className="btn"
-                                  onClick={() => {
-                                    setCur({ min: null, max: null });
-                                    setDisplay(label);
-                                    setOpenDropdown(null);
-                                  }}
-                                  style={{
-                                    backgroundColor: "#6c757d",
-                                    color: "white",
-                                    fontFamily: "Poppins",
-                                  }}
-                                >
-                                  Clear
-                                </button>
-                                <button
-                                  className="btn"
-                                  onClick={() => {
-                                    const display = `${cur?.min ?? 0} - ${
-                                      cur?.max ?? 0
-                                    } ${label}`;
-                                    setDisplay(display);
-                                    setOpenDropdown(null);
-                                  }}
-                                  style={{
-                                    backgroundColor: "#F4980E",
-                                    color: "white",
-                                    fontFamily: "Poppins",
-                                  }}
-                                >
-                                  Apply
-                                </button>
-                              </div>
-                            </div>
-                          );
-                        })()
-                      : null}
-                  </Modal>
-                )}
+       
+                          </div>
+                        </div>
+                      )}
               </div>
             ))}
           </div>
         </div>
         {showModal && (
+        <div
+          className="modal-overlay"
+          onClick={() => setShowModal(false)}
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100vw",
+            height: "100vh",
+            backgroundColor: "rgba(0,0,0,0.6)",
+            zIndex: 9999,
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
           <div
-            className="modal-overlay"
-            onClick={() => setShowModal(false)}
+            className="modal-box"
+            onClick={(e) => e.stopPropagation()}
             style={{
-              position: "fixed",
-              top: 0,
-              left: 0,
-              width: "100vw",
-              height: "100vh",
-              backgroundColor: "rgba(0,0,0,0.6)",
-              zIndex: 9999,
+              width: "750px",
+              height: "500px",
+              backgroundColor: "white",
+              borderRadius: "16px",
               display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
+              flexDirection: "column",
+              position: "relative",
             }}
           >
+            {/* ===== Header ===== */}
             <div
-              className="modal-box"
-              onClick={(e) => e.stopPropagation()}
               style={{
-                width: "750px",
-                height: "500px",
-                backgroundColor: "white",
-                borderRadius: "16px",
+                backgroundColor: "transparent",
+                color: "black",
                 display: "flex",
-                flexDirection: "column",
-                position: "relative",
+                alignItems: "center",
+                justifyContent: "space-between",
+                padding: "12px 20px",
+                fontFamily: "Poppins",
               }}
             >
-              <div
-                style={{
-                  backgroundColor: "transparent",
-                  color: "black",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  padding: "12px 20px",
-                  fontFamily: "Poppins",
-                  // borderRadius:"16px"
-                }}
-              >
-                <div>
-                  {navigationStack.length > 1 && (
-                    <button
-                      onClick={handleBack}
-                      className="btn p-0 d-flex justify-content-center align-items-center"
-                      style={{
-                        width: "16px",
-                        height: "16px",
-                        fontSize: "14px",
-                        lineHeight: "1",
-                        border: "none",
-                        background: "transparent",
-                        color: "black",
-                        marginRight: "10px",
-                      }}
-                    >
-                      &lt;
-                    </button>
-                  )}
-                </div>
-                <div style={{ flex: 1 }}>
-                  <h6
-                    style={{
-                      margin: 0,
-                      textAlign: "left",
-                      fontWeight: "600",
-                      fontSize: "16px",
-                      fontFamily: "Poppins",
-                      marginBottom: "5px",
-                    }}
-                  >
-                    {currentLevel?.node_level === 0
-                      ? "Select Country"
-                      : currentLevel?.node_level === 1
-                      ? "Search by State"
-                      : currentLevel?.node_level === 2
-                      ? "Select City/Area"
-                      : ""}
-                  </h6>
-
-                  {currentLevel?.node_level === 1 && navigationStack[0] && (
-                    <p
-                      style={{
-                        margin: 0,
-                        fontSize: "14px",
-                        color: "#555",
-                        fontFamily: "Poppins",
-                      }}
-                    >
-                      {navigationStack[0].name}
-                    </p>
-                  )}
-
-                  {currentLevel?.node_level === 2 && navigationStack[1] && (
-                    <p
-                      style={{
-                        margin: 0,
-                        fontSize: "14px",
-                        color: "#555",
-                        fontFamily: "Poppins",
-                      }}
-                    >
-                      {navigationStack[1].name}
-                    </p>
-                  )}
-                </div>
-
-                <div>
+              <div>
+                {navigationStack.length > 1 && (
                   <button
-                    onClick={() => setShowModal(false)}
-                    className="btn btn-sm"
+                    onClick={handleBack}
+                    className="btn p-0 d-flex justify-content-center align-items-center"
                     style={{
+                      width: "16px",
+                      height: "16px",
+                      fontSize: "14px",
+                      lineHeight: "1",
                       border: "none",
                       background: "transparent",
                       color: "black",
+                      marginRight: "10px",
                     }}
                   >
-                    ✕
+                    &lt;
                   </button>
-                </div>
-              </div>
-
-              <div style={{ flex: 1, overflowY: "auto", padding: "20px" }}>
-                {loadingLocationData ? (
-                  <div
-                    className="d-flex justify-content-center align-items-center"
-                    style={{ height: "100%" }}
-                  >
-                    <div className="spinner-border text-primary" role="status">
-                      <span className="visually-hidden">Loading...</span>
-                    </div>
-                  </div>
-                ) : (
-                  <>
-                    {navigationStack.length > 0 && (
-                      <>
-                        {/* ✅ Select All Checkbox (only for area list) */}
-                        {currentLevel?.node_level === 2 && (
-                          <div
-                            className="py-2 d-flex align-items-center"
-                            style={{ cursor: "pointer" }}
-                            onClick={() => {
-                              const allAreaIds = displayList.map(
-                                (area) => area.id
-                              );
-                              const allAreaObjects = displayList;
-
-                              const isAllSelected = allAreaIds.every((id) =>
-                                selectedAreaIds.includes(id)
-                              );
-
-                              if (isAllSelected) {
-                                setSelectedAreaIds([]);
-                                setSelectedAreaNames([]);
-                                setSelectedAreaObjects([]);
-                              } else {
-                                setSelectedAreaIds(allAreaIds);
-                                setSelectedAreaNames(
-                                  allAreaObjects.map((a) => a.name)
-                                );
-                                setSelectedAreaObjects(allAreaObjects);
-                              }
-                            }}
-                          >
-                            <input
-                              type="checkbox"
-                              className="form-check-input"
-                              style={{ marginRight: "2%" }}
-                              checked={
-                                displayList.length > 0 &&
-                                displayList.every((area) =>
-                                  selectedAreaIds.includes(area.id)
-                                )
-                              }
-                              readOnly
-                            />
-                            <span>Select All</span>
-                          </div>
-                        )}
-
-                        {/* ✅ Area & Node Listing */}
-                        {displayList.map((node) => (
-                          <div
-                            key={node.id}
-                            className="py-2 d-flex align-items-center"
-                            style={{ cursor: "pointer" }}
-                            onClick={() => handleNodeClick(node)}
-                          >
-                            {node.node_level === 3 ? (
-                              <>
-                                <input
-                                  type={"checkbox"}
-                                  className="form-check-input"
-                                  checked={selectedAreaIds.includes(node.id)}
-                                  onChange={() => handleAreaToggle(node)}
-                                  onClick={(e) => e.stopPropagation()}
-                                  style={{ marginRight: "2%" }}
-                                />
-                                <span>{node.name}</span>
-                              </>
-                            ) : (
-                              <div
-                                className="py-2 d-flex align-items-center justify-content-between w-100"
-                                style={{ cursor: "pointer" }}
-                              >
-                                <span>{node.name}</span>
-                                <span>&#x276F;</span>
-                              </div>
-                            )}
-                          </div>
-                        ))}
-                      </>
-                    )}
-                  </>
                 )}
               </div>
 
-              {currentLevel?.node_level === 2 && (
-                <div
+              <div style={{ flex: 1 }}>
+                {(() => {
+                  const levelNum =
+                    typeof currentLevel === "object"
+                      ? currentLevel?.node_level ?? navigationStack.length - 1
+                      : typeof currentLevel === "number"
+                      ? currentLevel
+                      : navigationStack.length - 1;
+
+                  return (
+                    <>
+                      <h6
+                        style={{
+                          margin: 0,
+                          textAlign: "left",
+                          fontWeight: "600",
+                          fontSize: "16px",
+                          fontFamily: "Poppins",
+                          marginBottom: "5px",
+                        }}
+                      >
+                        {levelNum === 0
+                          ? `Search by State`
+                          : levelNum === 1
+                          ? `Select City/Area`
+                          : levelNum === 2
+                          ? `Select City/Area`
+                          : `Select Area `}
+                      </h6>
+
+                      {levelNum === 1 && navigationStack[0] && (
+                        <p
+                          style={{
+                            margin: 0,
+                            fontSize: "14px",
+                            color: "#555",
+                            fontFamily: "Poppins",
+                          }}
+                        >
+                          {navigationStack[1].name}
+                        </p>
+                      )}
+
+                      {levelNum === 2 && navigationStack[1] && (
+                        <p
+                          style={{
+                            margin: 0,
+                            fontSize: "14px",
+                            color: "#555",
+                            fontFamily: "Poppins",
+                          }}
+                        >
+                          {navigationStack[1].name}
+                        </p>
+                      )}
+                    </>
+                  );
+                })()}
+              </div>
+
+              <div>
+                <button
+                  onClick={() => {
+                    console.log("data location", selectedCountry);
+                    setShowModal(false);
+                  }}
+                  className="btn btn-sm"
                   style={{
-                    // borderTop: "1px solid #ddd",
-                    padding: "15px 20px",
-                    backgroundColor: "white",
-                    display: "flex",
-                    justifyContent: "space-between", // left & right alignment
-                    borderRadius: "16px",
+                    border: "none",
+                    background: "transparent",
+                    color: "black",
                   }}
                 >
-                  <button
-                    className="btn btn-outline-secondary px-4"
-                    style={{ fontFamily: "Poppins" }}
-                    onClick={handleClear}
-                  >
-                    Clear
-                  </button>
+                  ✕
+                </button>
+              </div>
+            </div>
 
-                  <button
-                    className="btn text-white px-4"
-                    style={{
-                      backgroundColor: "#F4980E",
-                      fontFamily: "Poppins",
-                    }}
-                    onClick={handleApply}
-                  >
-                    Apply
-                  </button>
+            {/* ===== Content ===== */}
+            <div style={{ flex: 1, overflowY: "auto", padding: "20px" }}>
+              {loadingLocationData ? (
+                <div
+                  className="d-flex justify-content-center align-items-center"
+                  style={{ height: "100%" }}
+                >
+                  <div className="spinner-border text-primary" role="status">
+                    <span className="visually-hidden">Loading...</span>
+                  </div>
                 </div>
+              ) : (
+                <>
+                  {navigationStack.length > 0 && (
+                    <>
+                      {(() => {
+                        const depth = navigationStack.length;
+                        const isLeafLevel =
+                          Array.isArray(displayList) &&
+                          displayList.length > 0 &&
+                          displayList.every(
+                            (n) =>
+                              !n.child_list ||
+                              (Array.isArray(n.child_list) &&
+                                n.child_list.length === 0) ||
+                              n.child_count === 0
+                          );
+
+                        const showCheckboxes = depth >= 3 || isLeafLevel;
+
+                        return (
+                          <>
+                            {showCheckboxes && displayList.length > 0 && (
+                              <div
+                                className="py-2 d-flex align-items-center"
+                                style={{ cursor: "pointer" }}
+                                onClick={() => {
+                                  const allIds = displayList.map(
+                                    (item) => item.id
+                                  );
+                                  const allObjects = displayList;
+
+                                  const isAllSelected = allIds.every((id) =>
+                                    selectedAreaIds.includes(id)
+                                  );
+
+                                  if (isAllSelected) {
+                                    setSelectedAreaIds([]);
+                                    setSelectedAreaNames([]);
+                                    setSelectedAreaObjects([]);
+                                  } else {
+                                    setSelectedAreaIds(allIds);
+                                    setSelectedAreaNames(
+                                      allObjects.map((a) => a.name)
+                                    );
+                                    setSelectedAreaObjects(allObjects);
+                                  }
+                                }}
+                              >
+                                <input
+                                  type="checkbox"
+                                  style={{
+                                    appearance: "none",
+                                    width: "16px",
+                                    height: "16px",
+                                    border: "2px solid #F4980E",
+                                    borderRadius: "4px",
+                                    marginRight: "2%",
+                                    position: "relative",
+                                    cursor: "pointer",
+                                    backgroundColor:
+                                      displayList.length > 0 &&
+                                      displayList.every((item) =>
+                                        selectedAreaIds.includes(item.id)
+                                      )
+                                        ? "#F4980E"
+                                        : "#fff",
+                                  }}
+                                  checked={
+                                    displayList.length > 0 &&
+                                    displayList.every((item) =>
+                                      selectedAreaIds.includes(item.id)
+                                    )
+                                  }
+                                  readOnly
+                                />
+                                <span>Select All</span>
+                              </div>
+                            )}
+
+                            {Array.isArray(displayList) &&
+                              displayList.map((node) => {
+                                const nodeIsLeaf =
+                                  !node.child_list ||
+                                  (Array.isArray(node.child_list) &&
+                                    node.child_list.length === 0) ||
+                                  node.child_count === 0;
+
+                                return (
+                                  <div
+                                    key={node.id}
+                                    className="py-2 d-flex align-items-center"
+                                    style={{ cursor: "pointer" }}
+                                    onClick={() =>
+                                      node.child_count > 0
+                                        ? handleNodeClick(node)
+                                        : handleAreaToggle(node)
+                                    }
+                                  >
+                                    {showCheckboxes && nodeIsLeaf ? (
+                                      <>
+                                        <input
+                                          type="checkbox"
+                                          checked={selectedAreaIds.includes(
+                                            node.id
+                                          )}
+                                          onChange={() =>
+                                            handleAreaToggle(node)
+                                          }
+                                          onClick={(e) => e.stopPropagation()}
+                                          style={{
+                                            accentColor: "#F4980E", // ✅ Orange box
+                                            color: "white", // ✅ White tick (modern browsers support this)
+                                            cursor: "pointer",
+                                            marginRight: "2%",
+                                          }}
+                                        />
+
+                                        <span>{node.name}</span>
+                                      </>
+                                    ) : (
+                                      <div className="py-2 d-flex align-items-center justify-content-between w-100">
+                                        <span>{node.name}</span>
+                                        {node.child_count > 0 && (
+                                          <span>&#x276F;</span>
+                                        )}
+                                      </div>
+                                    )}
+                                  </div>
+                                );
+                              })}
+                          </>
+                        );
+                      })()}
+                    </>
+                  )}
+                </>
               )}
             </div>
+
+            {/* ===== Footer ===== */}
+            {(() => {
+              const depth = navigationStack.length;
+              const isLeafLevel =
+                Array.isArray(displayList) &&
+                displayList.length > 0 &&
+                displayList.every(
+                  (n) =>
+                    !n.child_list ||
+                    (Array.isArray(n.child_list) &&
+                      n.child_list.length === 0) ||
+                    n.child_count === 0
+                );
+              const showFooter = depth >= 3 || isLeafLevel;
+
+              return (
+                showFooter && (
+                  <div
+                    style={{
+                      padding: "15px 20px",
+                      backgroundColor: "white",
+                      display: "flex",
+                      justifyContent: "space-between",
+                      borderRadius: "16px",
+                    }}
+                  >
+                    <button
+                      className="btn btn-outline-secondary px-4"
+                      style={{ fontFamily: "Poppins" }}
+                      onClick={handleClear}
+                    >
+                      Clear
+                    </button>
+
+                    <button
+                      className="btn text-white px-4"
+                      style={{
+                        backgroundColor: "#F4980E",
+                        fontFamily: "Poppins",
+                      }}
+                      onClick={handleApply}
+                    >
+                      Apply
+                    </button>
+                  </div>
+                )
+              );
+            })()}
+
+          
           </div>
-        )}
+        </div>
+      )}
       </div>
     </>
   );

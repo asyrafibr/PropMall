@@ -59,6 +59,21 @@ const Filters = ({
   const [selectedAreaObjects, setSelectedAreaObjects] = useState([]);
   const [loadingLocationData, setLoadingLocationData] = useState(false);
   const [openDropdown, setOpenDropdown] = useState(null);
+  const [openModalLabel, setOpenModalLabel] = useState(null);
+
+  // when clicking a button
+  const handleButtonClick = (label) => {
+    
+    if (
+      label === "Price Ranges (RM)" ||
+      label === "Bedroom(s)" ||
+      label === "Bathroom(s)"
+    ) {
+      setOpenModalLabel(label); // open modal for that label
+    } else {
+      toggleDropdown(label); // old dropdown logic
+    }
+  };
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (
@@ -72,7 +87,6 @@ const Filters = ({
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
- 
 
   useEffect(() => {
     const fetchData = async () => {
@@ -127,31 +141,6 @@ const Filters = ({
     return null; // fallback if no subdomain
   };
 
-  // const handleCountryClick = async (country) => {
-  //   try {
-  //     setLoadingLocationData(true);
-  //     setSelectedCountry(country);
-
-  //     const domain = getSubdomain(); // dynamically extracted subdomain
-  //     const url_fe = window.location.href;
-
-  //     const res = await getLocationTree({
-  //       domain,
-  //       url_fe,
-  //       id_country: country.id_country,
-  //     });
-
-  //     if (res.data?.country) {
-  //       setLocationTree([res.data.country]);
-  //       setNavigationStack([res.data.country]);
-  //     }
-  //   } catch (err) {
-  //     console.error("Error fetching states/areas:", err);
-  //   } finally {
-  //     setLoadingLocationData(false);
-  //   }
-  // };
-  // Reusable Modal
   const BUY_AMOUNTS = [
     0, 100000, 200000, 300000, 400000, 500000, 600000, 700000, 800000, 900000,
     1000000, 1100000, 1200000, 1300000, 1400000, 1500000, 2000000, 2500000,
@@ -182,7 +171,6 @@ const Filters = ({
     return best;
   };
 
-  const formatRM = (n) => (n == null ? "" : n.toLocaleString("en-MY"));
 
   // === Reusable Modal (same-file), with optional Portal ===
   function Modal({
@@ -472,7 +460,6 @@ const Filters = ({
   const handleClear = () => {
     setSelectedAreaIds([]);
   };
-  // console.log("Payload", selectedHolding.id);
 
   return (
     <div>
@@ -646,7 +633,7 @@ const Filters = ({
                     style={{ position: "relative", width: "100%" }}
                   >
                     <button
-                      onClick={() => toggleDropdown(label)}
+                      onClick={() => handleButtonClick(label)}
                       className="btn p-0 d-flex align-items-center"
                       style={{
                         justifyContent: "space-between",
@@ -833,252 +820,74 @@ const Filters = ({
                           </ul>
                         </div>
                       )}
-
-                    {/* {(label === "Price Ranges (RM)" ||
+                    {(label === "Price Ranges (RM)" ||
                       label === "Bedroom(s)" ||
-                      label === "Bathroom(s)") && (
-                      <Modal
-                        isOpen={openDropdown === label}
-                        onClose={() => setOpenDropdown(null)}
-                        title={
-                          label === "Price Ranges (RM)"
-                            ? "Select Price Range (RM)"
-                            : `Enter ${label.toLowerCase()} range`
-                        }
-                        width={750}
-                        height={380}
-                      >
-                       
-                        <RangeSliderModal
-                          label="Price"
-                          scale={
-                            activeTab === "Buy" ? BUY_AMOUNTS : RENT_AMOUNTS
-                          }
-                          range={priceRange}
-                          setRange={setPriceRange}
-                          setRangeDisplay={setPriceRangeDisplay}
-                          handleSearch={handleSearch}
-                          setOpenDropdown={setOpenDropdown}
-                        />
+                      label === "Bathroom(s)") &&
+                       openModalLabel === label && (
+                        <div
+                          className="modal-overlay"
+                          onClick={() => setPriceModalOpen(false)}
+                        >
+                          <div
+                            // className="modal-box"
+                            style={{background:'#fff',
+                              borderRadius:12,
+                              padding:35,
+                              boxShadow:`0 10px 30px rgba(0, 0, 0, 0.25)`,
+                              overflow:'auto',
+                              zIndex:2,
+                              height:400,
+                              width:1000
+                            }}
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <h5 style={{color:'black'}}>
+                              {label === "Price Ranges (RM)"
+                                ? "Select Price Range (RM)"
+                                : label === "Bedroom(s)"
+                                ? "Select Bedroom Range"
+                                : "Select Bathroom Range"}
+                            </h5>
 
-                        {label === "Bedroom(s)" || label === "Bathroom(s)"
-                          ? (() => {
-                              const isBedroom = label === "Bedroom(s)";
-                              const scale = ROOM_COUNTS;
+                            <RangeSliderModal
+                              label={label}
+                              setOpenModalLabel={setOpenModalLabel}
+                              scale={
+                                label === "Price Ranges (RM)"
+                                  ? activeTab === "Buy"
+                                    ? BUY_AMOUNTS
+                                    : RENT_AMOUNTS
+                                  : ROOM_COUNTS
+                              }
+                              range={
+                                label === "Price Ranges (RM)"
+                                  ? priceRange
+                                  : label === "Bedroom(s)"
+                                  ? roomRange
+                                  : bathroomRange
+                              }
+                              setRange={
+                                label === "Price Ranges (RM)"
+                                  ? setPriceRange
+                                  : label === "Bedroom(s)"
+                                  ? setRoomRange
+                                  : setBathroomRange
+                              }
+                              setRangeDisplay={
+                                label === "Price Ranges (RM)"
+                                  ? setPriceRangeDisplay
+                                  : label === "Bedroom(s)"
+                                  ? setBedroomDisplay
+                                  : setBathroomDisplay
+                              }
+                              handleSearch={handleSearch}
+                              setOpenDropdown={setOpenDropdown}
+                            />
 
-                              const cur = isBedroom ? roomRange : bathroomRange;
-                              const setCur = isBedroom
-                                ? setRoomRange
-                                : setBathroomRange;
-                              const setDisplay = isBedroom
-                                ? setBedroomDisplay
-                                : setBathroomDisplay;
-
-                              const minIdx = nearestIndex(scale, cur?.min ?? 0);
-                              const maxIdx = nearestIndex(scale, cur?.max ?? 0);
-
-                              const setMinFromNumber = (num) => {
-                                const idx = nearestIndex(scale, num);
-                                const v = scale[idx];
-                                setCur((r) => {
-                                  const nextMax =
-                                    r?.max == null ? v : Math.max(v, r.max);
-                                  return { ...(r || {}), min: v, max: nextMax };
-                                });
-                              };
-
-                              const setMaxFromNumber = (num) => {
-                                const idx = nearestIndex(scale, num);
-                                const v = scale[idx];
-                                setCur((r) => {
-                                  const nextMin =
-                                    r?.min == null ? v : Math.min(v, r.min);
-                                  return { ...(r || {}), min: nextMin, max: v };
-                                });
-                              };
-
-                              return (
-                                <div
-                                  style={{
-                                    display: "flex",
-                                    flexDirection: "column",
-                                    gap: 16,
-                                  }}
-                                >
-                                  <div
-                                    style={{
-                                      display: "flex",
-                                      flexDirection: "column",
-                                      gap: 8,
-                                    }}
-                                  >
-                                    <div
-                                      style={{
-                                        fontSize: 12,
-                                        fontFamily: "Poppins",
-                                        color: "black",
-                                      }}
-                                    >
-                                      Min
-                                    </div>
-                                    <input
-                                      type="number"
-                                      placeholder="Min"
-                                      className="form-control"
-                                      value={cur?.min ?? ""}
-                                      onChange={(e) => {
-                                        const raw = e.target.value
-                                          ? +e.target.value
-                                          : null;
-                                        if (raw == null)
-                                          setCur((r) => ({
-                                            ...(r || {}),
-                                            min: null,
-                                          }));
-                                        else setMinFromNumber(raw);
-                                      }}
-                                    />
-                                    <input
-                                      type="range"
-                                      min={0}
-                                      max={scale.length - 1}
-                                      step={1}
-                                      value={minIdx}
-                                      onChange={(e) => {
-                                        const v = scale[+e.target.value];
-                                        setCur((r) => {
-                                          const nextMax =
-                                            r?.max == null
-                                              ? v
-                                              : Math.max(v, r.max);
-                                          return {
-                                            ...(r || {}),
-                                            min: v,
-                                            max: nextMax,
-                                          };
-                                        });
-                                      }}
-                                    />
-                                    <div
-                                      style={{
-                                        fontSize: 12,
-                                        fontFamily: "Poppins",
-                                      }}
-                                    >
-                                      {scale[minIdx]}
-                                    </div>
-                                  </div>
-
-                                  <div
-                                    style={{
-                                      display: "flex",
-                                      flexDirection: "column",
-                                      gap: 8,
-                                    }}
-                                  >
-                                    <div
-                                      style={{
-                                        fontSize: 12,
-                                        fontFamily: "Poppins",
-                                        color: "black",
-                                      }}
-                                    >
-                                      Max
-                                    </div>
-                                    <input
-                                      type="number"
-                                      placeholder="Max"
-                                      className="form-control"
-                                      value={cur?.max ?? ""}
-                                      onChange={(e) => {
-                                        const raw = e.target.value
-                                          ? +e.target.value
-                                          : null;
-                                        if (raw == null)
-                                          setCur((r) => ({
-                                            ...(r || {}),
-                                            max: null,
-                                          }));
-                                        else setMaxFromNumber(raw);
-                                      }}
-                                    />
-                                    <input
-                                      type="range"
-                                      min={0}
-                                      max={scale.length - 1}
-                                      step={1}
-                                      value={maxIdx}
-                                      onChange={(e) => {
-                                        const v = scale[+e.target.value];
-                                        setCur((r) => {
-                                          const nextMin =
-                                            r?.min == null
-                                              ? v
-                                              : Math.min(v, r.min);
-                                          return {
-                                            ...(r || {}),
-                                            min: nextMin,
-                                            max: v,
-                                          };
-                                        });
-                                      }}
-                                    />
-                                    <div
-                                      style={{
-                                        fontSize: 12,
-                                        fontFamily: "Poppins",
-                                      }}
-                                    >
-                                      {scale[maxIdx]}
-                                    </div>
-                                  </div>
-
-                                  <div
-                                    className="d-flex"
-                                    style={{
-                                      justifyContent: "space-between",
-                                      marginTop: 8,
-                                    }}
-                                  >
-                                    <button
-                                      className="btn"
-                                      onClick={() => {
-                                        setCur({ min: null, max: null });
-                                        setDisplay(label);
-                                        setOpenDropdown(null);
-                                      }}
-                                      style={{
-                                        backgroundColor: "#6c757d",
-                                        color: "white",
-                                        fontFamily: "Poppins",
-                                      }}
-                                    >
-                                      Clear
-                                    </button>
-                                    <button
-                                      className="btn"
-                                      onClick={() => {
-                                        const display = `${cur?.min ?? 0} - ${
-                                          cur?.max ?? 0
-                                        } ${label}`;
-                                        setDisplay(display);
-                                        setOpenDropdown(null);
-                                      }}
-                                      style={{
-                                        backgroundColor: "#F4980E",
-                                        color: "white",
-                                        fontFamily: "Poppins",
-                                      }}
-                                    >
-                                      Apply
-                                    </button>
-                                  </div>
-                                </div>
-                              );
-                            })()
-                          : null}
-                      </Modal>
-                    )} */}
+       
+                          </div>
+                        </div>
+                      )}
                   </div>
                 ))}
               </div>
@@ -1427,54 +1236,24 @@ const Filters = ({
               );
             })()}
 
-            {/* White tick only when checked */}
-            {/* <style>
-              {`
-          input[type="checkbox"][style]:checked::after {
-            content: "✔";
-            color: white;
-            font-size: 12px;
-            position: absolute;
-            top: -2px;
-            left: 2px;
-          }
-        `}
-            </style> */}
+          
           </div>
         </div>
       )}
 
-      {priceModalOpen && (
+      {/* {priceModalOpen && (
         <div className="modal-overlay" onClick={() => setPriceModalOpen(false)}>
           <div className="modal-box" onClick={(e) => e.stopPropagation()}>
             <h5>Select Price Range (RM)</h5>
-            <div className="d-flex gap-2 my-3">
-              <input
-                type="number"
-                placeholder="Min"
-                className="form-control"
-                value={priceRange.min || ""}
-                onChange={(e) =>
-                  setPriceRange((p) => ({
-                    ...p,
-                    min: e.target.value ? +e.target.value : null,
-                  }))
-                }
-              />
-              <input
-                type="number"
-                placeholder="Max"
-                className="form-control"
-                value={priceRange.max || ""}
-                onChange={(e) =>
-                  setPriceRange((p) => ({
-                    ...p,
-                    max: e.target.value ? +e.target.value : null,
-                  }))
-                }
-              />
-            </div>
-            {/* Slider can be added here */}
+            <RangeSliderModal
+              label="Price"
+              scale={activeTab === "Buy" ? BUY_AMOUNTS : RENT_AMOUNTS}
+              range={priceRange}
+              setRange={setPriceRange}
+              setRangeDisplay={setPriceRangeDisplay}
+              handleSearch={handleSearch}
+              setOpenDropdown={setOpenDropdown}
+            />
             <button
               className="btn btn-primary"
               onClick={() => {
@@ -1486,7 +1265,7 @@ const Filters = ({
             </button>
           </div>
         </div>
-      )}
+      )} */}
     </div>
   );
 };

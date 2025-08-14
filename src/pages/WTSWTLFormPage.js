@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { getLocationTree } from "../api/axiosApi";
 
 const PropertyRequestForm = () => {
   const [purpose, setPurpose] = useState("buy");
@@ -12,7 +13,7 @@ const PropertyRequestForm = () => {
   const [ownProperty, setOwnProperty] = useState(null);
   const [planToSell, setPlanToSell] = useState(null);
   const [helpWithSelling, setHelpWithSelling] = useState(false);
- const [landType, setLandType] = useState("");
+  const [landType, setLandType] = useState("");
   const [highriseType, setHighriseType] = useState("");
   const [commercialType, setCommercialType] = useState("");
   const [floorCount, setFloorCount] = useState("");
@@ -23,6 +24,14 @@ const PropertyRequestForm = () => {
   const [landLotType, setLandLotType] = useState("");
   const [landStatuses, setLandStatuses] = useState([]); // array of selected checkboxes
   const [otherCategory, setOtherCategory] = useState("");
+  const [location, setLocation] = useState([]);
+  const [domain, setDomain] = useState({});
+  const [locationTree, setLocationTree] = useState(null);
+  const [selectedStateId, setSelectedStateId] = useState("");
+  const [areas, setAreas] = useState([]);
+  const [selectedAreaId, setSelectedAreaId] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
+
   const inputStyle = {
     padding: "10px",
     border: "1px solid #ccc",
@@ -62,6 +71,56 @@ const PropertyRequestForm = () => {
     </>
   );
 
+  useEffect(() => {
+    const fetchFilterData = async () => {
+      const url_fe = window.location.href;
+      try {
+        const res = await getLocationTree({ domain, url_fe, id_country: 1 });
+        setLocation(res.data.country);
+        setLocationTree(res.data.country); // ✅ ensure locationTree is set
+      } catch (error) {
+        console.error("Error fetching filters:", error);
+      } finally {
+        setIsLoading(false); // ✅ done loading
+      }
+    };
+    fetchFilterData();
+  }, []);
+
+  const handleStateChange = (e) => {
+    const stateId = e.target.value;
+    setSelectedStateId(stateId);
+    setSelectedAreaId("");
+
+    const stateObj = locationTree?.child_list?.find(
+      (s) => String(s.id) === String(stateId)
+    );
+    if (stateObj?.child_list) {
+      setAreas(stateObj.child_list);
+    } else {
+      setAreas([]);
+    }
+  };
+  if (isLoading) {
+    return (
+      <>
+        {/* ✅ Spinner keyframes in a <style> tag */}
+        <style>
+          {`
+            @keyframes spin {
+              0% { transform: rotate(0deg); }
+              100% { transform: rotate(360deg); }
+            }
+          `}
+        </style>
+
+        <div style={styles.loadingContainer}>
+          <div style={styles.spinner}></div>
+          <p style={styles.loadingText}>Loading property form...</p>
+        </div>
+      </>
+    );
+  }
   return (
     <div
       style={{
@@ -157,19 +216,46 @@ const PropertyRequestForm = () => {
           </div>
 
           {/* Location State */}
-          <div style={rowStyle}>
-            {labelWrapper("*Location State")}
-            <select
-              style={inputStyle}
-              value={stateLocation}
-              onChange={(e) => setStateLocation(e.target.value)}
-            >
-              <option value="">[Please select a State]</option>
-              <option value="Selangor">Selangor</option>
-              <option value="Kuala Lumpur">Kuala Lumpur</option>
-            </select>
-          </div>
+     
+          <div style={{ display: "flex", gap: "20px", width: "100%" }}>
+            <div style={rowStyle}>
+              {labelWrapper("*Location State")}
+              <select
+                value={selectedStateId}
+                onChange={handleStateChange}
+                style={inputStyle}
+              >
+                <option value="">[Please select a State]</option>
+                {locationTree?.child_list?.map((state) => (
+                  <option key={state.id} value={state.id}>
+                    {state.name}
+                  </option>
+                ))}
+              </select>
+            </div>
 
+            {/* Area Select */}
+            <div style={rowStyle}>
+              {labelWrapper("*Location Area")}
+              <select
+                value={selectedAreaId}
+                onChange={(e) => setSelectedAreaId(e.target.value)}
+                disabled={!areas.length}
+                style={inputStyle}
+              >
+                <option value="">
+                  {selectedStateId
+                    ? "[Please select an Area]"
+                    : "[Please select a State first]"}
+                </option>
+                {areas.map((area) => (
+                  <option key={area.id} value={area.id}>
+                    {area.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
           {/* Address */}
           <div style={rowStyle}>
             {labelWrapper("*Address")}
@@ -239,237 +325,235 @@ const PropertyRequestForm = () => {
               </button>
             </div>
           </div>
- {category === "Landed" && (
-              <>
-                <div style={rowStyle}>
-                  {labelWrapper("Please choose type of land")}
-                  <select
-                    value={landType}
-                    onChange={(e) => setLandType(e.target.value)}
-                    style={inputStyle}
-                  >
-                    <option value="">[Select land type]</option>
-                    <option value="Terrace">Terrace</option>
-                    <option value="Townhouse">Townhouse</option>
-                    <option value="Semi Detached">Semi Detached</option>
-                    <option value="Bungalow">Bungalow</option>
-                  </select>
-                </div>
-
-                <div style={rowStyle}>
-                  {labelWrapper("How Many Floor")}
-                  <select
-                    value={floorCount}
-                    onChange={(e) => setFloorCount(e.target.value)}
-                    style={inputStyle}
-                  >
-                    <option value="">[Select floor count]</option>
-                    {[1, 2, 3, 4, 5].map((f) => (
-                      <option key={f} value={f}>
-                        {f}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div style={rowStyle}>
-                  {labelWrapper("How Many Bedroom(s)")}
-                  <input
-                    type="number"
-                    value={bedroom}
-                    onChange={(e) => setBedroom(e.target.value)}
-                    style={inputStyle}
-                    placeholder="e.g. 3"
-                  />
-                </div>
-
-                <div style={rowStyle}>
-                  {labelWrapper("How Many Bathroom(s)")}
-                  <input
-                    type="number"
-                    value={bathroom}
-                    onChange={(e) => setBathroom(e.target.value)}
-                    style={inputStyle}
-                    placeholder="e.g. 2"
-                  />
-                </div>
-
-                <div style={rowStyle}>
-                  {labelWrapper("Land Area (0 if unknown)")}
-                  <input
-                    type="number"
-                    value={landArea}
-                    onChange={(e) => setLandArea(e.target.value)}
-                    style={inputStyle}
-                    placeholder="e.g. 1500"
-                  />
-                </div>
-
-                <div style={rowStyle}>
-                  {labelWrapper("Built Up Area (0 if unknown)")}
-                  <input
-                    type="number"
-                    value={builtUpArea}
-                    onChange={(e) => setBuiltUpArea(e.target.value)}
-                    style={inputStyle}
-                    placeholder="e.g. 1200"
-                  />
-                </div>
-              </>
-            )}
-
-            {/* --- Highrise Type --- */}
-            {category === "Highrise" && (
-              <>
-                <div style={rowStyle}>
-                  {labelWrapper("Please choose type of high rise")}
-                  <select
-                    value={highriseType}
-                    onChange={(e) => setHighriseType(e.target.value)}
-                    style={inputStyle}
-                  >
-                    <option value="">[Select highrise type]</option>
-                    <option value="Flat">Flat</option>
-                    <option value="Apartment">Apartment</option>
-                    <option value="Condominium">Condominium</option>
-                    <option value="Penthouse">Penthouse</option>
-                    <option value="Studio (SOHO/SOFO/SOVO)">
-                      Studio (SOHO/SOFO/SOVO)
-                    </option>
-                  </select>
-                </div>
-
-                <div style={rowStyle}>
-                  {labelWrapper("How Many Bedroom(s)")}
-                  <input
-                    type="number"
-                    value={bedroom}
-                    onChange={(e) => setBedroom(e.target.value)}
-                    style={inputStyle}
-                    placeholder="e.g. 2"
-                  />
-                </div>
-
-                <div style={rowStyle}>
-                  {labelWrapper("How Many Bathroom(s)")}
-                  <input
-                    type="number"
-                    value={bathroom}
-                    onChange={(e) => setBathroom(e.target.value)}
-                    style={inputStyle}
-                    placeholder="e.g. 1"
-                  />
-                </div>
-
-                <div style={rowStyle}>
-                  {labelWrapper("Land Area (0 if unknown)")}
-                  <input
-                    type="number"
-                    value={landArea}
-                    onChange={(e) => setLandArea(e.target.value)}
-                    style={inputStyle}
-                    placeholder="e.g. 850"
-                  />
-                </div>
-              </>
-            )}
-
-            {/* --- Commercial Type --- */}
-            {category === "Commercial" && (
+          {category === "Landed" && (
+            <>
               <div style={rowStyle}>
-                {labelWrapper("Please choose type of commercial")}
+                {labelWrapper("Please choose type of land")}
                 <select
-                  value={commercialType}
-                  onChange={(e) => setCommercialType(e.target.value)}
+                  value={landType}
+                  onChange={(e) => setLandType(e.target.value)}
                   style={inputStyle}
                 >
-                  <option value="">[Select commercial type]</option>
-                  <option value="Shop Lot">Shop Lot</option>
-                  <option value="Shop House">Shop House</option>
-                  <option value="Office Space">Office Space</option>
-                  <option value="WareHouse">Warehouse</option>
-                  <option value="Factory">Factory</option>
-                  <option value="Hotel">Hotel</option>
-                  <option value="En bloc building">En bloc building</option>
+                  <option value="">[Select land type]</option>
+                  <option value="Terrace">Terrace</option>
+                  <option value="Townhouse">Townhouse</option>
+                  <option value="Semi Detached">Semi Detached</option>
+                  <option value="Bungalow">Bungalow</option>
                 </select>
               </div>
-            )}
-            {category === "Land" && (
-              <>
-                <div style={rowStyle}>
-                  {labelWrapper("Please choose type of land")}
-                  <select
-                    value={landLotType}
-                    onChange={(e) => setLandLotType(e.target.value)}
-                    style={inputStyle}
-                  >
-                    <option value="">[Select land type]</option>
-                    <option value="Agriculture">Agriculture</option>
-                    <option value="Building">Building</option>
-                    <option value="Industrial">Industrial</option>
-                    <option value="Don't know">Don't know</option>
-                  </select>
-                </div>
 
-                <div style={rowStyle}>
-                  {labelWrapper("Land Status")}
-                  <div
-                    style={{ display: "flex", gap: "16px", flexWrap: "wrap" }}
-                  >
-                    {["Lot NonBumi", "Lot Bumi", "Malay Reserve"].map(
-                      (status) => (
-                        <label
-                          key={status}
-                          style={{
-                            display: "flex",
-                            alignItems: "center",
-                            gap: "8px",
-                          }}
-                        >
-                          <input
-                            type="checkbox"
-                            checked={landStatuses.includes(status)}
-                            onChange={() => {
-                              if (landStatuses.includes(status)) {
-                                setLandStatuses(
-                                  landStatuses.filter((s) => s !== status)
-                                );
-                              } else {
-                                setLandStatuses([...landStatuses, status]);
-                              }
-                            }}
-                          />
-                          {status}
-                        </label>
-                      )
-                    )}
-                  </div>
-                </div>
-
-                <div style={rowStyle}>
-                  {labelWrapper("Land Area")}
-                  <input
-                    type="number"
-                    value={landArea}
-                    onChange={(e) => setLandArea(e.target.value)}
-                    style={inputStyle}
-                    placeholder="Enter land area (0 if unknown)"
-                  />
-                </div>
-              </>
-            )}
-            {category === "Others" && (
               <div style={rowStyle}>
-                {labelWrapper("Others")}
-                <input
-                  type="text"
-                  value={otherCategory}
-                  onChange={(e) => setOtherCategory(e.target.value)}
+                {labelWrapper("How Many Floor")}
+                <select
+                  value={floorCount}
+                  onChange={(e) => setFloorCount(e.target.value)}
                   style={inputStyle}
-                  placeholder="Please specify"
+                >
+                  <option value="">[Select floor count]</option>
+                  {[1, 2, 3, 4, 5].map((f) => (
+                    <option key={f} value={f}>
+                      {f}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div style={rowStyle}>
+                {labelWrapper("How Many Bedroom(s)")}
+                <input
+                  type="number"
+                  value={bedroom}
+                  onChange={(e) => setBedroom(e.target.value)}
+                  style={inputStyle}
+                  placeholder="e.g. 3"
                 />
               </div>
-            )}
+
+              <div style={rowStyle}>
+                {labelWrapper("How Many Bathroom(s)")}
+                <input
+                  type="number"
+                  value={bathroom}
+                  onChange={(e) => setBathroom(e.target.value)}
+                  style={inputStyle}
+                  placeholder="e.g. 2"
+                />
+              </div>
+
+              <div style={rowStyle}>
+                {labelWrapper("Land Area (0 if unknown)")}
+                <input
+                  type="number"
+                  value={landArea}
+                  onChange={(e) => setLandArea(e.target.value)}
+                  style={inputStyle}
+                  placeholder="e.g. 1500"
+                />
+              </div>
+
+              <div style={rowStyle}>
+                {labelWrapper("Built Up Area (0 if unknown)")}
+                <input
+                  type="number"
+                  value={builtUpArea}
+                  onChange={(e) => setBuiltUpArea(e.target.value)}
+                  style={inputStyle}
+                  placeholder="e.g. 1200"
+                />
+              </div>
+            </>
+          )}
+
+          {/* --- Highrise Type --- */}
+          {category === "Highrise" && (
+            <>
+              <div style={rowStyle}>
+                {labelWrapper("Please choose type of high rise")}
+                <select
+                  value={highriseType}
+                  onChange={(e) => setHighriseType(e.target.value)}
+                  style={inputStyle}
+                >
+                  <option value="">[Select highrise type]</option>
+                  <option value="Flat">Flat</option>
+                  <option value="Apartment">Apartment</option>
+                  <option value="Condominium">Condominium</option>
+                  <option value="Penthouse">Penthouse</option>
+                  <option value="Studio (SOHO/SOFO/SOVO)">
+                    Studio (SOHO/SOFO/SOVO)
+                  </option>
+                </select>
+              </div>
+
+              <div style={rowStyle}>
+                {labelWrapper("How Many Bedroom(s)")}
+                <input
+                  type="number"
+                  value={bedroom}
+                  onChange={(e) => setBedroom(e.target.value)}
+                  style={inputStyle}
+                  placeholder="e.g. 2"
+                />
+              </div>
+
+              <div style={rowStyle}>
+                {labelWrapper("How Many Bathroom(s)")}
+                <input
+                  type="number"
+                  value={bathroom}
+                  onChange={(e) => setBathroom(e.target.value)}
+                  style={inputStyle}
+                  placeholder="e.g. 1"
+                />
+              </div>
+
+              <div style={rowStyle}>
+                {labelWrapper("Land Area (0 if unknown)")}
+                <input
+                  type="number"
+                  value={landArea}
+                  onChange={(e) => setLandArea(e.target.value)}
+                  style={inputStyle}
+                  placeholder="e.g. 850"
+                />
+              </div>
+            </>
+          )}
+
+          {/* --- Commercial Type --- */}
+          {category === "Commercial" && (
+            <div style={rowStyle}>
+              {labelWrapper("Please choose type of commercial")}
+              <select
+                value={commercialType}
+                onChange={(e) => setCommercialType(e.target.value)}
+                style={inputStyle}
+              >
+                <option value="">[Select commercial type]</option>
+                <option value="Shop Lot">Shop Lot</option>
+                <option value="Shop House">Shop House</option>
+                <option value="Office Space">Office Space</option>
+                <option value="WareHouse">Warehouse</option>
+                <option value="Factory">Factory</option>
+                <option value="Hotel">Hotel</option>
+                <option value="En bloc building">En bloc building</option>
+              </select>
+            </div>
+          )}
+          {category === "Land" && (
+            <>
+              <div style={rowStyle}>
+                {labelWrapper("Please choose type of land")}
+                <select
+                  value={landLotType}
+                  onChange={(e) => setLandLotType(e.target.value)}
+                  style={inputStyle}
+                >
+                  <option value="">[Select land type]</option>
+                  <option value="Agriculture">Agriculture</option>
+                  <option value="Building">Building</option>
+                  <option value="Industrial">Industrial</option>
+                  <option value="Don't know">Don't know</option>
+                </select>
+              </div>
+
+              <div style={rowStyle}>
+                {labelWrapper("Land Status")}
+                <div style={{ display: "flex", gap: "16px", flexWrap: "wrap" }}>
+                  {["Lot NonBumi", "Lot Bumi", "Malay Reserve"].map(
+                    (status) => (
+                      <label
+                        key={status}
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "8px",
+                        }}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={landStatuses.includes(status)}
+                          onChange={() => {
+                            if (landStatuses.includes(status)) {
+                              setLandStatuses(
+                                landStatuses.filter((s) => s !== status)
+                              );
+                            } else {
+                              setLandStatuses([...landStatuses, status]);
+                            }
+                          }}
+                        />
+                        {status}
+                      </label>
+                    )
+                  )}
+                </div>
+              </div>
+
+              <div style={rowStyle}>
+                {labelWrapper("Land Area")}
+                <input
+                  type="number"
+                  value={landArea}
+                  onChange={(e) => setLandArea(e.target.value)}
+                  style={inputStyle}
+                  placeholder="Enter land area (0 if unknown)"
+                />
+              </div>
+            </>
+          )}
+          {category === "Others" && (
+            <div style={rowStyle}>
+              {labelWrapper("Others")}
+              <input
+                type="text"
+                value={otherCategory}
+                onChange={(e) => setOtherCategory(e.target.value)}
+                style={inputStyle}
+                placeholder="Please specify"
+              />
+            </div>
+          )}
           {/* Plan to sell */}
           <div style={rowStyle}>
             {labelWrapper("*Are you planning to sell this property soon?")}
@@ -575,5 +659,28 @@ const PropertyRequestForm = () => {
     </div>
   );
 };
-
+const styles = {
+  loadingContainer: {
+    minHeight: "100vh",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+    background: "#fafafa",
+  },
+  spinner: {
+    width: "50px",
+    height: "50px",
+    border: "6px solid #ddd",
+    borderTop: "6px solid #F4980E",
+    borderRadius: "50%",
+    animation: "spin 1s linear infinite",
+  },
+  loadingText: {
+    marginTop: "16px",
+    fontSize: "16px",
+    fontFamily: "Poppins",
+    color: "#555",
+  },
+};
 export default PropertyRequestForm;

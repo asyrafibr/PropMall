@@ -295,6 +295,8 @@ const SearchPage = () => {
                 bathroomRange={bathroomRange}
                 setRoomRange={setRoomRange}
                 roomRange={roomRange}
+                      setSelectedAreaIds={setSelectedAreaIds}
+                selectedAreaIds={selectedAreaIds}
               ></FilterT2>
             )}
           </Suspense>

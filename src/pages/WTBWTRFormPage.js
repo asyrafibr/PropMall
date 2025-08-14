@@ -1,4 +1,6 @@
-import React, { useState } from "react";
+
+import React, { useState, useEffect } from "react";
+import { getLocationTree } from "../api/axiosApi";
 
 const PropertyRequestForm = () => {
   const [purpose, setPurpose] = useState("buy");
@@ -19,8 +21,17 @@ const PropertyRequestForm = () => {
   const [landArea, setLandArea] = useState("");
   const [builtUpArea, setBuiltUpArea] = useState("");
   const [landLotType, setLandLotType] = useState("");
-  const [landStatuses, setLandStatuses] = useState([]); // array of selected checkboxes
+  const [landStatuses, setLandStatuses] = useState([]);
   const [otherCategory, setOtherCategory] = useState("");
+  const [location, setLocation] = useState([]);
+  const [domain, setDomain] = useState({});
+  const [locationTree, setLocationTree] = useState(null);
+  const [selectedStateId, setSelectedStateId] = useState("");
+  const [areas, setAreas] = useState([]);
+  const [selectedAreaId, setSelectedAreaId] = useState("");
+
+  // ✅ Loading state
+  const [isLoading, setIsLoading] = useState(true);
 
   const inputStyle = {
     padding: "10px",
@@ -32,7 +43,7 @@ const PropertyRequestForm = () => {
 
   const rowStyle = {
     display: "flex",
-    alignItems: "center", // fix alignment
+    alignItems: "center",
     width: "100%",
     gap: "12px",
   };
@@ -43,16 +54,16 @@ const PropertyRequestForm = () => {
     fontWeight: "500",
     fontSize: "14px",
     flexShrink: 0,
-    textAlign: "left", // ← Align text to the left
+    textAlign: "left",
   };
 
   const colonStyle = {
     fontWeight: "500",
     fontSize: "14px",
-    padding: "0 12px", // ← More spacing around colon
+    padding: "0 12px",
     flexShrink: 0,
     textAlign: "center",
-    width: "12px", // fix width to center it nicely
+    width: "12px",
     display: "inline-block",
   };
 
@@ -63,31 +74,59 @@ const PropertyRequestForm = () => {
     </>
   );
 
-  const propertyTypeOptions = {
-    Landed: ["Terrace", "Townhouse", "Semi- Detached", "Bungalow"],
-    Highrise: [
-      "Flat",
-      "Apartment",
-      "Condominium",
-      "Penthouse",
-      "Studio (SOHO/ SOFO/ SOVO)",
-    ],
-    Commercial: [
-      "Shop Lot",
-      "Shop House",
-      "Office Space",
-      "Warehouse",
-      "Factory",
-      "En Bloc Building",
-    ],
-    Land: ["Agriculture Land", "Building Land", "Industrial Land", "Not Sure"],
+  useEffect(() => {
+    const fetchFilterData = async () => {
+      const url_fe = window.location.href;
+      try {
+        const res = await getLocationTree({ domain, url_fe, id_country: 1 });
+        setLocation(res.data.country);
+        setLocationTree(res.data.country); // ✅ ensure locationTree is set
+      } catch (error) {
+        console.error("Error fetching filters:", error);
+      } finally {
+        setIsLoading(false); // ✅ done loading
+      }
+    };
+    fetchFilterData();
+  }, []);
+
+  const handleStateChange = (e) => {
+    const stateId = e.target.value;
+    setSelectedStateId(stateId);
+    setSelectedAreaId("");
+
+    const stateObj = locationTree?.child_list?.find(
+      (s) => String(s.id) === String(stateId)
+    );
+    if (stateObj?.child_list) {
+      setAreas(stateObj.child_list);
+    } else {
+      setAreas([]);
+    }
   };
 
-  const getTypeOptions = () => {
-    const key = category.split(" ")[0]; // e.g., Landed, Highrise, etc.
-    return propertyTypeOptions[key] || [];
-  };
-  console.log("property type", category);
+  if (isLoading) {
+    return (
+      <>
+        {/* ✅ Spinner keyframes in a <style> tag */}
+        <style>
+          {`
+            @keyframes spin {
+              0% { transform: rotate(0deg); }
+              100% { transform: rotate(360deg); }
+            }
+          `}
+        </style>
+
+        <div style={styles.loadingContainer}>
+          <div style={styles.spinner}></div>
+          <p style={styles.loadingText}>Loading property form...</p>
+        </div>
+      </>
+    );
+  }
+
+
   return (
     <div
       style={{
@@ -203,34 +242,38 @@ const PropertyRequestForm = () => {
               <div style={rowStyle}>
                 {labelWrapper("*Location State")}
                 <select
-                  value={stateLocation}
-                  onChange={(e) => setStateLocation(e.target.value)}
-                  style={inputStyle}
+                  value={selectedStateId}
+                  onChange={handleStateChange}
+                style={inputStyle}
                 >
                   <option value="">[Please select a State]</option>
-                  <option value="selangor">Selangor</option>
-                  <option value="kualalumpur">Kuala Lumpur</option>
+                  {locationTree?.child_list?.map((state) => (
+                    <option key={state.id} value={state.id}>
+                      {state.name}
+                    </option>
+                  ))}
                 </select>
               </div>
+
+              {/* Area Select */}
               <div style={rowStyle}>
                 {labelWrapper("*Location Area")}
                 <select
-                  value={areaLocation}
-                  onChange={(e) => setAreaLocation(e.target.value)}
-                  disabled={!stateLocation}
-                  style={inputStyle}
+                  value={selectedAreaId}
+                  onChange={(e) => setSelectedAreaId(e.target.value)}
+                  disabled={!areas.length}
+                style={inputStyle}
                 >
                   <option value="">
-                    {stateLocation
+                    {selectedStateId
                       ? "[Please select an Area]"
                       : "[Please select a State first]"}
                   </option>
-                  {stateLocation && (
-                    <>
-                      <option value="puchong">Puchong</option>
-                      <option value="ampang">Ampang</option>
-                    </>
-                  )}
+                  {areas.map((area) => (
+                    <option key={area.id} value={area.id}>
+                      {area.name}
+                    </option>
+                  ))}
                 </select>
               </div>
             </div>
@@ -577,5 +620,30 @@ const PropertyRequestForm = () => {
     </div>
   );
 };
+const styles = {
+  loadingContainer: {
+    minHeight: "100vh",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+    background: "#fafafa",
+  },
+  spinner: {
+    width: "50px",
+    height: "50px",
+    border: "6px solid #ddd",
+    borderTop: "6px solid #F4980E",
+    borderRadius: "50%",
+    animation: "spin 1s linear infinite",
+  },
+  loadingText: {
+    marginTop: "16px",
+    fontSize: "16px",
+    fontFamily: "Poppins",
+    color: "#555",
+  },
+};
+
 
 export default PropertyRequestForm;

@@ -1,0 +1,32 @@
+/* Track (filled part) */
+.custom-slider .rc-slider-track {
+  background-color: #F4980E; /* Green */
+  height: 8px; /* Thicker */
+}
+
+/* Rail (unfilled part) */
+.custom-slider .rc-slider-rail {
+  background-color: #ccc;
+  height: 8px;
+}
+
+/* Slider handles (draggable circles) */
+.custom-slider .rc-slider-handle {
+  border: solid 3px #737373;
+  background-color: white;
+  width: 22px; /* Bigger handle */
+  height: 22px;
+  margin-top: -9px; /* Centers it on the track */
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Handle hover/focus */
+.custom-slider .rc-slider-handle:hover,
+.custom-slider .rc-slider-handle:focus {
+  border-color: #F4980E; /* Darker green */
+}
+
+/* Marks text size */
+.custom-slider .rc-slider-mark-text {
+  font-size: 14px;
+}
