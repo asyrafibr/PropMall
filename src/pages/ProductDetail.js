@@ -13,6 +13,7 @@ import "./ProductDetail.css";
 import { FiCamera } from "react-icons/fi";
 import MortgageCalculator from "./MortgageCalculator";
 import { useTemplate } from "../context/TemplateContext"; // ✅ Import Template Context
+import bgImage from "../image/template2bg.png";
 
 const ProductDetail = () => {
   const [product, setProduct] = useState(null);
@@ -23,7 +24,7 @@ const ProductDetail = () => {
   const [previewImage, setPreviewImage] = useState(null);
   const [similarListing, setSimilarListing] = useState([]);
   // const [agent, setAgent] = useState({});
-  const { agent, category,mainAgent } = useTemplate();
+  const { agent, template } = useTemplate();
 
   const whatsappMessage = `Hello My Lovely Agent,\nI'm interested in the property that you advertise at website\n${window.location.href}\nand I would love to visit this property.\nMy name is:`;
   const [modalOpen, setModalOpen] = useState(false);
@@ -131,12 +132,21 @@ const ProductDetail = () => {
       <div style={{ paddingTop: "20px", backgroundColor: "#fff" }}>
         <div
           className="container"
-          style={{ maxWidth: "1300px", padding: "0 50px" }}
+          style={{ maxWidth: "2000px", padding: "0 50px" }}
         >
           {/* Agent Box */}
 
           {/* Title */}
-          <div className="pb-4">
+          <div
+            className="pb-4"
+            style={{
+              backgroundImage:
+                template === "template2" ? `url(${bgImage})` : null,
+              maxWidth: "2000px",
+              paddingLeft:50,
+              paddingTop:50,marginBottom:50
+            }}
+          >
             <nav aria-label="breadcrumb">
               <ol
                 className="breadcrumb"
@@ -176,11 +186,17 @@ const ProductDetail = () => {
               </ol>
             </nav>
 
-            <text
-              style={{ fontSize: "20px", fontFamily: "Poppins",fontWeight:600 }}
-            >
-              {product.ads_title}
-            </text>
+            {template === "template1" && (
+              <text
+                style={{
+                  fontSize: "20px",
+                  fontFamily: "Poppins",
+                  fontWeight: 600,
+                }}
+              >
+                {product.ads_title}
+              </text>
+            )}
           </div>
 
           {/* Photos */}
@@ -200,8 +216,8 @@ const ProductDetail = () => {
                 }}
                 className="img-fluid rounded"
                 style={{
-                  width: "100%",
-                  maxWidth: 646,
+                  width: 1000,
+                  // maxWidth: 646,
                   height: "480px",
                   objectFit: "cover",
                   cursor: "pointer",
@@ -213,7 +229,7 @@ const ProductDetail = () => {
                 className="d-grid gap-3"
                 style={{
                   gridTemplateColumns: "repeat(2, 1fr)",
-                  maxWidth: "530px",
+                  maxWidth: "880px",
                   width: "100%",
                   height: "480px",
                 }}
@@ -735,13 +751,13 @@ const ProductDetail = () => {
                 Description
               </text>
               <div
-                  style={{
-                    width: "100%", // or a fixed width
-                    height: "1px",
-                    backgroundColor: "var(--Grey-2, #DBDBDB)",
-                    marginBottom: "20px",
-                  }}
-                />
+                style={{
+                  width: "100%", // or a fixed width
+                  height: "1px",
+                  backgroundColor: "var(--Grey-2, #DBDBDB)",
+                  marginBottom: "20px",
+                }}
+              />
               <p
                 style={{
                   whiteSpace: "pre-line",
