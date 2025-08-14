@@ -9,6 +9,8 @@ import { FaSearch } from "react-icons/fa";
 import { createPortal } from "react-dom";
 import { useTemplate } from "../context/TemplateContext"; // ✅ Import Template Context
 import RangeSliderModal from "./RangeSliderModal";
+import { useLocation } from "react-router-dom";
+
 import {
   getCategory,
   getHolding,
@@ -24,6 +26,7 @@ const Filters = ({
   setSearchTerm,
 }) => {
   const navigate = useNavigate();
+
   const containerRef = useRef(null); // ✅ ref to the whole dropdown group
   const [selectedCategory, setSelectedCategory] = useState([]);
   const [selectedHolding, setSelectedHolding] = useState([]);
@@ -43,6 +46,8 @@ const Filters = ({
   const [holding, setHolding] = useState({});
   const [lot, setLot] = useState({});
   const { agent, category } = useTemplate();
+  const [displayList, setDisplayList] = useState([]);
+  const [currentLevel, setCurrentLevel] = useState(0);
 
   const [priceRange, setPriceRange] = useState({ min: null, max: null });
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -67,6 +72,7 @@ const Filters = ({
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+ 
 
   useEffect(() => {
     const fetchData = async () => {
@@ -77,8 +83,13 @@ const Filters = ({
 
         const holdingList = await getHolding();
         const lotList = await getLot();
-        setHolding(holdingList.data.property_holding_and_type || []);
+        setHolding([
+          ...(holdingList.data.property_holding || []),
+          ...(lotList.data?.property_lot_type || []), // Adjust key based on lotList structure
+        ]);
         console.log("lot", lotList);
+        console.log("holdingList", holdingList);
+
         // ❌ agent is NOT updated here yet
       } catch (error) {
         console.error("Error fetching agent:", error);
@@ -116,30 +127,30 @@ const Filters = ({
     return null; // fallback if no subdomain
   };
 
-  const handleCountryClick = async (country) => {
-    try {
-      setLoadingLocationData(true);
-      setSelectedCountry(country);
+  // const handleCountryClick = async (country) => {
+  //   try {
+  //     setLoadingLocationData(true);
+  //     setSelectedCountry(country);
 
-      const domain = getSubdomain(); // dynamically extracted subdomain
-      const url_fe = window.location.href;
+  //     const domain = getSubdomain(); // dynamically extracted subdomain
+  //     const url_fe = window.location.href;
 
-      const res = await getLocationTree({
-        domain,
-        url_fe,
-        id_country: country.id_country,
-      });
+  //     const res = await getLocationTree({
+  //       domain,
+  //       url_fe,
+  //       id_country: country.id_country,
+  //     });
 
-      if (res.data?.country) {
-        setLocationTree([res.data.country]);
-        setNavigationStack([res.data.country]);
-      }
-    } catch (err) {
-      console.error("Error fetching states/areas:", err);
-    } finally {
-      setLoadingLocationData(false);
-    }
-  };
+  //     if (res.data?.country) {
+  //       setLocationTree([res.data.country]);
+  //       setNavigationStack([res.data.country]);
+  //     }
+  //   } catch (err) {
+  //     console.error("Error fetching states/areas:", err);
+  //   } finally {
+  //     setLoadingLocationData(false);
+  //   }
+  // };
   // Reusable Modal
   const BUY_AMOUNTS = [
     0, 100000, 200000, 300000, 400000, 500000, 600000, 700000, 800000, 900000,
@@ -243,29 +254,47 @@ const Filters = ({
     }
     return node;
   }
+  // --- Node Click ---
+  // --- Node Click ---
   const handleNodeClick = (node) => {
-    if (node.node_level === 2) {
-      // Just update selectedState, don't reset checkboxes
-      setSelectedState(node);
-    }
+    // If node has a child_list and that child_list has its own child_list
+    if (node.child_list && node.child_list.length > 0) {
+      // If you want to skip directly to grandchild_list:
+      const grandChildList = node.child_list[0]?.child_list || null;
 
-    if (node.node_level === 3) {
-      // This is an area node — do NOT replace the selections
-      handleAreaToggle(node);
-      return; // stop here — don't push to navigation stack
-    }
+      if (grandChildList && grandChildList.length > 0) {
+        setDisplayList(grandChildList);
+        setNavigationStack((prev) => [
+          ...prev,
+          {
+            node_level: (node.node_level || 0) + 2,
+            name: node.name,
+            child_list: grandChildList,
+          },
+        ]);
+        setCurrentLevel((prev) =>
+          typeof prev === "object" ? (prev.node_level || 0) + 2 : prev + 2
+        );
+        return;
+      }
 
-    if (node.child_count > 0 && node.child_list?.length > 0) {
-      setNavigationStack((prev) => [...prev, node]);
+      // Otherwise just go to normal child_list
+      setDisplayList(node.child_list);
+      setNavigationStack((prev) => [
+        ...prev,
+        {
+          node_level: (node.node_level || 0) + 1,
+          name: node.name,
+          child_list: node.child_list,
+        },
+      ]);
+      setCurrentLevel((prev) =>
+        typeof prev === "object" ? (prev.node_level || 0) + 1 : prev + 1
+      );
     }
   };
 
-  const handleBack = () => {
-    if (navigationStack.length > 1) {
-      setNavigationStack((prev) => prev.slice(0, -1));
-    }
-  };
-
+  // --- Area Toggle ---
   const handleAreaToggle = (area) => {
     const isSelected = selectedAreaIds.includes(area.id);
 
@@ -276,7 +305,6 @@ const Filters = ({
         prev.filter((obj) => obj.id !== area.id)
       );
     } else {
-      // Optional check: enforce same-state selection only
       const parentStateId = area.parent_id;
       const isSameState =
         !selectedAreaObjects.length ||
@@ -287,7 +315,6 @@ const Filters = ({
         setSelectedAreaNames((prev) => [...prev, area.name]);
         setSelectedAreaObjects((prev) => [...prev, area]);
       } else {
-        // clear previous and add new area if different state
         setSelectedAreaIds([area.id]);
         setSelectedAreaNames([area.name]);
         setSelectedAreaObjects([area]);
@@ -295,11 +322,63 @@ const Filters = ({
     }
   };
 
+  // --- Back Navigation ---
+  const handleBack = () => {
+    setNavigationStack((prev) => {
+      if (prev.length <= 1) return prev;
+
+      const newStack = prev.slice(0, -1);
+      const lastNode = newStack[newStack.length - 1];
+
+      // Restore previous level's children
+      setDisplayList(lastNode.child_list || []);
+      setCurrentLevel(lastNode);
+
+      return newStack;
+    });
+  };
+
+  // --- Initial Load of Countries ---
+  useEffect(() => {
+    if (showModal) {
+      // Example: fetch countries list here
+      fetchRootCountries();
+    }
+  }, [showModal]);
+
+  const fetchRootCountries = async () => {
+    try {
+      setLoadingLocationData(true);
+
+      const domain = getSubdomain();
+      const url_fe = window.location.href;
+
+      const res = await getLocationTree({ domain, url_fe, id_country: 1 });
+      if (res.data?.country) {
+        const countries = Array.isArray(res.data.country.child_list)
+          ? res.data.country.child_list
+          : [];
+
+        setDisplayList(countries);
+
+        setNavigationStack([
+          { node_level: 0, name: "Countries", child_list: countries },
+        ]);
+
+        setCurrentLevel({ node_level: 0 });
+      }
+    } catch (err) {
+      console.error("Error fetching countries:", err);
+    } finally {
+      setLoadingLocationData(false);
+    }
+  };
+
   const handleApply = () => {
     const countryName = selectedCountry?.name || "";
     const stateName = selectedState?.name || "";
     const areaNames = selectedAreaNames.join(", ");
-    setSelectedLocation(`${stateName}, ${areaNames}`);
+    setSelectedLocation(`${areaNames}`);
     setShowModal(false);
     setNavigationStack([]);
     setLocationTree([]);
@@ -310,7 +389,7 @@ const Filters = ({
       const hostname = window.location.hostname;
       const domain = hostname.replace(/^www\./, "").split(".")[0];
       const url_fe = window.location.href;
-
+      console.log("selectedHolding", selectedHolding);
       const payload = {
         domain,
         url_fe,
@@ -333,7 +412,7 @@ const Filters = ({
               id_cities: [],
             },
             property_category: selectedCategory.id || [],
-            property_holding: selectedHolding.id || [],
+            property_holding: selectedHolding.map((h) => h.id) || [],
             property_lot_type: null,
             room: {
               min: roomRange?.min || null,
@@ -377,8 +456,8 @@ const Filters = ({
     { label: "New Project", key: "project" },
     { label: "Auction", key: "auction" },
   ];
-  const currentLevel = navigationStack[navigationStack.length - 1];
-  const displayList = currentLevel?.child_list || [];
+  // const currentLevel = navigationStack[navigationStack.length - 1];
+  // const displayList = currentLevel?.child_list || [];
   const filters = {
     "All Categories": categoryData, // array from props/state
     "All Holding Types": holding, // array from props/state
@@ -473,7 +552,10 @@ const Filters = ({
               <div className="col-12 col-md-3">
                 <div
                   className="form-control d-flex align-items-center justify-content-between"
-                  onClick={() => setShowModal(true)}
+                  onClick={() => {
+                    console.log("click");
+                    setShowModal(true);
+                  }}
                   style={{
                     height: "60px",
                     cursor: "pointer",
@@ -667,20 +749,82 @@ const Filters = ({
                                     </span>
 
                                     {label === "All Holding Types" && (
-                                      <input
-                                        type="checkbox"
-                                        onChange={(e) => {
-                                          e.stopPropagation();
-                                          setSelectedHolding({
-                                            id: item.id,
-                                            name: item.desc,
-                                          });
-                                          setOpenDropdown(null);
+                                      <label
+                                        style={{
+                                          position: "relative",
+                                          display: "inline-flex",
+                                          alignItems: "center",
+                                          cursor: "pointer",
                                         }}
-                                        checked={
-                                          selectedHolding?.id === item.id
-                                        }
-                                      />
+                                      >
+                                        <input
+                                          type="checkbox"
+                                          onChange={(e) => {
+                                            e.stopPropagation();
+                                            setSelectedHolding((prev) => {
+                                              const isChecked =
+                                                e.target.checked;
+                                              if (isChecked) {
+                                                return [
+                                                  ...prev,
+                                                  {
+                                                    id: item.id,
+                                                    name: item.desc,
+                                                  },
+                                                ];
+                                              } else {
+                                                return prev.filter(
+                                                  (holding) =>
+                                                    holding.id !== item.id
+                                                );
+                                              }
+                                            });
+                                          }}
+                                          checked={selectedHolding.some(
+                                            (holding) => holding.id === item.id
+                                          )}
+                                          style={{ display: "none" }} // hide native checkbox
+                                        />
+                                        <span
+                                          style={{
+                                            width: "18px",
+                                            height: "18px",
+                                            border: "2px solid #F4980E",
+                                            borderRadius: "3px",
+                                            display: "inline-block",
+                                            backgroundColor:
+                                              selectedHolding.some(
+                                                (holding) =>
+                                                  holding.id === item.id
+                                              )
+                                                ? "#F4980E"
+                                                : "#fff",
+                                            position: "relative",
+                                            transition: "all 0.2s ease",
+                                          }}
+                                        >
+                                          {selectedHolding.some(
+                                            (holding) => holding.id === item.id
+                                          ) && (
+                                            <svg
+                                              xmlns="http://www.w3.org/2000/svg"
+                                              viewBox="0 0 16 16"
+                                              fill="white"
+                                              width="14"
+                                              height="14"
+                                              style={{
+                                                position: "absolute",
+                                                top: "50%",
+                                                left: "50%",
+                                                transform:
+                                                  "translate(-50%, -50%)",
+                                              }}
+                                            >
+                                              <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7.25 7.25a.5.5 0 0 1-.708 0l-3.25-3.25a.5.5 0 1 1 .708-.708L6.25 10.043l6.896-6.897a.5.5 0 0 1 .708 0z" />
+                                            </svg>
+                                          )}
+                                        </span>
+                                      </label>
                                     )}
                                   </label>
                                 </li>
@@ -973,6 +1117,7 @@ const Filters = ({
               position: "relative",
             }}
           >
+            {/* ===== Header ===== */}
             <div
               style={{
                 backgroundColor: "transparent",
@@ -982,7 +1127,6 @@ const Filters = ({
                 justifyContent: "space-between",
                 padding: "12px 20px",
                 fontFamily: "Poppins",
-                // borderRadius:"16px"
               }}
             >
               <div>
@@ -1005,56 +1149,73 @@ const Filters = ({
                   </button>
                 )}
               </div>
+
               <div style={{ flex: 1 }}>
-                <h6
-                  style={{
-                    margin: 0,
-                    textAlign: "left",
-                    fontWeight: "600",
-                    fontSize: "16px",
-                    fontFamily: "Poppins",
-                    marginBottom: "5px",
-                  }}
-                >
-                  {currentLevel?.node_level === 0
-                    ? "Select Country"
-                    : currentLevel?.node_level === 1
-                    ? "Search by State"
-                    : currentLevel?.node_level === 2
-                    ? "Select City/Area"
-                    : ""}
-                </h6>
+                {(() => {
+                  const levelNum =
+                    typeof currentLevel === "object"
+                      ? currentLevel?.node_level ?? navigationStack.length - 1
+                      : typeof currentLevel === "number"
+                      ? currentLevel
+                      : navigationStack.length - 1;
 
-                {currentLevel?.node_level === 1 && navigationStack[0] && (
-                  <p
-                    style={{
-                      margin: 0,
-                      fontSize: "14px",
-                      color: "#555",
-                      fontFamily: "Poppins",
-                    }}
-                  >
-                    {navigationStack[0].name}
-                  </p>
-                )}
+                  return (
+                    <>
+                      <h6
+                        style={{
+                          margin: 0,
+                          textAlign: "left",
+                          fontWeight: "600",
+                          fontSize: "16px",
+                          fontFamily: "Poppins",
+                          marginBottom: "5px",
+                        }}
+                      >
+                        {levelNum === 0
+                          ? `Search by State`
+                          : levelNum === 1
+                          ? `Select City/Area`
+                          : levelNum === 2
+                          ? `Select City/Area`
+                          : `Select Area `}
+                      </h6>
 
-                {currentLevel?.node_level === 2 && navigationStack[1] && (
-                  <p
-                    style={{
-                      margin: 0,
-                      fontSize: "14px",
-                      color: "#555",
-                      fontFamily: "Poppins",
-                    }}
-                  >
-                    {navigationStack[1].name}
-                  </p>
-                )}
+                      {levelNum === 1 && navigationStack[0] && (
+                        <p
+                          style={{
+                            margin: 0,
+                            fontSize: "14px",
+                            color: "#555",
+                            fontFamily: "Poppins",
+                          }}
+                        >
+                          {navigationStack[1].name}
+                        </p>
+                      )}
+
+                      {levelNum === 2 && navigationStack[1] && (
+                        <p
+                          style={{
+                            margin: 0,
+                            fontSize: "14px",
+                            color: "#555",
+                            fontFamily: "Poppins",
+                          }}
+                        >
+                          {navigationStack[1].name}
+                        </p>
+                      )}
+                    </>
+                  );
+                })()}
               </div>
 
               <div>
                 <button
-                  onClick={() => setShowModal(false)}
+                  onClick={() => {
+                    console.log("data location", selectedCountry);
+                    setShowModal(false);
+                  }}
                   className="btn btn-sm"
                   style={{
                     border: "none",
@@ -1067,6 +1228,7 @@ const Filters = ({
               </div>
             </div>
 
+            {/* ===== Content ===== */}
             <div style={{ flex: 1, overflowY: "auto", padding: "20px" }}>
               {loadingLocationData ? (
                 <div
@@ -1081,118 +1243,207 @@ const Filters = ({
                 <>
                   {navigationStack.length > 0 && (
                     <>
-                      {/* ✅ Select All Checkbox (only for area list) */}
-                      {currentLevel?.node_level === 2 && (
-                        <div
-                          className="py-2 d-flex align-items-center"
-                          style={{ cursor: "pointer" }}
-                          onClick={() => {
-                            const allAreaIds = displayList.map(
-                              (area) => area.id
-                            );
-                            const allAreaObjects = displayList;
+                      {(() => {
+                        const depth = navigationStack.length;
+                        const isLeafLevel =
+                          Array.isArray(displayList) &&
+                          displayList.length > 0 &&
+                          displayList.every(
+                            (n) =>
+                              !n.child_list ||
+                              (Array.isArray(n.child_list) &&
+                                n.child_list.length === 0) ||
+                              n.child_count === 0
+                          );
 
-                            const isAllSelected = allAreaIds.every((id) =>
-                              selectedAreaIds.includes(id)
-                            );
+                        const showCheckboxes = depth >= 3 || isLeafLevel;
 
-                            if (isAllSelected) {
-                              setSelectedAreaIds([]);
-                              setSelectedAreaNames([]);
-                              setSelectedAreaObjects([]);
-                            } else {
-                              setSelectedAreaIds(allAreaIds);
-                              setSelectedAreaNames(
-                                allAreaObjects.map((a) => a.name)
-                              );
-                              setSelectedAreaObjects(allAreaObjects);
-                            }
-                          }}
-                        >
-                          <input
-                            type="checkbox"
-                            className="form-check-input"
-                            style={{ marginRight: "2%" }}
-                            checked={
-                              displayList.length > 0 &&
-                              displayList.every((area) =>
-                                selectedAreaIds.includes(area.id)
-                              )
-                            }
-                            readOnly
-                          />
-                          <span>Select All</span>
-                        </div>
-                      )}
+                        return (
+                          <>
+                            {showCheckboxes && displayList.length > 0 && (
+                              <div
+                                className="py-2 d-flex align-items-center"
+                                style={{ cursor: "pointer" }}
+                                onClick={() => {
+                                  const allIds = displayList.map(
+                                    (item) => item.id
+                                  );
+                                  const allObjects = displayList;
 
-                      {/* ✅ Area & Node Listing */}
-                      {displayList.map((node) => (
-                        <div
-                          key={node.id}
-                          className="py-2 d-flex align-items-center"
-                          style={{ cursor: "pointer" }}
-                          onClick={() => handleNodeClick(node)}
-                        >
-                          {node.node_level === 3 ? (
-                            <>
-                              <input
-                                type={"checkbox"}
-                                className="form-check-input"
-                                checked={selectedAreaIds.includes(node.id)}
-                                onChange={() => handleAreaToggle(node)}
-                                onClick={(e) => e.stopPropagation()}
-                                style={{ marginRight: "2%" }}
-                              />
-                              <span>{node.name}</span>
-                            </>
-                          ) : (
-                            <div
-                              className="py-2 d-flex align-items-center justify-content-between w-100"
-                              style={{ cursor: "pointer" }}
-                            >
-                              <span>{node.name}</span>
-                              <span>&#x276F;</span>
-                            </div>
-                          )}
-                        </div>
-                      ))}
+                                  const isAllSelected = allIds.every((id) =>
+                                    selectedAreaIds.includes(id)
+                                  );
+
+                                  if (isAllSelected) {
+                                    setSelectedAreaIds([]);
+                                    setSelectedAreaNames([]);
+                                    setSelectedAreaObjects([]);
+                                  } else {
+                                    setSelectedAreaIds(allIds);
+                                    setSelectedAreaNames(
+                                      allObjects.map((a) => a.name)
+                                    );
+                                    setSelectedAreaObjects(allObjects);
+                                  }
+                                }}
+                              >
+                                <input
+                                  type="checkbox"
+                                  style={{
+                                    appearance: "none",
+                                    width: "16px",
+                                    height: "16px",
+                                    border: "2px solid #F4980E",
+                                    borderRadius: "4px",
+                                    marginRight: "2%",
+                                    position: "relative",
+                                    cursor: "pointer",
+                                    backgroundColor:
+                                      displayList.length > 0 &&
+                                      displayList.every((item) =>
+                                        selectedAreaIds.includes(item.id)
+                                      )
+                                        ? "#F4980E"
+                                        : "#fff",
+                                  }}
+                                  checked={
+                                    displayList.length > 0 &&
+                                    displayList.every((item) =>
+                                      selectedAreaIds.includes(item.id)
+                                    )
+                                  }
+                                  readOnly
+                                />
+                                <span>Select All</span>
+                              </div>
+                            )}
+
+                            {Array.isArray(displayList) &&
+                              displayList.map((node) => {
+                                const nodeIsLeaf =
+                                  !node.child_list ||
+                                  (Array.isArray(node.child_list) &&
+                                    node.child_list.length === 0) ||
+                                  node.child_count === 0;
+
+                                return (
+                                  <div
+                                    key={node.id}
+                                    className="py-2 d-flex align-items-center"
+                                    style={{ cursor: "pointer" }}
+                                    onClick={() =>
+                                      node.child_count > 0
+                                        ? handleNodeClick(node)
+                                        : handleAreaToggle(node)
+                                    }
+                                  >
+                                    {showCheckboxes && nodeIsLeaf ? (
+                                      <>
+                                        <input
+                                          type="checkbox"
+                                          checked={selectedAreaIds.includes(
+                                            node.id
+                                          )}
+                                          onChange={() =>
+                                            handleAreaToggle(node)
+                                          }
+                                          onClick={(e) => e.stopPropagation()}
+                                          style={{
+                                            accentColor: "#F4980E", // ✅ Orange box
+                                            color: "white", // ✅ White tick (modern browsers support this)
+                                            cursor: "pointer",
+                                            marginRight: "2%",
+                                          }}
+                                        />
+
+                                        <span>{node.name}</span>
+                                      </>
+                                    ) : (
+                                      <div className="py-2 d-flex align-items-center justify-content-between w-100">
+                                        <span>{node.name}</span>
+                                        {node.child_count > 0 && (
+                                          <span>&#x276F;</span>
+                                        )}
+                                      </div>
+                                    )}
+                                  </div>
+                                );
+                              })}
+                          </>
+                        );
+                      })()}
                     </>
                   )}
                 </>
               )}
             </div>
 
-            {currentLevel?.node_level === 2 && (
-              <div
-                style={{
-                  // borderTop: "1px solid #ddd",
-                  padding: "15px 20px",
-                  backgroundColor: "white",
-                  display: "flex",
-                  justifyContent: "space-between", // left & right alignment
-                  borderRadius: "16px",
-                }}
-              >
-                <button
-                  className="btn btn-outline-secondary px-4"
-                  style={{ fontFamily: "Poppins" }}
-                  onClick={handleClear}
-                >
-                  Clear
-                </button>
+            {/* ===== Footer ===== */}
+            {(() => {
+              const depth = navigationStack.length;
+              const isLeafLevel =
+                Array.isArray(displayList) &&
+                displayList.length > 0 &&
+                displayList.every(
+                  (n) =>
+                    !n.child_list ||
+                    (Array.isArray(n.child_list) &&
+                      n.child_list.length === 0) ||
+                    n.child_count === 0
+                );
+              const showFooter = depth >= 3 || isLeafLevel;
 
-                <button
-                  className="btn text-white px-4"
-                  style={{ backgroundColor: "#F4980E", fontFamily: "Poppins" }}
-                  onClick={handleApply}
-                >
-                  Apply
-                </button>
-              </div>
-            )}
+              return (
+                showFooter && (
+                  <div
+                    style={{
+                      padding: "15px 20px",
+                      backgroundColor: "white",
+                      display: "flex",
+                      justifyContent: "space-between",
+                      borderRadius: "16px",
+                    }}
+                  >
+                    <button
+                      className="btn btn-outline-secondary px-4"
+                      style={{ fontFamily: "Poppins" }}
+                      onClick={handleClear}
+                    >
+                      Clear
+                    </button>
+
+                    <button
+                      className="btn text-white px-4"
+                      style={{
+                        backgroundColor: "#F4980E",
+                        fontFamily: "Poppins",
+                      }}
+                      onClick={handleApply}
+                    >
+                      Apply
+                    </button>
+                  </div>
+                )
+              );
+            })()}
+
+            {/* White tick only when checked */}
+            {/* <style>
+              {`
+          input[type="checkbox"][style]:checked::after {
+            content: "✔";
+            color: white;
+            font-size: 12px;
+            position: absolute;
+            top: -2px;
+            left: 2px;
+          }
+        `}
+            </style> */}
           </div>
         </div>
       )}
+
       {priceModalOpen && (
         <div className="modal-overlay" onClick={() => setPriceModalOpen(false)}>
           <div className="modal-box" onClick={(e) => e.stopPropagation()}>

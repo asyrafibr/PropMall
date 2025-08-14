@@ -84,10 +84,10 @@ const SearchPage = () => {
     text?.toLowerCase().trim().replace(/\s+/g, "-") || "";
 
   const handleSearch = useCallback(
-    debounce(async () => {
+    debounce(async (tab) => {
       setHasSearched(true);
       setLoading(true);
-      setSearchType(activeTab);
+    setSearchType(tab);
       const locationId = selectedLocation || "";
       const searchQuery = searchTerm.trim();
 
@@ -110,7 +110,7 @@ const SearchPage = () => {
             description: true,
           },
           search_filters: {
-            objective: objectiveMap[activeTab] || {},
+            objective: objectiveMap[tab] || {},
 
             location: {
               id_country: selectedCountry?.id_country || null,
@@ -140,7 +140,8 @@ const SearchPage = () => {
 
       try {
         const response = await getListings(payload);
-        console.log("payload", response.data.listing_search.listing_rows);
+        console.log("payload",payload);
+      console.log("tab used", tab); // ✅ confirm correct tab is used
 
         setProducts(response.data.listing_search.listing_rows);
       } catch (error) {
@@ -261,6 +262,8 @@ const SearchPage = () => {
                 bathroomRange={bathroomRange}
                 setRoomRange={setRoomRange}
                 roomRange={roomRange}
+                setSelectedAreaIds={setSelectedAreaIds}
+                selectedAreaIds={selectedAreaIds}
               />
             ) : (
               <FilterT2

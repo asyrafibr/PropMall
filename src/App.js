@@ -65,7 +65,7 @@ useEffect(() => {
 
   return (
     <>
-      {/* {!hideHeaderFooter && <Header />} */}
+      {!hideHeaderFooter && <Header />}
 
       <Routes>
         <Route path="/" element={<Dashboard />} />

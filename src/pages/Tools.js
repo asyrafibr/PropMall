@@ -4,22 +4,30 @@ import LegalFeeCalculator from "./LegalFeeCalculator";
 
 const Tools = () => {
   return (
-    <div style={{
-      display: "flex",
-      justifyContent: "center",
-      padding: "40px 20px",
-    }}>
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "center", // center horizontally
+        alignItems: "center",     // center vertically
+        minHeight: "100vh",       // take full viewport height
+        padding: "40px 20px",
+        backgroundColor: "#f9f9f9", // optional for contrast
+      }}
+    >
       <div
         style={{
           display: "flex",
-          gap: "20px", // Reduced from 40px to 20px
+          gap: "20px", // space between calculator and filter
           alignItems: "flex-start",
           maxWidth: "1200px",
           width: "100%",
+          justifyContent: "center", // keep both elements centered as a group
         }}
       >
-        <LegalFeeCalculator />
-        <div style={{ maxWidth: "400px", marginTop: "8%" }}>
+        <div style={{ flex: "1 1 700px", maxWidth: "700px" }}>
+          <LegalFeeCalculator />
+        </div>
+        <div style={{ flex: "0 0 350px", maxWidth: "350px" }}>
           <SideFilter />
         </div>
       </div>

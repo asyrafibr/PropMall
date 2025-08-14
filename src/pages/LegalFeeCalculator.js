@@ -1,19 +1,38 @@
 import React, { useState } from "react";
-const formatCurrency = (value) => {
-  return value.toLocaleString("en-MY", {
+import {
+  FaHome,
+  FaMoneyCheckAlt,
+  FaFileContract,
+  FaCalculator,
+  FaChartLine,
+  FaArrowLeft
+} from "react-icons/fa";
+
+// Currency formatter
+const formatCurrency = (value) =>
+  value.toLocaleString("en-MY", {
     style: "currency",
     currency: "MYR",
     minimumFractionDigits: 2,
   });
-};
+
 const inputStyle = {
   width: "100%",
   padding: "8px 10px",
   border: "1px solid #ddd",
   borderRadius: "6px",
   fontSize: "14px",
-  boxSizing: "border-box",
 };
+
+/* ----- CALCULATORS ----- */
+
+// 1️⃣ Buy / Sell Calculator
+const BuySellCalculator = () => {
+  const [price, setPrice] = useState("");
+  const [result, setResult] = useState(null);
+    const [discount, setDiscount] = useState("");
+      const [error, setError] = useState("");
+  const [buySellResult, setBuySellResult] = useState(null);
 const calculateBuySell = (price, discount = 0) => {
   const discountedPrice = price * (1 - discount / 100);
   let legalFees = 0;
@@ -46,95 +65,10 @@ const calculateBuySell = (price, discount = 0) => {
   };
 };
 
-const calculateLoan = (loanAmount) => {
-  const legalFees =
-    loanAmount <= 500000
-      ? loanAmount * 0.01
-      : loanAmount <= 1000000
-      ? 5000 + (loanAmount - 500000) * 0.008
-      : 9000 + (loanAmount - 1000000) * 0.007;
-
-  const stampDuty = loanAmount * 0.005;
-  const sst = legalFees * 0.08;
-
-  return {
-    legalFees,
-    stampDuty,
-    sst,
-    total: legalFees + stampDuty + sst,
-  };
-};
-
-const calculateTenancy = (monthlyRent, durationMonths) => {
-  const annualRent = monthlyRent * durationMonths;
-  const stampDuty =
-    annualRent <= 2400 ? 0 : annualRent <= 24000 ? 40 : 0.2 * annualRent;
-  return {
-    stampDuty,
-  };
-};
-
-const LegalFeeCalculator = () => {
-  const [price, setPrice] = useState("");
-  const [discount, setDiscount] = useState("");
-  const [loanAmount, setLoanAmount] = useState("");
-  const [monthlyRent, setMonthlyRent] = useState("");
-  const [rentalDuration, setRentalDuration] = useState("");
-
-  const [buySellResult, setBuySellResult] = useState(null);
-  const [loanResult, setLoanResult] = useState(null);
-  const [tenancyResult, setTenancyResult] = useState(null);
-  const [error, setError] = useState("");
-  const [rpgtResult, setRpgtResult] = useState(null);
-  const [rpgt, setRpgt] = useState({
-    purchasePrice: "",
-    disposalPrice: "",
-    purchaseYear: "",
-    disposalYear: "",
-    permittedExpenses: "",
-  });
-  const [mortgageResult, setMortgageResult] = useState(null);
-  const [mortgage, setMortgage] = useState({
-    propertyPrice: "",
-    loanAmount: "",
-    interestRate: "",
-    loanTenure: "",
-  });
-  const handleCalculateMortgage = () => {
-    console.log("Loan Amount:", mortgage.loanAmount);
-    console.log("Interest Rate:", mortgage.interestRate);
-    console.log("Loan Tenure:", mortgage.loanTenure);
-    const P = parseFloat(mortgage.loanAmount.replace(/,/g, ""));
-    const r = parseFloat(mortgage.interestRate) / 100 / 12;
-    const n = parseInt(mortgage.loanTenure) * 12;
-
-    if (isNaN(P) || isNaN(r) || isNaN(n)) return;
-
-    const monthly = (P * r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1);
-
-    const total = monthly * n;
-    const interest = total - P;
-    const principal = P;
-
-    const downpayment =
-      parseFloat(mortgage.propertyPrice.replace(/,/g, "")) - P;
-    console.log("monthly", monthly);
-    console.log("P", P);
-
-    console.log("r", r);
-
-    console.log("n", n);
-
-    setMortgageResult({
-      monthly: Math.round(monthly),
-      principal,
-      interest: Math.round(interest),
-      downpayment,
-    });
-  };
   const handleCalculateBuySell = () => {
     const priceValue = parseFloat(price.replace(/,/g, ""));
     const discountValue = parseFloat(discount);
+
     if (isNaN(priceValue) || priceValue <= 0) {
       setError("Please enter a valid purchase price.");
       return;
@@ -150,61 +84,18 @@ const LegalFeeCalculator = () => {
     setBuySellResult(calculateBuySell(priceValue, discountValue));
   };
 
-  const handleCalculateLoan = () => {
-    const loanValue = parseFloat(loanAmount.replace(/,/g, ""));
-    if (isNaN(loanValue) || loanValue <= 0) return;
-    setLoanResult(calculateLoan(loanValue));
-  };
-  const handleCalculateRPGT = () => {
-    const purchase = parseFloat(rpgt.purchasePrice.replace(/,/g, ""));
-    const disposal = parseFloat(rpgt.disposalPrice.replace(/,/g, ""));
-    const expense = parseFloat(rpgt.permittedExpenses.replace(/,/g, "")) || 0;
-    const gain = disposal - purchase - expense;
-    const holdingPeriod =
-      parseInt(rpgt.disposalYear) - parseInt(rpgt.purchaseYear);
-
-    let taxRate = 0;
-
-    if (holdingPeriod <= 3) taxRate = 0.3;
-    else if (holdingPeriod === 4) taxRate = 0.2;
-    else if (holdingPeriod === 5) taxRate = 0.15;
-    else if (holdingPeriod > 5) taxRate = 0.05;
-
-    const tax = gain > 0 ? gain * taxRate : 0;
-
-    setRpgtResult({
-      gain,
-      taxRate,
-      tax,
-    });
-  };
-  const handleCalculateTenancy = () => {
-    const rent = parseFloat(monthlyRent.replace(/,/g, ""));
-    const duration = parseInt(rentalDuration);
-    if (isNaN(rent) || rent <= 0 || isNaN(duration) || duration <= 0) return;
-    setTenancyResult(calculateTenancy(rent, duration));
+  const handleCalculate = () => {
+    const p = parseFloat(price);
+    if (!isNaN(p)) {
+      setResult({
+        legalFee: p * 0.01,
+        stampDuty: p * 0.03,
+      });
+    }
   };
 
   return (
-    <div
-      style={{
-        display: "flex",
-        gap: "40px",
-        alignItems: "flex-start",
-        padding: "20px",
-      }}
-    >
-      <div
-        style={{
-          minWidth: "800px",
-          margin: "0 auto",
-          fontFamily: "Poppins",
-        }}
-      >
-        <h3 style={{ paddingTop: 40 }}>Legal Fees / Stamp Duty Calculator</h3>
-
-        {/* Section Card */}
-        <div style={styles.card}>
+   <div style={styles.card}>
           <h4>Buy / Sell</h4>
           <div style={styles.flexRow}>
             <div style={{ ...styles.leftCol, marginBottom: "5%" }}>
@@ -274,6 +165,61 @@ const LegalFeeCalculator = () => {
             </div>
           </div>
 
+    </div>
+  );
+};
+
+// 2️⃣ Loan Calculator
+const LoanCalculator = () => {
+  const [amount, setAmount] = useState("");
+  const [rate, setRate] = useState("");
+  const [years, setYears] = useState("");
+  const [monthly, setMonthly] = useState(null);
+  const [mortgage, setMortgage] = useState({
+    propertyPrice: "",
+    loanAmount: "",
+    interestRate: "",
+    loanTenure: "",
+  });
+    const [loanAmount, setLoanAmount] = useState("");
+      const [loanResult, setLoanResult] = useState(null);
+const calculateLoan = (loanAmount) => {
+  const legalFees =
+    loanAmount <= 500000
+      ? loanAmount * 0.01
+      : loanAmount <= 1000000
+      ? 5000 + (loanAmount - 500000) * 0.008
+      : 9000 + (loanAmount - 1000000) * 0.007;
+
+  const stampDuty = loanAmount * 0.005;
+  const sst = legalFees * 0.08;
+
+  return {
+    legalFees,
+    stampDuty,
+    sst,
+    total: legalFees + stampDuty + sst,
+  };
+};
+ const handleCalculateLoan = () => {
+    const loanValue = parseFloat(loanAmount.replace(/,/g, ""));
+    if (isNaN(loanValue) || loanValue <= 0) return;
+    setLoanResult(calculateLoan(loanValue));
+  };
+  const handleCalculate = () => {
+    const loan = parseFloat(amount);
+    const interest = parseFloat(rate) / 100 / 12;
+    const payments = parseFloat(years) * 12;
+    if (loan && interest && payments) {
+      const m =
+        (loan * interest) / (1 - Math.pow(1 + interest, -payments));
+      setMonthly(m);
+    }
+  };
+
+  return (
+       <div style={styles.card}>
+          
           {/* Loan */}
           <h4>Loan</h4>
           <div style={styles.flexRow}>
@@ -312,6 +258,45 @@ const LegalFeeCalculator = () => {
               </p>
             </div>
           </div>
+    </div>
+  );
+};
+
+// 3️⃣ Tenancy Calculator
+const TenancyCalculator = () => {
+  const [rent, setRent] = useState("");
+  const [months, setMonths] = useState("");
+  const [total, setTotal] = useState(null);
+  const [monthlyRent, setMonthlyRent] = useState("");
+  const [rentalDuration, setRentalDuration] = useState("");
+    const [tenancyResult, setTenancyResult] = useState(null);
+
+  const handleCalculateTenancy = () => {
+    const rent = parseFloat(monthlyRent.replace(/,/g, ""));
+    const duration = parseInt(rentalDuration);
+    if (isNaN(rent) || rent <= 0 || isNaN(duration) || duration <= 0) return;
+    setTenancyResult(calculateTenancy(rent, duration));
+  };
+const calculateTenancy = (monthlyRent, durationMonths) => {
+  const annualRent = monthlyRent * durationMonths;
+  const stampDuty =
+    annualRent <= 2400 ? 0 : annualRent <= 24000 ? 40 : 0.2 * annualRent;
+  return {
+    stampDuty,
+  };
+};
+  const handleCalculate = () => {
+    const r = parseFloat(rent);
+    const m = parseFloat(months);
+    if (!isNaN(r) && !isNaN(m)) {
+      setTotal(r * m);
+    }
+  };
+
+  return (
+      <div style={styles.card}>
+          
+       
 
           {/* Tenancy */}
           <h4>Tenancy</h4>
@@ -365,7 +350,66 @@ const LegalFeeCalculator = () => {
             </div>
           </div>
         </div>
-        <div style={styles.card}>
+  );
+};
+
+// 4️⃣ Mortgage Calculator
+const MortgageCalculator = () => {
+  const [principal, setPrincipal] = useState("");
+  const [rate, setRate] = useState("");
+  const [years, setYears] = useState("");
+  const [monthly, setMonthly] = useState(null);
+  const [mortgageResult, setMortgageResult] = useState(null);
+  const [mortgage, setMortgage] = useState({
+    propertyPrice: "",
+    loanAmount: "",
+    interestRate: "",
+    loanTenure: "",
+  });
+    const handleCalculateMortgage = () => {
+    console.log("Loan Amount:", mortgage.loanAmount);
+    console.log("Interest Rate:", mortgage.interestRate);
+    console.log("Loan Tenure:", mortgage.loanTenure);
+    const P = parseFloat(mortgage.loanAmount.replace(/,/g, ""));
+    const r = parseFloat(mortgage.interestRate) / 100 / 12;
+    const n = parseInt(mortgage.loanTenure) * 12;
+
+    if (isNaN(P) || isNaN(r) || isNaN(n)) return;
+
+    const monthly = (P * r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1);
+
+    const total = monthly * n;
+    const interest = total - P;
+    const principal = P;
+
+    const downpayment =
+      parseFloat(mortgage.propertyPrice.replace(/,/g, "")) - P;
+    console.log("monthly", monthly);
+    console.log("P", P);
+
+    console.log("r", r);
+
+    console.log("n", n);
+
+    setMortgageResult({
+      monthly: Math.round(monthly),
+      principal,
+      interest: Math.round(interest),
+      downpayment,
+    });
+  };
+  const handleCalculate = () => {
+    const p = parseFloat(principal);
+    const r = parseFloat(rate) / 100 / 12;
+    const n = parseFloat(years) * 12;
+    if (p && r && n) {
+      const m = (p * r) / (1 - Math.pow(1 + r, -n));
+      setMonthly(m);
+    }
+  };
+
+  return (
+    <div style={styles.card}>
           <h4 style={styles.title}>Mortgage Calculator</h4>
           <div style={styles.flexRow}>
             {/* LEFT COLUMN */}
@@ -572,9 +616,57 @@ const LegalFeeCalculator = () => {
             </div>
           </div>
         </div>
+  );
+};
 
-        {/* Real Property Gain Tax */}
-        <div style={styles.card}>
+// 5️⃣ RPGT Calculator
+const RPGTCalculator = () => {
+  const [price, setPrice] = useState("");
+  const [cost, setCost] = useState("");
+  const [gain, setGain] = useState(null);
+    const [rpgtResult, setRpgtResult] = useState(null);
+
+  const [rpgt, setRpgt] = useState({
+    purchasePrice: "",
+    disposalPrice: "",
+    purchaseYear: "",
+    disposalYear: "",
+    permittedExpenses: "",
+  });
+   const handleCalculateRPGT = () => {
+    const purchase = parseFloat(rpgt.purchasePrice.replace(/,/g, ""));
+    const disposal = parseFloat(rpgt.disposalPrice.replace(/,/g, ""));
+    const expense = parseFloat(rpgt.permittedExpenses.replace(/,/g, "")) || 0;
+    const gain = disposal - purchase - expense;
+    const holdingPeriod =
+      parseInt(rpgt.disposalYear) - parseInt(rpgt.purchaseYear);
+
+    let taxRate = 0;
+
+    if (holdingPeriod <= 3) taxRate = 0.3;
+    else if (holdingPeriod === 4) taxRate = 0.2;
+    else if (holdingPeriod === 5) taxRate = 0.15;
+    else if (holdingPeriod > 5) taxRate = 0.05;
+
+    const tax = gain > 0 ? gain * taxRate : 0;
+
+    setRpgtResult({
+      gain,
+      taxRate,
+      tax,
+    });
+  };
+  
+  const handleCalculate = () => {
+    const p = parseFloat(price);
+    const c = parseFloat(cost);
+    if (!isNaN(p) && !isNaN(c)) {
+      setGain(p - c);
+    }
+  };
+
+  return (
+    <div style={styles.card}>
           <h4 style={{ marginBottom: "15px", fontWeight: "600" }}>
             Real Property Gain Tax
           </h4>
@@ -832,11 +924,92 @@ const LegalFeeCalculator = () => {
             </div>
           </div>
         </div>
+  );
+};
+
+/* ----- MAIN PAGE ----- */
+const CalculatorMenuPage = () => {
+  const [selectedCalculator, setSelectedCalculator] = useState(null);
+
+  const calculators = [
+    { id: "buySell", name: "Buy / Sell", icon: <FaHome size={40} />, component: <BuySellCalculator /> },
+    { id: "loan", name: "Loan", icon: <FaMoneyCheckAlt size={40} />, component: <LoanCalculator /> },
+    { id: "tenancy", name: "Tenancy", icon: <FaFileContract size={40} />, component: <TenancyCalculator /> },
+    { id: "mortgage", name: "Mortgage", icon: <FaCalculator size={40} />, component: <MortgageCalculator /> },
+    { id: "rpgt", name: "RPGT", icon: <FaChartLine size={40} />, component: <RPGTCalculator /> },
+  ];
+
+  if (selectedCalculator) {
+    const calc = calculators.find((c) => c.id === selectedCalculator);
+    return (
+      <div style={{ padding: 20 }}>
+        <button
+          onClick={() => setSelectedCalculator(null)}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 8,
+            marginBottom: 20,
+            padding: "6px 12px",
+            background: "#fafafa",
+            border: "none",
+            borderRadius: 6,
+            cursor: "pointer"
+          }}
+        >
+          <FaArrowLeft /> Back
+        </button>
+        {calc?.component}
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ padding: 20 }}>
+      {/* Top row (3 icons) */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 20 }}>
+        {calculators.slice(0, 3).map((calc) => (
+          <div
+            key={calc.id}
+            onClick={() => setSelectedCalculator(calc.id)}
+            style={{
+              cursor: "pointer",
+              background: "#f8f8f8",
+              borderRadius: 12,
+              padding: 20,
+              textAlign: "center",
+              boxShadow: "0 2px 5px rgba(0,0,0,0.1)",
+            }}
+          >
+            {calc.icon}
+            <p style={{ marginTop: 10 }}>{calc.name}</p>
+          </div>
+        ))}
+      </div>
+
+      {/* Bottom row (2 icons) */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 20, marginTop: 20 }}>
+        {calculators.slice(3).map((calc) => (
+          <div
+            key={calc.id}
+            onClick={() => setSelectedCalculator(calc.id)}
+            style={{
+              cursor: "pointer",
+              background: "#f8f8f8",
+              borderRadius: 12,
+              padding: 20,
+              textAlign: "center",
+              boxShadow: "0 2px 5px rgba(0,0,0,0.1)",
+            }}
+          >
+            {calc.icon}
+            <p style={{ marginTop: 10 }}>{calc.name}</p>
+          </div>
+        ))}
       </div>
     </div>
   );
 };
-
 const styles = {
   card: {
     border: "1px solid #ccc",
@@ -937,5 +1110,4 @@ const styles = {
     width: "120px",
   },
 };
-
-export default LegalFeeCalculator;
+export default CalculatorMenuPage;

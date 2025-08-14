@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useTemplate } from "../context/TemplateContext"; // ✅ Import Template Context
 import { getAgent } from "../api/axiosApi";
-
+import './header.css'
 const Navbar = () => {
   const { template, switchTemplate } = useTemplate(); // ✅ Use Template Context
   const navigate = useNavigate();
@@ -14,7 +14,7 @@ const Navbar = () => {
   };
   // const [agent, setAgent] = useState({});
   // const [category, setCategory] = useState({});
-  const { agent, category,mainAgent } = useTemplate();
+  const { agent, category, mainAgent } = useTemplate();
 
   const handleNavigate = (path) => {
     // You can also add logic here if needed before navigating
@@ -75,7 +75,8 @@ const Navbar = () => {
               <li className="nav-item">
                 <Link
                   className="nav-link text-nowrap"
-                  to="/sale"
+                  to="/search"
+                  state={{ activeTab: "Buy", autoSearch: true }} // ✅ send desired active tab
                   style={{
                     fontSize: "16px",
                     fontWeight: 400,
@@ -90,7 +91,8 @@ const Navbar = () => {
               <li className="nav-item">
                 <Link
                   className="nav-link text-nowrap"
-                  to="/rent"
+                  to="/search"
+                  state={{ activeTab: "Rent", autoSearch: true }} // ✅
                   style={{
                     fontSize: "16px",
                     fontWeight: 400,
@@ -105,7 +107,8 @@ const Navbar = () => {
               <li className="nav-item">
                 <Link
                   className="nav-link text-nowrap"
-                  to="/new-project"
+                  to="/search"
+                  state={{ activeTab: "New Project", autoSearch: true }} // ✅
                   style={{
                     fontSize: "16px",
                     fontWeight: 400,
@@ -120,7 +123,8 @@ const Navbar = () => {
               <li className="nav-item">
                 <Link
                   className="nav-link text-nowrap"
-                  to="/auction"
+                  to="/search"
+                  state={{ activeTab: "Auction", autoSearch: true }} // ✅
                   style={{
                     fontSize: "16px",
                     fontWeight: 400,
@@ -131,6 +135,7 @@ const Navbar = () => {
                 </Link>
               </li>
             )}
+
             <li className="nav-item">
               <Link
                 className="nav-link text-nowrap"
@@ -171,7 +176,7 @@ const Navbar = () => {
               </Link>
             </li>
 
-            {/* {agent.i_want_to && (
+            {agent.i_want_to && (
               <li className="nav-item dropdown">
                 <a
                   href="#"
@@ -252,8 +257,8 @@ const Navbar = () => {
                   </li>
                 </ul>
               </li>
-            )} */}
-            {/* {agent.tools && (
+            )}
+            {agent.tools && (
               <li className="nav-item">
                 <Link
                   className="nav-link text-nowrap"
@@ -267,7 +272,7 @@ const Navbar = () => {
                   Tools
                 </Link>
               </li>
-            )} */}
+            )}
 
             {/* ✅ Template Switch Dropdown */}
             <li className="nav-item ms-3">

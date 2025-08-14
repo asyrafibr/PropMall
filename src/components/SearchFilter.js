@@ -2,7 +2,14 @@ import React, { useEffect, useState, useRef } from "react";
 import AgentBox from "./AgentBox";
 import agentBoxbg from "../image/Landing_HeroAgent.jpg";
 import { useTemplate } from "../context/TemplateContext"; // ✅ Import Template Context
-import { getCategory, getHolding, getLot } from "../api/axiosApi";
+import {
+  getCategory,
+  getHolding,
+  getLot,
+  getLocationTree,
+} from "../api/axiosApi";
+import { useLocation } from "react-router-dom";
+
 const SearchFilter = ({
   locations,
   years,
@@ -30,7 +37,9 @@ const SearchFilter = ({
   bathroomRange,
   setBathroomRange,
   setRoomRange,
-  roomRange
+  roomRange,
+  setSelectedAreaIds,
+  selectedAreaIds,
 }) => {
   const { agent, category } = useTemplate();
   const containerRef = useRef(null); // ✅ ref to the whole dropdown group
@@ -43,9 +52,20 @@ const SearchFilter = ({
   // const [priceRange, setPriceRange] = useState({ min: null, max: null });
   const [categoryData, setCategory] = useState({});
   const [holding, setHolding] = useState({});
-  const [selectedAreaIds, setSelectedAreaIds] = useState([]);
+  // const [selectedAreaIds, setSelectedAreaIds] = useState([]);
   // const [bathroomRange, setBathroomRange] = useState({ min: null, max: null });
   // const [roomRange, setRoomRange] = useState({ min: null, max: null });
+  const [displayList, setDisplayList] = useState([]);
+  const [navigationStack, setNavigationStack] = useState([]);
+  const [currentLevel, setCurrentLevel] = useState(0);
+  const [selectedAreaNames, setSelectedAreaNames] = useState([]);
+  const [selectedAreaObjects, setSelectedAreaObjects] = useState([]);
+  const [showModal, setShowModal] = useState(false);
+  const [loadingLocationData, setLoadingLocationData] = useState(false);
+  const [selectedCountry, setSelectedCountry] = useState(null);
+  const [selectedState, setSelectedState] = useState(null);
+  const [locationTree, setLocationTree] = useState([]);
+  const location = useLocation();
 
   const BUY_AMOUNTS = [
     0, 100000, 200000, 300000, 400000, 500000, 600000, 700000, 800000, 900000,
@@ -76,6 +96,183 @@ const SearchFilter = ({
     }
     return best;
   };
+  const handleNodeClick = (node) => {
+    // If node has a child_list and that child_list has its own child_list
+    if (node.child_list && node.child_list.length > 0) {
+      // If you want to skip directly to grandchild_list:
+      const grandChildList = node.child_list[0]?.child_list || null;
+
+      if (grandChildList && grandChildList.length > 0) {
+        setDisplayList(grandChildList);
+        setNavigationStack((prev) => [
+          ...prev,
+          {
+            node_level: (node.node_level || 0) + 2,
+            name: node.name,
+            child_list: grandChildList,
+          },
+        ]);
+        setCurrentLevel((prev) =>
+          typeof prev === "object" ? (prev.node_level || 0) + 2 : prev + 2
+        );
+        return;
+      }
+
+      // Otherwise just go to normal child_list
+      setDisplayList(node.child_list);
+      setNavigationStack((prev) => [
+        ...prev,
+        {
+          node_level: (node.node_level || 0) + 1,
+          name: node.name,
+          child_list: node.child_list,
+        },
+      ]);
+      setCurrentLevel((prev) =>
+        typeof prev === "object" ? (prev.node_level || 0) + 1 : prev + 1
+      );
+    }
+  };
+
+  // --- Area Toggle ---
+  const handleAreaToggle = (area) => {
+    const isSelected = selectedAreaIds.includes(area.id);
+
+    if (isSelected) {
+      setSelectedAreaIds((prev) => prev.filter((id) => id !== area.id));
+      setSelectedAreaNames((prev) => prev.filter((name) => name !== area.name));
+      setSelectedAreaObjects((prev) =>
+        prev.filter((obj) => obj.id !== area.id)
+      );
+    } else {
+      const parentStateId = area.parent_id;
+      const isSameState =
+        !selectedAreaObjects.length ||
+        selectedAreaObjects[0].parent_id === parentStateId;
+
+      if (isSameState) {
+        setSelectedAreaIds((prev) => [...prev, area.id]);
+        setSelectedAreaNames((prev) => [...prev, area.name]);
+        setSelectedAreaObjects((prev) => [...prev, area]);
+      } else {
+        setSelectedAreaIds([area.id]);
+        setSelectedAreaNames([area.name]);
+        setSelectedAreaObjects([area]);
+      }
+    }
+
+  };
+
+  // --- Back Navigation ---
+  const handleBack = () => {
+    setNavigationStack((prev) => {
+      if (prev.length <= 1) return prev;
+
+      const newStack = prev.slice(0, -1);
+      const lastNode = newStack[newStack.length - 1];
+
+      // Restore previous level's children
+      setDisplayList(lastNode.child_list || []);
+      setCurrentLevel(lastNode);
+
+      return newStack;
+    });
+  };
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const categoryList = await getCategory();
+
+        setCategory(categoryList.data.property_category);
+
+        const holdingList = await getHolding();
+        const lotList = await getLot();
+        setHolding([
+          ...(holdingList.data.property_holding || []),
+          ...(lotList.data?.property_lot_type || []), // Adjust key based on lotList structure
+        ]);
+        console.log("lot", lotList);
+        console.log("masuk 2", holdingList);
+
+        // ❌ agent is NOT updated here yet
+      } catch (error) {
+        console.error("Error fetching agent:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    console.log("locatoion", location);
+    if (location.state?.activeTab) {
+      setActiveTab(location.state.activeTab);
+    }
+  }, [location.state?.activeTab]);
+
+  useEffect(() => {
+    // If autoSearch flag is set, run handleSearch after tab is updated
+    console.log("LOCATION NOW",location.state.activeTab)
+    if (location.state?.autoSearch && location.state?.activeTab) {
+      handleSearch(location.state.activeTab);
+    }
+  }, [location.state?.autoSearch, location.state?.activeTab]);
+  // --- Initial Load of Countries ---
+  useEffect(() => {
+    if (showModal) {
+      // Example: fetch countries list here
+      fetchRootCountries();
+    }
+  }, [showModal]);
+  const getSubdomain = () => {
+    const hostname = window.location.hostname; // e.g., "prohartanah.myhartanah.co"
+    const parts = hostname.split(".");
+
+    // Handle localhost (e.g., "localhost" or "localhost:3000")
+    if (hostname.includes("localhost")) return "localhost";
+
+    // e.g. ["prohartanah", "myhartanah", "co"]
+    if (parts.length > 2) return parts[0]; // "prohartanah"
+    return null; // fallback if no subdomain
+  };
+  const fetchRootCountries = async () => {
+    try {
+      setLoadingLocationData(true);
+
+      const domain = getSubdomain();
+      const url_fe = window.location.href;
+
+      const res = await getLocationTree({ domain, url_fe, id_country: 1 });
+      if (res.data?.country) {
+        const countries = Array.isArray(res.data.country.child_list)
+          ? res.data.country.child_list
+          : [];
+
+        setDisplayList(countries);
+
+        setNavigationStack([
+          { node_level: 0, name: "Countries", child_list: countries },
+        ]);
+
+        setCurrentLevel({ node_level: 0 });
+      }
+    } catch (err) {
+      console.error("Error fetching countries:", err);
+    } finally {
+      setLoadingLocationData(false);
+    }
+  };
+
+  const handleApply = () => {
+    const countryName = selectedCountry?.name || "";
+    const stateName = selectedState?.name || "";
+    const areaNames = selectedAreaNames.join(", ");
+    console.log("location", selectedAreaNames);
+    setSelectedLocation(`${areaNames}`);
+    setShowModal(false);
+    setNavigationStack([]);
+    setLocationTree([]);
+  };
   const filters = {
     "All Categories": categoryData, // array from props/state
     "All Holding Types": holding, // array from props/state
@@ -89,25 +286,25 @@ const SearchFilter = ({
   const handleClear = () => {
     setSelectedAreaIds([]);
   };
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const categoryList = await getCategory();
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const categoryList = await getCategory();
 
-        setCategory(categoryList.data.property_category);
+  //       setCategory(categoryList.data.property_category);
 
-        const holdingList = await getHolding();
-        const lotList = await getLot();
-        setHolding(holdingList.data.property_holding_and_type || []);
+  //       const holdingList = await getHolding();
+  //       const lotList = await getLot();
+  //       setHolding(holdingList.data.property_holding_and_type || []);
 
-        // ❌ agent is NOT updated here yet
-      } catch (error) {
-        console.error("Error fetching agent:", error);
-      }
-    };
+  //       // ❌ agent is NOT updated here yet
+  //     } catch (error) {
+  //       console.error("Error fetching agent:", error);
+  //     }
+  //   };
 
-    fetchData();
-  }, []);
+  //   fetchData();
+  // }, []);
 
   function Modal({
     title,
@@ -186,10 +383,6 @@ const SearchFilter = ({
     { label: "New Project", key: "project" },
     { label: "Auction", key: "auction" },
   ];
-  console.log(
-    "Tabs shown:",
-    selectedCategory
-  );
   return (
     <div style={{ width: "100%", display: "flex", justifyContent: "center" }}>
       <div
@@ -243,7 +436,47 @@ const SearchFilter = ({
 
           {/* Filters Row */}
           <div className="row justify-content-left">
-            <div className="col-12 col-md-3 mb-3">
+            <div className="col-12 col-md-3">
+              <div
+                className="form-control d-flex align-items-center justify-content-between"
+                onClick={() => {
+                  console.log("click");
+                  setShowModal(true);
+                }}
+                style={{
+                  height: "60px",
+                  cursor: "pointer",
+                  backgroundColor: "#fff",
+                  fontFamily: "Poppins",
+                  padding: "0 16px", // add some padding
+                  overflow: "hidden",
+                }}
+              >
+                <span
+                  style={{
+                    fontFamily: "Poppins",
+                    fontSize: "20px",
+                    fontWeight: 400,
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    flex: 1,
+                  }}
+                >
+                  {selectedLocation || "All States"}
+                </span>
+                <span
+                  style={{
+                    fontSize: "0.8rem",
+                    marginLeft: "8px",
+                    flexShrink: 0,
+                  }}
+                >
+                  ▼
+                </span>
+              </div>
+            </div>
+            {/* <div className="col-12 col-md-3 mb-3">
               <label
                 htmlFor="location"
                 className="form-label"
@@ -265,7 +498,7 @@ const SearchFilter = ({
                   </option>
                 ))}
               </select>
-            </div>
+            </div> */}
 
             <div className="col-12 col-md-9 d-flex align-items-start mb-3">
               <div
@@ -275,13 +508,6 @@ const SearchFilter = ({
                   flexDirection: "column",
                 }}
               >
-                <label
-                  htmlFor="search"
-                  className="form-label"
-                  style={{ marginBottom: "6px", fontFamily: "Poppins" }}
-                >
-                  Search:
-                </label>
                 <input
                   id="search"
                   type="text"
@@ -311,7 +537,7 @@ const SearchFilter = ({
                   boxSizing: "border-box",
                   display: "flex",
                   alignItems: "center",
-                  marginTop: "30px",
+                  // marginTop: "30px",
                   justifyContent: "center",
                   fontFamily: "Poppins",
                 }}
@@ -431,18 +657,79 @@ const SearchFilter = ({
                                   </span>
 
                                   {label === "All Holding Types" && (
-                                    <input
-                                      type="checkbox"
-                                      onChange={(e) => {
-                                        e.stopPropagation();
-                                        setSelectedHolding({
-                                          id: item.id,
-                                          name: item.desc,
-                                        });
-                                        setOpenDropdown(null);
+                                    <label
+                                      style={{
+                                        position: "relative",
+                                        display: "inline-flex",
+                                        alignItems: "center",
+                                        cursor: "pointer",
                                       }}
-                                      checked={selectedHolding?.id === item.id}
-                                    />
+                                    >
+                                      <input
+                                        type="checkbox"
+                                        onChange={(e) => {
+                                          e.stopPropagation();
+                                          setSelectedHolding((prev) => {
+                                            const isChecked = e.target.checked;
+                                            if (isChecked) {
+                                              return [
+                                                ...prev,
+                                                {
+                                                  id: item.id,
+                                                  name: item.desc,
+                                                },
+                                              ];
+                                            } else {
+                                              return prev.filter(
+                                                (holding) =>
+                                                  holding.id !== item.id
+                                              );
+                                            }
+                                          });
+                                        }}
+                                        checked={selectedHolding.some(
+                                          (holding) => holding.id === item.id
+                                        )}
+                                        style={{ display: "none" }} // hide native checkbox
+                                      />
+                                      <span
+                                        style={{
+                                          width: "18px",
+                                          height: "18px",
+                                          border: "2px solid #F4980E",
+                                          borderRadius: "3px",
+                                          display: "inline-block",
+                                          backgroundColor: selectedHolding.some(
+                                            (holding) => holding.id === item.id
+                                          )
+                                            ? "#F4980E"
+                                            : "#fff",
+                                          position: "relative",
+                                          transition: "all 0.2s ease",
+                                        }}
+                                      >
+                                        {selectedHolding.some(
+                                          (holding) => holding.id === item.id
+                                        ) && (
+                                          <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            viewBox="0 0 16 16"
+                                            fill="white"
+                                            width="14"
+                                            height="14"
+                                            style={{
+                                              position: "absolute",
+                                              top: "50%",
+                                              left: "50%",
+                                              transform:
+                                                "translate(-50%, -50%)",
+                                            }}
+                                          >
+                                            <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7.25 7.25a.5.5 0 0 1-.708 0l-3.25-3.25a.5.5 0 1 1 .708-.708L6.25 10.043l6.896-6.897a.5.5 0 0 1 .708 0z" />
+                                          </svg>
+                                        )}
+                                      </span>
+                                    </label>
                                   )}
                                 </label>
                               </li>
@@ -914,6 +1201,362 @@ const SearchFilter = ({
           </div>
         </div>
       </div>
+      {showModal && (
+        <div
+          className="modal-overlay"
+          onClick={() => setShowModal(false)}
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100vw",
+            height: "100vh",
+            backgroundColor: "rgba(0,0,0,0.6)",
+            zIndex: 9999,
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <div
+            className="modal-box"
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              width: "750px",
+              height: "500px",
+              backgroundColor: "white",
+              borderRadius: "16px",
+              display: "flex",
+              flexDirection: "column",
+              position: "relative",
+            }}
+          >
+            {/* ===== Header ===== */}
+            <div
+              style={{
+                backgroundColor: "transparent",
+                color: "black",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                padding: "12px 20px",
+                fontFamily: "Poppins",
+              }}
+            >
+              <div>
+                {navigationStack.length > 1 && (
+                  <button
+                    onClick={handleBack}
+                    className="btn p-0 d-flex justify-content-center align-items-center"
+                    style={{
+                      width: "16px",
+                      height: "16px",
+                      fontSize: "14px",
+                      lineHeight: "1",
+                      border: "none",
+                      background: "transparent",
+                      color: "black",
+                      marginRight: "10px",
+                    }}
+                  >
+                    &lt;
+                  </button>
+                )}
+              </div>
+
+              <div style={{ flex: 1 }}>
+                {(() => {
+                  const levelNum =
+                    typeof currentLevel === "object"
+                      ? currentLevel?.node_level ?? navigationStack.length - 1
+                      : typeof currentLevel === "number"
+                      ? currentLevel
+                      : navigationStack.length - 1;
+
+                  return (
+                    <>
+                      <h6
+                        style={{
+                          margin: 0,
+                          textAlign: "left",
+                          fontWeight: "600",
+                          fontSize: "16px",
+                          fontFamily: "Poppins",
+                          marginBottom: "5px",
+                        }}
+                      >
+                        {levelNum === 0
+                          ? `Search by State`
+                          : levelNum === 1
+                          ? `Select City/Area`
+                          : levelNum === 2
+                          ? `Select City/Area`
+                          : `Select Area `}
+                      </h6>
+
+                      {levelNum === 1 && navigationStack[0] && (
+                        <p
+                          style={{
+                            margin: 0,
+                            fontSize: "14px",
+                            color: "#555",
+                            fontFamily: "Poppins",
+                          }}
+                        >
+                          {navigationStack[1].name}
+                        </p>
+                      )}
+
+                      {levelNum === 2 && navigationStack[1] && (
+                        <p
+                          style={{
+                            margin: 0,
+                            fontSize: "14px",
+                            color: "#555",
+                            fontFamily: "Poppins",
+                          }}
+                        >
+                          {navigationStack[1].name}
+                        </p>
+                      )}
+                    </>
+                  );
+                })()}
+              </div>
+
+              <div>
+                <button
+                  onClick={() => {
+                    console.log("data location", selectedCountry);
+                    setShowModal(false);
+                  }}
+                  className="btn btn-sm"
+                  style={{
+                    border: "none",
+                    background: "transparent",
+                    color: "black",
+                  }}
+                >
+                  ✕
+                </button>
+              </div>
+            </div>
+
+            {/* ===== Content ===== */}
+            <div style={{ flex: 1, overflowY: "auto", padding: "20px" }}>
+              {loadingLocationData ? (
+                <div
+                  className="d-flex justify-content-center align-items-center"
+                  style={{ height: "100%" }}
+                >
+                  <div className="spinner-border text-primary" role="status">
+                    <span className="visually-hidden">Loading...</span>
+                  </div>
+                </div>
+              ) : (
+                <>
+                  {navigationStack.length > 0 && (
+                    <>
+                      {(() => {
+                        const depth = navigationStack.length;
+                        const isLeafLevel =
+                          Array.isArray(displayList) &&
+                          displayList.length > 0 &&
+                          displayList.every(
+                            (n) =>
+                              !n.child_list ||
+                              (Array.isArray(n.child_list) &&
+                                n.child_list.length === 0) ||
+                              n.child_count === 0
+                          );
+
+                        const showCheckboxes = depth >= 3 || isLeafLevel;
+
+                        return (
+                          <>
+                            {showCheckboxes && displayList.length > 0 && (
+                              <div
+                                className="py-2 d-flex align-items-center"
+                                style={{ cursor: "pointer" }}
+                                onClick={() => {
+                                  const allIds = displayList.map(
+                                    (item) => item.id
+                                  );
+                                  const allObjects = displayList;
+
+                                  const isAllSelected = allIds.every((id) =>
+                                    selectedAreaIds.includes(id)
+                                  );
+
+                                  if (isAllSelected) {
+                                    setSelectedAreaIds([]);
+                                    setSelectedAreaNames([]);
+                                    setSelectedAreaObjects([]);
+                                  } else {
+                                    setSelectedAreaIds(allIds);
+                                    setSelectedAreaNames(
+                                      allObjects.map((a) => a.name)
+                                    );
+                                    setSelectedAreaObjects(allObjects);
+                                  }
+                                }}
+                              >
+                                <input
+                                  type="checkbox"
+                                  style={{
+                                    appearance: "none",
+                                    width: "16px",
+                                    height: "16px",
+                                    border: "2px solid #F4980E",
+                                    borderRadius: "4px",
+                                    marginRight: "2%",
+                                    position: "relative",
+                                    cursor: "pointer",
+                                    backgroundColor:
+                                      displayList.length > 0 &&
+                                      displayList.every((item) =>
+                                        selectedAreaIds.includes(item.id)
+                                      )
+                                        ? "#F4980E"
+                                        : "#fff",
+                                  }}
+                                  checked={
+                                    displayList.length > 0 &&
+                                    displayList.every((item) =>
+                                      selectedAreaIds.includes(item.id)
+                                    )
+                                  }
+                                  readOnly
+                                />
+                                <span>Select All</span>
+                              </div>
+                            )}
+
+                            {Array.isArray(displayList) &&
+                              displayList.map((node) => {
+                                const nodeIsLeaf =
+                                  !node.child_list ||
+                                  (Array.isArray(node.child_list) &&
+                                    node.child_list.length === 0) ||
+                                  node.child_count === 0;
+
+                                return (
+                                  <div
+                                    key={node.id}
+                                    className="py-2 d-flex align-items-center"
+                                    style={{ cursor: "pointer" }}
+                                    onClick={() =>
+                                      node.child_count > 0
+                                        ? handleNodeClick(node)
+                                        : handleAreaToggle(node)
+                                    }
+                                  >
+                                    {showCheckboxes && nodeIsLeaf ? (
+                                      <>
+                                        <input
+                                          type="checkbox"
+                                          checked={selectedAreaIds.includes(
+                                            node.id
+                                          )}
+                                          onChange={() =>
+                                            handleAreaToggle(node)
+                                          }
+                                          onClick={(e) => e.stopPropagation()}
+                                          style={{
+                                            accentColor: "#F4980E", // ✅ Orange box
+                                            color: "white", // ✅ White tick (modern browsers support this)
+                                            cursor: "pointer",
+                                            marginRight: "2%",
+                                          }}
+                                        />
+
+                                        <span>{node.name}</span>
+                                      </>
+                                    ) : (
+                                      <div className="py-2 d-flex align-items-center justify-content-between w-100">
+                                        <span>{node.name}</span>
+                                        {node.child_count > 0 && (
+                                          <span>&#x276F;</span>
+                                        )}
+                                      </div>
+                                    )}
+                                  </div>
+                                );
+                              })}
+                          </>
+                        );
+                      })()}
+                    </>
+                  )}
+                </>
+              )}
+            </div>
+
+            {/* ===== Footer ===== */}
+            {(() => {
+              const depth = navigationStack.length;
+              const isLeafLevel =
+                Array.isArray(displayList) &&
+                displayList.length > 0 &&
+                displayList.every(
+                  (n) =>
+                    !n.child_list ||
+                    (Array.isArray(n.child_list) &&
+                      n.child_list.length === 0) ||
+                    n.child_count === 0
+                );
+              const showFooter = depth >= 3 || isLeafLevel;
+
+              return (
+                showFooter && (
+                  <div
+                    style={{
+                      padding: "15px 20px",
+                      backgroundColor: "white",
+                      display: "flex",
+                      justifyContent: "space-between",
+                      borderRadius: "16px",
+                    }}
+                  >
+                    <button
+                      className="btn btn-outline-secondary px-4"
+                      style={{ fontFamily: "Poppins" }}
+                      onClick={handleClear}
+                    >
+                      Clear
+                    </button>
+
+                    <button
+                      className="btn text-white px-4"
+                      style={{
+                        backgroundColor: "#F4980E",
+                        fontFamily: "Poppins",
+                      }}
+                      onClick={handleApply}
+                    >
+                      Apply
+                    </button>
+                  </div>
+                )
+              );
+            })()}
+
+            {/* White tick only when checked */}
+            {/* <style>
+              {`
+          input[type="checkbox"][style]:checked::after {
+            content: "✔";
+            color: white;
+            font-size: 12px;
+            position: absolute;
+            top: -2px;
+            left: 2px;
+          }
+        `}
+            </style> */}
+          </div>
+        </div>
+      )}
     </div>
   );
 };
