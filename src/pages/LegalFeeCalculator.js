@@ -932,11 +932,11 @@ const CalculatorMenuPage = () => {
   const [selectedCalculator, setSelectedCalculator] = useState(null);
 
   const calculators = [
-    { id: "buySell", name: "Buy / Sell", icon: <FaHome size={40} />, component: <BuySellCalculator /> },
-    { id: "loan", name: "Loan", icon: <FaMoneyCheckAlt size={40} />, component: <LoanCalculator /> },
-    { id: "tenancy", name: "Tenancy", icon: <FaFileContract size={40} />, component: <TenancyCalculator /> },
-    { id: "mortgage", name: "Mortgage", icon: <FaCalculator size={40} />, component: <MortgageCalculator /> },
-    { id: "rpgt", name: "RPGT", icon: <FaChartLine size={40} />, component: <RPGTCalculator /> },
+    { id: "buySell", name: "Buy & Sell Legal Fee & Stamp Duty", icon: <FaHome size={40} />, component: <BuySellCalculator /> },
+    { id: "loan", name: "Loan Legal Fee & Stamp Duty", icon: <FaMoneyCheckAlt size={40} />, component: <LoanCalculator /> },
+    { id: "tenancy", name: "Tenancy Legal Fee & Stamp Duty", icon: <FaFileContract size={40} />, component: <TenancyCalculator /> },
+    { id: "mortgage", name: "Mortgage Loan", icon: <FaCalculator size={40} />, component: <MortgageCalculator /> },
+    { id: "rpgt", name: "Real Property Gain Tax (RPGT", icon: <FaChartLine size={40} />, component: <RPGTCalculator /> },
   ];
 
   if (selectedCalculator) {

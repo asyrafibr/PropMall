@@ -37,7 +37,7 @@ const ListingCard = ({ product, handleViewDetails }) => {
         fontFamily: "Poppins, sans-serif",
       }}
     >
-      <div className="card" style={{ maxWidth: "900px", width: "100%" }}>
+      <div className="card" style={{ maxWidth: "2000px", width: "100%" }}>
         <div className="p-3">
           {/* Image with Badges */}
           <div

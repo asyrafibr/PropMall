@@ -8,13 +8,15 @@ import AgentBox from "../components/AgentBox";
 import { getAgent, getFeaturedList, getListingInfo } from "../api/axiosApi";
 import sharImage from "../image/ios_share.svg";
 import saveImage from "../image/kid_star.svg";
-import SimilarListing from "../components/SimilarListingCard";
+import SimilarListing from "../components/SimilarListingCardT2";
 import "./ProductDetail.css";
 import { FiCamera } from "react-icons/fi";
 import MortgageCalculator from "./MortgageCalculator";
 import { useTemplate } from "../context/TemplateContext"; // ✅ Import Template Context
 import bgImage from "../image/template2bg.png";
-
+import bedIcon from "../image/bed.png";
+import bathIcon from "../image/bathtub.png";
+import area from "../image/area.png";
 const ProductDetail = () => {
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -32,6 +34,7 @@ const ProductDetail = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const thumbnailRefs = useRef([]);
   useEffect(() => {
+    console.log("agent", agentInfo);
     const fetchProductDetails = async () => {
       try {
         const hostname = window.location.hostname;
@@ -140,6 +143,7 @@ const ProductDetail = () => {
           <div
             className="pb-4"
             style={{
+              backgroundImage: `url(${bgImage})`,
               maxWidth: "2000px",
               paddingLeft: 50,
               paddingTop: 50,
@@ -154,48 +158,65 @@ const ProductDetail = () => {
                 <li className="breadcrumb-item">
                   <a
                     href="/"
-                    style={{ textDecoration: "none", color: "inherit" }}
+                    style={{
+                      textDecoration: "none",
+                      color: "inherit",
+                      fontSize: "16px",
+                      fontFamily: "Poppins",
+                    }}
                   >
                     Home
                   </a>
+                  <text
+                    style={{ marginRight: 10, marginLeft: 10 }}
+                  >{` > `}</text>
                 </li>
-                <li className="breadcrumb-item">
+                <li>
                   <a
                     href="/properties"
-                    style={{ textDecoration: "none", color: "inherit" }}
+                    style={{
+                      textDecoration: "none",
+                      color: "inherit",
+                      fontSize: "16px",
+                      fontFamily: "Poppins",
+                    }}
                   >
                     Properties
                   </a>
+                  <text
+                    style={{ marginRight: 10, marginLeft: 10 }}
+                  >{` > `}</text>
                 </li>
-                <li className="breadcrumb-item">
+                <li>
                   <a
                     href="/properties/kuala-lumpur"
-                    style={{ textDecoration: "none", color: "inherit" }}
+                    style={{
+                      textDecoration: "none",
+                      color: "inherit",
+                      fontSize: "16px",
+                      fontFamily: "Poppins",
+                    }}
                   >
                     Kuala Lumpur
                   </a>
+                  <text
+                    style={{ marginRight: 10, marginLeft: 10 }}
+                  >{` > `}</text>
                 </li>
                 <li
                   className="breadcrumb-item active"
                   aria-current="page"
-                  style={{ color: "inherit" }} // optional bold for active item
+                  style={{
+                    color: "inherit",
+                    fontWeight: 600,
+                    fontSize: "16px",
+                    fontFamily: "Poppins",
+                  }} // optional bold for active item
                 >
                   {product.ads_title}
                 </li>
               </ol>
             </nav>
-
-            {template === "template1" && (
-              <text
-                style={{
-                  fontSize: "20px",
-                  fontFamily: "Poppins",
-                  fontWeight: 600,
-                }}
-              >
-                {product.ads_title}
-              </text>
-            )}
           </div>
 
           {/* Photos */}
@@ -399,7 +420,7 @@ const ProductDetail = () => {
           )}
 
           {/* Pricing + Agent Info */}
-          <div className="card shadow-sm mt-4">
+          <div className="mt-4" style={{ backgroundColor: "#FDFFFE" }}>
             <div className="row g-4 p-4">
               <div className="col-lg-8">
                 <div className="d-flex justify-content-between align-items-start">
@@ -408,47 +429,12 @@ const ProductDetail = () => {
                       className="fw-bold text-dark"
                       style={{
                         fontFamily: "Poppins",
-                        fontSize: 20,
+                        fontSize: 28,
                         fontWeight: 600,
                       }}
                     >
-                      RM {product.price}
+                      {product.ads_title}
                     </h5>
-                    <h6
-                      className="text-muted"
-                      style={{
-                        fontFamily: "Poppins",
-                        fontSize: 16,
-                        fontWeight: 600,
-                        marginTop: 2,
-                      }}
-                    >
-                      (RM {product.built_price_per_sqft} per sq ft)
-                    </h6>
-                  </div>
-                  <div className="d-flex gap-2">
-                    <button
-                      className="btn btn-sm d-flex align-items-center"
-                      style={{ background: "none", color: "#333" }}
-                    >
-                      <img
-                        src={sharImage}
-                        alt="Share"
-                        style={{ width: 16, height: 16 }}
-                      />
-                      Share
-                    </button>
-                    <button
-                      className="btn btn-sm d-flex align-items-center"
-                      style={{ background: "none", color: "#f4b400" }}
-                    >
-                      <img
-                        src={saveImage}
-                        alt="Save"
-                        style={{ width: 16, height: 16 }}
-                      />
-                      Save
-                    </button>
                   </div>
                 </div>
 
@@ -456,69 +442,121 @@ const ProductDetail = () => {
                   className="mb-1"
                   style={{
                     fontFamily: "Poppins",
-                    fontSize: 20,
-                    fontWeight: 400,
-                  }}
-                >
-                  {product.property_title}
-                </p>
-                <small
-                  className="text-muted d-block mb-3"
-                  style={{
-                    fontFamily: "Poppins",
                     fontSize: 16,
                     fontWeight: 400,
+                    color: "#737373",
                   }}
                 >
                   {product.location_area}
-                </small>
-                <small
-                  className="text-muted d-flex align-items-center gap-2 mb-3"
-                  style={{
-                    fontFamily: "Poppins",
-                    fontSize: 16,
-                    fontWeight: 400,
-                  }}
-                >
-                  {product.category_type_title_holding_lottype_storey}
-                  <span
+                </p>
+                <div className="row">
+                  {/* Divider line */}
+                  <div
                     style={{
-                      width: "8px",
-                      height: "8px",
-                      borderRadius: "50%",
-                      backgroundColor: "#666",
-                      display: "inline-block",
+                      width: "100%",
+                      height: "1px",
+                      backgroundColor: "#DBDBDB",
+                      margin: "2% auto",
                     }}
-                  ></span>
-                  {product?.built_size && (
-                    <span>
-                      Built-up: {product.built_size} {product.built_size_unit}
-                    </span>
-                  )}
-                  {product?.land_size && (
-                    <span>
-                      Land-Size:{product.land_price_per_sqft}{" "}
-                      {product.land_size_unit}
-                    </span>
-                  )}
-                </small>
-                {product.room && product.bathroom > 0 && (
-                  <div className="d-flex gap-3 mb-2">
-                    <span className="d-flex align-items-center gap-1">
-                      <FaBed /> {product.room} beds
-                    </span>
-                    <span className="d-flex align-items-center gap-1">
-                      <FaBath /> {product.bathroom} baths
-                    </span>
+                  />
+
+                  {/* Price + Beds/Baths closer together */}
+                  <div className="d-flex align-items-center gap-4">
+                    <div style={{ paddingRight: "200px" }}>
+                      <h5
+                        className="fw-bold text-dark"
+                        style={{
+                          fontFamily: "Poppins",
+                          fontSize: 20,
+                          fontWeight: 600,
+                        }}
+                      >
+                        RM {product.price}
+                      </h5>
+                      <h6
+                        className="text-muted"
+                        style={{
+                          fontFamily: "Poppins",
+                          fontSize: 12,
+                          fontWeight: 400,
+                          marginTop: 2,
+                          color: "#737373",
+                        }}
+                      >
+                        (RM {product.land_price_per_sqft} per sq ft)
+                      </h6>
+                    </div>
+                    <div
+                      style={{
+                        width: "1px",
+                        height: "59px",
+                        backgroundColor: "#DBDBDB",
+                        marginRight: "10px",
+                      }}
+                    />
+                    {product.room && product.bathroom > 0 && (
+                      <div className="d-flex justify-content-evenly">
+                        <span
+                          className="d-flex flex-column align-items-center"
+                          style={{ marginRight: "20px" }}
+                        >
+                          <img
+                            src={bedIcon}
+                            alt="Bed"
+                            style={{ width: "24px", height: "24px" }}
+                          />
+                          <span style={{ paddingTop: "10px" }}>
+                            {product.room} beds
+                          </span>
+                        </span>
+
+                        <span
+                          className="d-flex flex-column align-items-center"
+                          style={{ marginRight: "20px" }}
+                        >
+                          <img
+                            src={bathIcon}
+                            alt="Bath"
+                            style={{ width: "24px", height: "24px" }}
+                          />
+                          <span style={{ paddingTop: "10px" }}>
+                            {product.bathroom} baths
+                          </span>
+                        </span>
+
+                        <span className="d-flex flex-column align-items-center">
+                          <img
+                            src={area}
+                            alt="Area"
+                            style={{ width: "24px", height: "24px" }}
+                          />
+                          <span style={{ paddingTop: "10px" }}>
+                            {product.land_price_per_sqft} sq.ft
+                          </span>
+                        </span>
+                      </div>
+                    )}
                   </div>
-                )}
+                  <div
+                    style={{
+                      width: "100%",
+                      height: "1px",
+                      backgroundColor: "#DBDBDB",
+                      margin: "2% auto",
+                    }}
+                  />
+                </div>
               </div>
 
               {/* Agent Sidebar */}
               <div className="col-lg-4">
                 <div
                   className="card p-3"
-                  style={{ border: "1px solid #DBDBDB", borderRadius: "8px" }}
+                  style={{
+                    border: "1px solid #DBDBDB",
+                    borderRadius: "16px",
+                    boxShadow: "0 4px 10px 0 rgba(0, 0, 0, 0.15)",
+                  }}
                 >
                   <div className="d-flex align-items-center mb-3">
                     <img
@@ -528,10 +566,24 @@ const ProductDetail = () => {
                       style={{ width: 60, height: 60 }}
                     />
                     <div>
-                      <strong> {agentInfo.name || ""}</strong>
+                      <text
+                        style={{
+                          fontSize: 16,
+                          fontFamily: "Poppins",
+                          fontWeight: 400,
+                          color: "#3A3A3A",
+                        }}
+                      >
+                        {agentInfo.name || ""}
+                      </text>
                       <p
                         className="text-muted mb-0"
-                        style={{ fontSize: "0.9rem" }}
+                        style={{
+                          fontSize: "9px",
+                          fontFamily: "Poppins",
+                          fontWeight: 400,
+                          color: "#3A3A3A",
+                        }}
                       >
                         {agentInfo.reg_no || ""}{" "}
                       </p>
@@ -544,11 +596,243 @@ const ProductDetail = () => {
                     className="btn btn-warning text-white w-100"
                     target="_blank"
                     rel="noopener noreferrer"
-                    style={{ backgroundColor: "#F4980E" }}
+                    style={{ backgroundColor: "#F4980E", borderRadius: 99 }}
                   >
-                    <i className="bi bi-whatsapp me-2"></i> WhatsApp Agent
+                    <i className="bi bi-whatsapp me-2"></i>{" "}
+                    <text
+                      style={{
+                        fontSize: 16,
+                        fontFamily: "Poppins",
+                        fontWeight: 400,
+                        color: "#FAFAFA",
+                      }}
+                    >
+                      WhatsApp Agent
+                    </text>
                   </a>
                 </div>
+              </div>
+              <div className="row mt-4">
+                <div className="col-12">
+                  <div className="mb-3">
+                    <text
+                      style={{
+                        fontSize: "20px",
+                        fontFamily: "Poppins",
+                        fontWeight: 600,
+                      }}
+                    >
+                      Property Details
+                    </text>
+                    {/* <div
+                      style={{
+                        width: "100%", // or a fixed width
+                        height: "1px",
+                        backgroundColor: "var(--Grey-2, #DBDBDB)",
+                        marginTop: "20px",
+                        marginBottom: "20px",
+                      }}
+                    /> */}
+                    <div className="row">
+                      <div className="col-6 p-3">
+                        <text
+                          style={{
+                            fontSize: "20px",
+                            fontFamily: "Poppins",
+                            fontWeight: 400,
+                          }}
+                        >
+                          Property Category:
+                        </text>
+                        <br />
+                        <text
+                          style={{
+                            color: "#737373",
+                            fontSize: "16px",
+                            fontFamily: "Poppins",
+                            fontWeight: 400,
+                          }}
+                        >
+                          {" "}
+                          {product.property_type_description}
+                        </text>
+                      </div>
+                      <div className="col-6 pt-3">
+                        <text
+                          style={{
+                            fontSize: "20px",
+                            fontFamily: "Poppins",
+                            fontWeight: 400,
+                          }}
+                        >
+                          Property Type :
+                        </text>
+                        <br />
+                        <text
+                          style={{
+                            color: "#737373",
+                            fontSize: "16px",
+                            fontFamily: "Poppins",
+                            fontWeight: 400,
+                          }}
+                        >
+                          {" "}
+                          {product.property_lot_type_description}
+                        </text>
+                      </div>
+                      <div className="col-6 p-3">
+                        <text
+                          style={{
+                            fontSize: "20px",
+                            fontFamily: "Poppins",
+                            fontWeight: 400,
+                          }}
+                        >
+                          Title:
+                        </text>
+                        <br />
+                        <text
+                          style={{
+                            color: "#737373",
+                            fontSize: "16px",
+                            fontFamily: "Poppins",
+                            fontWeight: 400,
+                          }}
+                        >
+                          {" "}
+                          {product.property_title}
+                        </text>
+                      </div>
+                      <div className="col-6 pt-3">
+                        <text
+                          style={{
+                            fontSize: "20px",
+                            fontFamily: "Poppins",
+                            fontWeight: 400,
+                          }}
+                        >
+                          Holding:
+                        </text>
+                        <br />
+                        <text
+                          style={{
+                            color: "#737373",
+                            fontSize: "16px",
+                            fontFamily: "Poppins",
+                            fontWeight: 400,
+                          }}
+                        >
+                          {" "}
+                          {product.property_title}
+                        </text>
+                      </div>
+                      <div className="col-6 p-3">
+                        <text
+                          style={{
+                            fontSize: "20px",
+                            fontFamily: "Poppins",
+                            fontWeight: 400,
+                          }}
+                        >
+                          Lot Type:
+                        </text>
+                        <br />
+                        <text
+                          style={{
+                            color: "#737373",
+                            fontSize: "16px",
+                            fontFamily: "Poppins",
+                            fontWeight: 400,
+                          }}
+                        >
+                          {" "}
+                          {product.property_holding}
+                        </text>
+                      </div>
+                      <div className="col-6 pt-3">
+                        <text
+                          style={{
+                            fontSize: "20px",
+                            fontFamily: "Poppins",
+                            fontWeight: 400,
+                          }}
+                        >
+                          Position:
+                        </text>
+                        <br />
+                        {hasValue(product?.built_size) ? (
+                          <text
+                            style={{
+                              color: "#737373",
+                              fontSize: "16px",
+                              fontFamily: "Poppins",
+                              fontWeight: 400,
+                            }}
+                          >
+                            {product.built_size}{" "}
+                            {product.built_size_unit || "sqft"}
+                          </text>
+                        ) : hasValue(product?.land_price_per_sqft) ? (
+                          <text
+                            style={{
+                              color: "#737373",
+                              fontSize: "16px",
+                              fontFamily: "Poppins",
+                              fontWeight: 400,
+                            }}
+                          >
+                            {product.land_price_per_sqft}{" "}
+                            {product.land_size_unit || "sqft"}
+                          </text>
+                        ) : null}{" "}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div
+                style={{
+                  width: "67%", // or a fixed width
+                  height: "1px",
+                  backgroundColor: "var(--Grey-2, #DBDBDB)",
+                  marginBottom: "20px",
+                }}
+              />
+              {product.ads_description && (
+                <div className="p-3">
+                  <text
+                    style={{
+                      fontSize: "20px",
+                      fontFamily: "Poppins",
+                      fontWeight: 600,
+                      paddingBottom: "20px",
+                    }}
+                  >
+                    Description
+                  </text>
+
+                  <p
+                    style={{
+                      whiteSpace: "pre-line",
+                      fontFamily: "Poppins",
+                      fontSize: "20px",
+                      paddingTop: "30px",
+                    }}
+                  >
+                    {formatAdsDescription(product.ads_description)}
+                  </p>
+                </div>
+              )}
+              <div
+                style={{
+                  width: "67%", // or a fixed width
+                  height: "1px",
+                  backgroundColor: "var(--Grey-2, #DBDBDB)",
+                  marginBottom: "20px",
+                }}
+              />
+              <div>
+                <MortgageCalculator product={product}></MortgageCalculator>
               </div>
             </div>
           </div>
@@ -584,218 +868,8 @@ const ProductDetail = () => {
           )}
 
           {/* Property Details */}
-          <div className="row mt-4">
-            <div className="col-12">
-              <div className="card p-3 shadow-sm mb-3">
-                <text
-                  style={{
-                    fontSize: "20px",
-                    fontFamily: "Poppins",
-                    fontWeight: 600,
-                  }}
-                >
-                  Property Details
-                </text>
-                <div
-                  style={{
-                    width: "100%", // or a fixed width
-                    height: "1px",
-                    backgroundColor: "var(--Grey-2, #DBDBDB)",
-                    marginTop: "20px",
-                    marginBottom: "20px",
-                  }}
-                />
-                <div className="row">
-                  <div className="col-6">
-                    <text
-                      style={{
-                        fontSize: "20px",
-                        fontFamily: "Poppins",
-                        fontWeight: 400,
-                      }}
-                    >
-                      Type:
-                    </text>
-                    <br />
-                    <text
-                      style={{
-                        color: "#737373",
-                        fontSize: "16px",
-                        fontFamily: "Poppins",
-                        fontWeight: 400,
-                      }}
-                    >
-                      {" "}
-                      {product.property_type_description}
-                    </text>
-                  </div>
-                  <div className="col-6">
-                    <text
-                      style={{
-                        fontSize: "20px",
-                        fontFamily: "Poppins",
-                        fontWeight: 400,
-                      }}
-                    >
-                      Land Title:
-                    </text>
-                    <br />
-                    <text
-                      style={{
-                        color: "#737373",
-                        fontSize: "16px",
-                        fontFamily: "Poppins",
-                        fontWeight: 400,
-                      }}
-                    >
-                      {" "}
-                      {product.property_lot_type_description}
-                    </text>
-                  </div>
-                  <div className="col-6">
-                    <text
-                      style={{
-                        fontSize: "20px",
-                        fontFamily: "Poppins",
-                        fontWeight: 400,
-                      }}
-                    >
-                      Title Type:
-                    </text>
-                    <br />
-                    <text
-                      style={{
-                        color: "#737373",
-                        fontSize: "16px",
-                        fontFamily: "Poppins",
-                        fontWeight: 400,
-                      }}
-                    >
-                      {" "}
-                      {product.property_title}
-                    </text>
-                  </div>
-                  <div className="col-6">
-                    <text
-                      style={{
-                        fontSize: "20px",
-                        fontFamily: "Poppins",
-                        fontWeight: 400,
-                      }}
-                    >
-                      Lot:
-                    </text>
-                    <br />
-                    <text
-                      style={{
-                        color: "#737373",
-                        fontSize: "16px",
-                        fontFamily: "Poppins",
-                        fontWeight: 400,
-                      }}
-                    >
-                      {" "}
-                      {product.property_title}
-                    </text>
-                  </div>
-                  <div className="col-6">
-                    <text
-                      style={{
-                        fontSize: "20px",
-                        fontFamily: "Poppins",
-                        fontWeight: 400,
-                      }}
-                    >
-                      Tenure:
-                    </text>
-                    <br />
-                    <text
-                      style={{
-                        color: "#737373",
-                        fontSize: "16px",
-                        fontFamily: "Poppins",
-                        fontWeight: 400,
-                      }}
-                    >
-                      {" "}
-                      {product.property_holding}
-                    </text>
-                  </div>
-                  <div className="col-6">
-                    <text
-                      style={{
-                        fontSize: "20px",
-                        fontFamily: "Poppins",
-                        fontWeight: 400,
-                      }}
-                    >
-                      Size:
-                    </text>
-                    <br />
-                    {hasValue(product?.built_size) ? (
-                      <text
-                        style={{
-                          color: "#737373",
-                          fontSize: "16px",
-                          fontFamily: "Poppins",
-                          fontWeight: 400,
-                        }}
-                      >
-                        {product.built_size} {product.built_size_unit || "sqft"}
-                      </text>
-                    ) : hasValue(product?.land_price_per_sqft) ? (
-                      <text
-                        style={{
-                          color: "#737373",
-                          fontSize: "16px",
-                          fontFamily: "Poppins",
-                          fontWeight: 400,
-                        }}
-                      >
-                        {product.land_price_per_sqft}{" "}
-                        {product.land_size_unit || "sqft"}
-                      </text>
-                    ) : null}{" "}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+
           {/* Property Description */}
-          {product.ads_description && (
-            <div className="card p-3 shadow-sm">
-              <text
-                style={{
-                  fontSize: "20px",
-                  fontFamily: "Poppins",
-                  fontWeight: 600,
-                  paddingBottom: "20px",
-                }}
-              >
-                Description
-              </text>
-              <div
-                style={{
-                  width: "100%", // or a fixed width
-                  height: "1px",
-                  backgroundColor: "var(--Grey-2, #DBDBDB)",
-                  marginBottom: "20px",
-                }}
-              />
-              <p
-                style={{
-                  whiteSpace: "pre-line",
-                  fontFamily: "Poppins",
-                  fontSize: "20px",
-                }}
-              >
-                {formatAdsDescription(product.ads_description)}
-              </p>
-            </div>
-          )}
-          <div>
-            <MortgageCalculator product={product}></MortgageCalculator>
-          </div>
 
           {/* Similar Listings */}
           <SimilarListing listings={similarListing?.featured_rows ?? []} />

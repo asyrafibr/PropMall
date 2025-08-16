@@ -15,7 +15,9 @@ if (parts.length >= 2) {
 const baseURL =
   process.env.NODE_ENV === "development"
     ? process.env.REACT_APP_API_BASE
-    : window.location.origin;
+    : 
+    // window.location.origin;
+    `http://dev-agentv3.propmall.net`
 const API = axios.create({
   baseURL,
   headers: {

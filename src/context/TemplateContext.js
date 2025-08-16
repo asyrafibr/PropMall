@@ -1,4 +1,10 @@
-import React, { createContext, useContext, useEffect, useState, useRef } from "react";
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  useRef,
+} from "react";
 import { getAgent } from "../api/axiosApi";
 
 const TemplateContext = createContext();
@@ -11,6 +17,7 @@ export const TemplateProvider = ({ children }) => {
   const [mainAgent, setMainAgent] = useState(null);
   const [category, setCategory] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [agentInfo, setAgentInfo] = useState(null);
 
   const hasFetched = useRef(false); // 🛑 Prevent multiple fetches
 
@@ -23,6 +30,7 @@ export const TemplateProvider = ({ children }) => {
     const fetchAgentData = async () => {
       try {
         const agentRes = await getAgent();
+        setAgentInfo(agentRes.data.agent);
         setAgent(agentRes.data.domain.config);
         setMainAgent(agentRes.data.domain);
         setCategory(agentRes.data.domain.config.listing_category);
@@ -45,6 +53,7 @@ export const TemplateProvider = ({ children }) => {
         mainAgent,
         category,
         loading,
+        agentInfo,
       }}
     >
       {children}

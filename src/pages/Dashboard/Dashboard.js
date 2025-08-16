@@ -13,6 +13,7 @@ import { type } from "@testing-library/user-event/dist/type";
 import { useTemplate } from "../../context/TemplateContext";
 import DashboardListingT1 from "./DashboardListingT1";
 import FilterT2 from "./DashboardT2";
+import FilterT3 from "./DashboardT3";
 
 const data = {};
 const Dashboard = () => {
@@ -39,7 +40,7 @@ const Dashboard = () => {
 
         const locationRes = await getLocations();
         setLocations(locationRes.data.states);
-        console.log('location',locationRes)
+        console.log("location", locationRes);
       } catch (error) {
         console.error("Error fetching filters:", error);
       }
@@ -47,9 +48,9 @@ const Dashboard = () => {
     fetchFilterData();
   }, []);
 
-// useEffect(() => {
+  // useEffect(() => {
 
-//   }, []);
+  //   }, []);
 
   const handleSearch = async () => {
     const locationId = selectedLocation;
@@ -177,7 +178,28 @@ const Dashboard = () => {
           </>
         );
       case "template3":
-        return null;
+        return (
+          <>
+            <FilterT3
+              locations={locations}
+              agent={agent}
+              years={years}
+              selectedLocation={selectedLocation}
+              selectedYear={selectedYear}
+              searchTerm={searchTerm}
+              setSelectedLocation={setSelectedLocation}
+              setSelectedYear={setSelectedYear}
+              setSearchTerm={setSearchTerm}
+              handleSearch={handleSearch}
+              activeTab={activeTab}
+              setActiveTab={setActiveTab}
+            />
+            <DashboardListingT1
+              handleViewDetails={handleViewDetails}
+              listings={featuredList.featured_rows}
+            ></DashboardListingT1>
+          </>
+        );;
       case "template4":
         return null;
       default:
@@ -185,7 +207,15 @@ const Dashboard = () => {
     }
   };
 
-  return <div>{renderByTemplate()}</div>;
+  return (
+    <div
+      style={{
+        backgroundColor: template === "template2" ? "#FAFAFA" : "#F8F6F4",
+      }}
+    >
+      {renderByTemplate()}
+    </div>
+  );
 };
 
 export default Dashboard;

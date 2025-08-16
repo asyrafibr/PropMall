@@ -55,7 +55,7 @@ const MortgageCalculator = ({ product }) => {
     "RM " + Number(num).toLocaleString(undefined, { maximumFractionDigits: 0 });
 
   return (
-    <div className="card p-4 shadow-sm mt-4" style={{ fontFamily: "Poppins" }}>
+    <div className=" mt-4" style={{ fontFamily: "Poppins", width:'70%' }}>
       <text style={{fontSize:'20px',fontWeight:600}}>Mortgage Calculator</text>
 
       <div className="row">

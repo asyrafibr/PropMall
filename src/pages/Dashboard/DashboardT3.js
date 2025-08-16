@@ -10,7 +10,6 @@ import {
   getLot,
 } from "../../api/axiosApi";
 import { useTemplate } from "../../context/TemplateContext"; // ✅ Import Template Context
-import AgentBoxT2 from "../../components/AgentBoxT2";
 
 const textBlack = { color: "black" };
 // const category = {
@@ -433,9 +432,6 @@ useEffect(() => {
   return (
     <>
       {/* Hero Section */}
-       <div className="order-1 order-md-2 w-100 w-md-auto">
-        <AgentBoxT2 />
-      </div>
       <div
         className="hero-section d-flex flex-column align-items-center justify-content-center text-center"
         style={{

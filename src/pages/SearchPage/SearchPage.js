@@ -61,7 +61,7 @@ const SearchPage = () => {
   const [selectedAreaIds, setSelectedAreaIds] = useState([]);
 
   useEffect(() => {
-    console.log('activeTab',state?.searchType)
+    console.log("activeTab", state?.searchType);
 
     const fetchFilterData = async () => {
       try {
@@ -87,7 +87,7 @@ const SearchPage = () => {
     debounce(async (tab) => {
       setHasSearched(true);
       setLoading(true);
-    setSearchType(tab);
+      setSearchType(tab);
       const locationId = selectedLocation || "";
       const searchQuery = searchTerm.trim();
 
@@ -140,8 +140,8 @@ const SearchPage = () => {
 
       try {
         const response = await getListings(payload);
-        console.log("payload",payload);
-      console.log("tab used", tab); // ✅ confirm correct tab is used
+        console.log("payload", payload);
+        console.log("tab used", tab); // ✅ confirm correct tab is used
 
         setProducts(response.data.listing_search.listing_rows);
       } catch (error) {
@@ -220,16 +220,23 @@ const SearchPage = () => {
     <div
       style={{
         boxSizing: "border-box",
+        width: "100%", // ✅ Fill available space
+        maxWidth: "2000px", // ✅ Limit max size on big monitors
+        margin: "0 auto", // ✅ Center on large screens
+        // padding: "0 16px",
+        backgroundColor: "#FAFAFA",
+
+        //
       }}
     >
-      <div className="container px-2">
+      <div className=" px-2">
         {/* Sticky Search Filter */}
         <div
           style={{
             position: "sticky",
             top: 0,
             zIndex: 1000,
-            backgroundColor: "#fff",
+            backgroundColor: "#FAFAFA",
           }}
         >
           <Suspense fallback={<div>Loading filters...</div>}>
@@ -295,7 +302,7 @@ const SearchPage = () => {
                 bathroomRange={bathroomRange}
                 setRoomRange={setRoomRange}
                 roomRange={roomRange}
-                      setSelectedAreaIds={setSelectedAreaIds}
+                setSelectedAreaIds={setSelectedAreaIds}
                 selectedAreaIds={selectedAreaIds}
               ></FilterT2>
             )}

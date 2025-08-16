@@ -18,12 +18,14 @@ html, body, #root {
 .listings {
   box-sizing: border-box;
   width: 100%;
+  padding-left: 80px;
 }
 
 .sidebar {
   width: 100%;
   box-sizing: border-box;
   margin-top: 24px; /* spacing for mobile */
+  padding-right: 80px;
 }
 
 @media (min-width: 992px) {

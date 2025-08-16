@@ -24,7 +24,7 @@ const Navbar = () => {
   return (
     <nav
       className="navbar navbar-expand-lg bg-white px-3"
-      style={{ backgroundColor: "#F8F9FA" }}
+      style={{ backgroundColor: template==='template2'?("#FFFFFF" ):("#F8F9FA")}}
     >
       <div className="container-fluid">
         <a
