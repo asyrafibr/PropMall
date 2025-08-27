@@ -1,6 +1,7 @@
-
-import React, { useState, useEffect } from "react";
-import { getLocationTree } from "../api/axiosApi";
+import React, { useState, useEffect, useCallback } from "react";
+import { getLocationTree, getSubmitBuy,getSubmitRent } from "../api/axiosApi";
+import { useTemplate } from "../context/TemplateContext";
+import axios from "axios";
 
 const PropertyRequestForm = () => {
   const [purpose, setPurpose] = useState("buy");
@@ -29,6 +30,7 @@ const PropertyRequestForm = () => {
   const [selectedStateId, setSelectedStateId] = useState("");
   const [areas, setAreas] = useState([]);
   const [selectedAreaId, setSelectedAreaId] = useState("");
+  const { mainAgent } = useTemplate();
 
   // ✅ Loading state
   const [isLoading, setIsLoading] = useState(true);
@@ -73,6 +75,69 @@ const PropertyRequestForm = () => {
       <span style={colonStyle}>:</span>
     </>
   );
+const handleViewDetails = useCallback(async () => {
+          const url_fe = window.location.href;
+
+  try {
+    const payload = {
+      domain:mainAgent.name,
+      url_fe: url_fe,
+      id_country: 1,
+      [purpose === "buy" ? "want_to_buy" : "want_to_rent"]: {
+        leads_objective: purpose==='buy'?("WTB"):("WTR"),
+        leads_name: name,              // from your state
+        leads_phone: phone,
+        leads_email: email,
+        property_id_country: 1,
+        property_id_province: null,
+        property_id_state: selectedStateId,
+        property_id_city: null,
+        property_id_area: selectedAreaId,        // add if you have
+        property_category: category,
+        property_type: landType,
+        property_type_others: otherCategory,
+        property_floor: floorCount,
+        property_room: bedroom,
+        property_bathroom: bathroom,
+        property_built_size: builtUpArea,
+        property_land_size: landArea,
+        property_lot_type: landLotType,
+        property_budget_price_min: 800000,  // replace with state if dynamic
+        property_budget_price_max: 1000000, // replace with state if dynamic
+        leads_acquire_soon: planToBuy,
+        leads_agree_agent_assist: "YES",
+      },
+    };
+    if (purpose==='buy')
+    {
+      const response = await getSubmitBuy(payload);
+    console.log("✅ Success Buy:", response.data);
+    }
+    else{
+      const response = await getSubmitRent(payload);
+    console.log("✅ Success Rent:", response.data);
+    }
+
+
+  } catch (err) {
+    console.error("❌ Error submitting form:", err);
+  }
+}, [
+  name,
+  phone,
+  email,
+  selectedStateId,
+  category,
+  landType,
+  otherCategory,
+  floorCount,
+  bedroom,
+  bathroom,
+  builtUpArea,
+  landArea,
+  landLotType,
+  planToBuy,
+]);
 
   useEffect(() => {
     const fetchFilterData = async () => {
@@ -125,7 +190,6 @@ const PropertyRequestForm = () => {
       </>
     );
   }
-
 
   return (
     <div
@@ -244,7 +308,7 @@ const PropertyRequestForm = () => {
                 <select
                   value={selectedStateId}
                   onChange={handleStateChange}
-                style={inputStyle}
+                  style={inputStyle}
                 >
                   <option value="">[Please select a State]</option>
                   {locationTree?.child_list?.map((state) => (
@@ -262,7 +326,7 @@ const PropertyRequestForm = () => {
                   value={selectedAreaId}
                   onChange={(e) => setSelectedAreaId(e.target.value)}
                   disabled={!areas.length}
-                style={inputStyle}
+                  style={inputStyle}
                 >
                   <option value="">
                     {selectedStateId
@@ -306,23 +370,6 @@ const PropertyRequestForm = () => {
               </select>
             </div>
 
-            {/* Property Type */}
-            {/* <div style={rowStyle}>
-              {labelWrapper("*Property Type")}
-              <select
-                value={type}
-                onChange={(e) => setType(e.target.value)}
-                style={inputStyle}
-                disabled={getTypeOptions().length === 0}
-              >
-                <option value="">[Please select a property type]</option>
-                {getTypeOptions().map((t) => (
-                  <option key={t} value={t}>
-                    {t}
-                  </option>
-                ))}
-              </select>
-            </div> */}
             {category === "Landed (Terrace/ Semi-D/ Bungalow)" && (
               <>
                 <div style={rowStyle}>
@@ -611,6 +658,7 @@ const PropertyRequestForm = () => {
                 border: "none",
                 fontWeight: "600",
               }}
+              onClick={handleViewDetails}
             >
               Submit Now
             </button>
@@ -644,6 +692,5 @@ const styles = {
     color: "#555",
   },
 };
-
 
 export default PropertyRequestForm;

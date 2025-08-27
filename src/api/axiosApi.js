@@ -71,3 +71,12 @@ export const getHolding = (payload) =>
 //Lot
 export const getLot = (payload) =>
   API.post("/graph/param/property/lottype", payload);
+
+export const getSubmitBuy = (payload) =>
+  API.post("/graph/audi/want/buy/new", payload);
+export const getSubmitRent = (payload) =>
+  API.post("/graph/audi/want/rent/new", payload);
+export const getSubmitSell = (payload) =>
+  API.post("/graph/audi/want/sell/new", payload);
+export const getSubmitLet = (payload) =>
+  API.post("/graph/audi/want/let/new", payload);

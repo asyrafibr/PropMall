@@ -84,7 +84,7 @@ useEffect(() => {
         <Route path="/donedeal" element={<DoneDeal />} />
         <Route path="/property/:slug" element={<ProductDetailPage />} />
         <Route path="/business-card" element={<BusinessCard />} />
-        <Route path="/saleprops" element={<WTSWTLFormPage mode="sale" />} />
+        <Route path="/i-want-to" element={<WTSWTLFormPage mode="sale" />} />
       </Routes>
 
       {!hideHeaderFooter && <Footer />}

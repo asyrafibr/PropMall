@@ -232,7 +232,7 @@ const Navbar = () => {
                   <li>
                     <Link
                       className="dropdown-item"
-                      to="/saleprops"
+                      to="/i-want-to"
                       onClick={() => handleNavigate("/saleprops")}
                       style={{
                         fontSize: "14px",
@@ -246,7 +246,7 @@ const Navbar = () => {
                   <li>
                     <Link
                       className="dropdown-item"
-                      to="/saleprops"
+                      to="/i-want-to"
                       onClick={() => handleNavigate("/saleprops")}
                       style={{
                         fontSize: "14px",

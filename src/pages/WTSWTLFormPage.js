@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from "react";
-import { getLocationTree } from "../api/axiosApi";
+import React, { useState, useEffect,useCallback } from "react";
+import { getLocationTree ,getSubmitSell,getSubmitLet } from "../api/axiosApi";
+import { useTemplate } from "../context/TemplateContext";
 
 const PropertyRequestForm = () => {
   const [purpose, setPurpose] = useState("buy");
@@ -31,6 +32,7 @@ const PropertyRequestForm = () => {
   const [areas, setAreas] = useState([]);
   const [selectedAreaId, setSelectedAreaId] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+  const { mainAgent } = useTemplate();
 
   const inputStyle = {
     padding: "10px",
@@ -86,7 +88,71 @@ const PropertyRequestForm = () => {
     };
     fetchFilterData();
   }, []);
+  const handleViewDetails = useCallback(async () => {
+          const url_fe = window.location.href;
 
+    try {
+      const payload = {
+        domain: mainAgent.name,
+        url_fe: url_fe,
+        id_country: 1,
+        [purpose === "buy" ? "want_to_sell" : "want_to_let"]: {
+          leads_objective: purpose === "buy" ? "WTS" : "WTL",
+          leads_name: name, // from your state
+          leads_phone: phone,
+          leads_email: email,
+          leads_ownership_testimony: ownProperty,
+          property_address: address,
+          property_location_map_url: wazeLocation,
+          property_id_country: 1,
+          property_id_province: null,
+          property_id_state: selectedStateId,
+          property_id_city: null,
+          property_id_area: selectedAreaId, // add if you have
+          property_category: category,
+          property_type: landType,
+          property_type_others: otherCategory,
+          property_floor: floorCount,
+          property_room: bedroom,
+          property_bathroom: bathroom,
+          property_built_size: builtUpArea,
+          property_land_size: landArea,
+          property_lot_type: landLotType,
+            			leads_ownership_testimony: "YES",
+
+      				property_asking_price: 700000,
+// replace with state if dynamic
+          leads_divest_soon: "YES",
+          leads_agree_agent_assist: helpWithSelling===true ?('YES'):("NO"),
+        },
+      };
+if (purpose=='buy')
+{    const response = await getSubmitSell(payload);
+      console.log("✅ Success Sell:", response.data);}
+else
+{
+ const response = await getSubmitLet(payload);
+      console.log("✅ Success Let:", response.data);
+}
+  
+    } catch (err) {
+      console.error("❌ Error submitting form:", err);
+    }
+  }, [
+    name,
+    phone,
+    email,
+    selectedStateId,
+    category,
+    landType,
+    otherCategory,
+    floorCount,
+    bedroom,
+    bathroom,
+    builtUpArea,
+    landArea,
+    landLotType,
+  ]);
   const handleStateChange = (e) => {
     const stateId = e.target.value;
     setSelectedStateId(stateId);
@@ -216,7 +282,7 @@ const PropertyRequestForm = () => {
           </div>
 
           {/* Location State */}
-     
+
           <div style={{ display: "flex", gap: "20px", width: "100%" }}>
             <div style={rowStyle}>
               {labelWrapper("*Location State")}
@@ -651,6 +717,7 @@ const PropertyRequestForm = () => {
               fontWeight: "600",
               fontFamily: "Poppins",
             }}
+            onClick={handleViewDetails}
           >
             Submit Now
           </button>
