@@ -493,7 +493,7 @@ const Filters = ({
         >
           <h4
             className="text-white fw-bold text-end mb-4"
-            style={{ fontSize: "34px", fontFamily: "Poppins", fontWeight: 600 }}
+            style={{ fontSize: "32px", fontFamily: "Poppins", fontWeight: 600 }}
           >
             Discover Dream Properties at {domain.name}
           </h4>
@@ -515,7 +515,7 @@ const Filters = ({
                     onClick={() => setActiveTab(label)}
                     style={{
                       background: "transparent",
-                      fontSize: "16px",
+                      fontSize: "14px",
                       fontFamily: "Poppins",
                       borderBottom:
                         activeTab === label
@@ -555,7 +555,7 @@ const Filters = ({
                   <span
                     style={{
                       fontFamily: "Poppins",
-                      fontSize: "20px",
+                      fontSize: "18px",
                       fontWeight: 400,
                       whiteSpace: "nowrap",
                       overflow: "hidden",
@@ -585,7 +585,7 @@ const Filters = ({
                         left: "16px",
                         top: "50%",
                         transform: "translateY(-50%)",
-                        fontSize: "20px",
+                        fontSize: "18px",
                         color: "#999",
                       }}
                     />
@@ -599,7 +599,7 @@ const Filters = ({
                         height: "60px",
                         paddingLeft: "48px", // room for the icon
                         fontFamily: "Poppins",
-                        fontSize: "20px",
+                        fontSize: "18px",
                         fontStyle: "normal",
                         fontWeight: 400,
                         lineHeight: "normal",
@@ -640,7 +640,7 @@ const Filters = ({
                         width: "100%",
                         background: "transparent",
                         border: "none",
-                        fontSize: "16px",
+                        fontSize: "14px",
                         fontFamily: "Poppins",
                         color: "white",
                         textDecoration: "none",
@@ -725,7 +725,7 @@ const Filters = ({
                                     <span
                                       style={{
                                         fontFamily: "Poppins",
-                                        fontSize: 16,
+                                        fontSize: 14,
                                         fontStyle: "normal",
                                         fontWeight: 400,
                                         lineHeight: "normal",
@@ -946,7 +946,7 @@ const Filters = ({
                     style={{
                       width: "16px",
                       height: "16px",
-                      fontSize: "14px",
+                      fontSize: "12px",
                       lineHeight: "1",
                       border: "none",
                       background: "transparent",
@@ -975,7 +975,7 @@ const Filters = ({
                           margin: 0,
                           textAlign: "left",
                           fontWeight: "600",
-                          fontSize: "16px",
+                          fontSize: "14px",
                           fontFamily: "Poppins",
                           marginBottom: "5px",
                         }}
@@ -993,7 +993,7 @@ const Filters = ({
                         <p
                           style={{
                             margin: 0,
-                            fontSize: "14px",
+                            fontSize: "12px",
                             color: "#555",
                             fontFamily: "Poppins",
                           }}
@@ -1006,7 +1006,7 @@ const Filters = ({
                         <p
                           style={{
                             margin: 0,
-                            fontSize: "14px",
+                            fontSize: "12px",
                             color: "#555",
                             fontFamily: "Poppins",
                           }}

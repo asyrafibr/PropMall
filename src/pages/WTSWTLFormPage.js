@@ -36,7 +36,7 @@ const PropertyRequestForm = () => {
     padding: "10px",
     border: "1px solid #ccc",
     borderRadius: "4px",
-    fontSize: "14px",
+    fontSize: "12px",
     width: "100%",
     fontFamily: "Poppins",
   };
@@ -53,7 +53,7 @@ const PropertyRequestForm = () => {
     width: "200px",
     fontFamily: "Poppins",
     fontWeight: "500",
-    fontSize: "14px",
+    fontSize: "12px",
     flexShrink: 0,
   };
 
@@ -142,7 +142,7 @@ const PropertyRequestForm = () => {
           fontFamily: "Poppins",
         }}
       >
-        <div style={{ fontWeight: "600", fontSize: "20px" }}>
+        <div style={{ fontWeight: "600", fontSize: "18px" }}>
           Property Request Form
         </div>
 
@@ -275,7 +275,7 @@ const PropertyRequestForm = () => {
                 value={wazeLocation}
                 onChange={(e) => setWazeLocation(e.target.value)}
               />
-              <p style={{ fontSize: "10px", color: "#777", marginTop: "4px" }}>
+              <p style={{ fontSize: "8px", color: "#777", marginTop: "4px" }}>
                 *Key in Google/ Waze Pin Location (if any)
               </p>
             </div>
@@ -605,7 +605,7 @@ const PropertyRequestForm = () => {
               display: "flex",
               alignItems: "center",
               gap: "12px",
-              fontSize: "14px",
+              fontSize: "12px",
               fontFamily: "Poppins",
               cursor: "pointer",
             }}
@@ -629,7 +629,7 @@ const PropertyRequestForm = () => {
                 justifyContent: "center",
                 color: "#fff",
                 fontWeight: "bold",
-                fontSize: "12px",
+                fontSize: "10px",
                 transition: "all 0.2s ease",
               }}
             >
@@ -678,7 +678,7 @@ const styles = {
   },
   loadingText: {
     marginTop: "16px",
-    fontSize: "16px",
+    fontSize: "14px",
     fontFamily: "Poppins",
     color: "#555",
   },

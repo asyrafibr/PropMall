@@ -72,7 +72,7 @@ const ListingCard = ({ product, handleViewDetails }) => {
                   gap: "8px",
                   zIndex: 2,
                   fontWeight: 600,
-                  fontSize: "16px",
+                  fontSize: "14px",
                 }}
               >
                 {statusText && (
@@ -82,7 +82,7 @@ const ListingCard = ({ product, handleViewDetails }) => {
                       color: "white",
                       borderRadius: "4px",
                       padding: "4px 12px",
-                      fontSize: "16px",
+                      fontSize: "14px",
                       fontWeight: 600,
                       textAlign: "left",
                       maxWidth: "100px",
@@ -98,7 +98,7 @@ const ListingCard = ({ product, handleViewDetails }) => {
                       color: "white",
                       borderRadius: "4px",
                       padding: "4px 12px",
-                      fontSize: "16px",
+                      fontSize: "14px",
                       fontWeight: 600,
                       textAlign: "center",
                       minWidth: "90px",
@@ -131,7 +131,7 @@ const ListingCard = ({ product, handleViewDetails }) => {
                 alignItems: "center",
                 justifyContent: "center",
                 pointerEvents: "none",
-                fontSize:'16px'
+                fontSize:'14px'
               }}
             >
               Exclusive
@@ -147,7 +147,7 @@ const ListingCard = ({ product, handleViewDetails }) => {
               className="btn d-flex align-items-center"
               style={{
                 gap: "5px",
-                fontSize: "14px",
+                fontSize: "12px",
                 fontWeight: 500,
                 border: "none",
                 backgroundColor: "transparent",
@@ -170,7 +170,7 @@ const ListingCard = ({ product, handleViewDetails }) => {
           <div
             style={{
               fontWeight: 400,
-              fontSize: "20px",
+              fontSize: "18px",
               marginBottom: "6px",
               color: "#333",
             }}
@@ -182,7 +182,7 @@ const ListingCard = ({ product, handleViewDetails }) => {
           <div
             style={{
               fontWeight: 400,
-              fontSize: "16px",
+              fontSize: "14px",
               color: "#666",
               marginBottom: "4px",
             }}
@@ -193,7 +193,7 @@ const ListingCard = ({ product, handleViewDetails }) => {
           <div
             style={{
               fontWeight: 400,
-              fontSize: "16px",
+              fontSize: "14px",
               color: "#666",
               marginBottom: "10px",
               fontFamily: "Poppins",
@@ -233,7 +233,7 @@ const ListingCard = ({ product, handleViewDetails }) => {
           >
             <div
               className="d-flex align-items-start"
-              style={{ gap: "20px", fontSize: "16px", color: "#444" }}
+              style={{ gap: "20px", fontSize: "14px", color: "#444" }}
             >
               {room && (
                 <span

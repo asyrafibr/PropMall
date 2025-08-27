@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useTemplate } from "../context/TemplateContext"; // ✅ Import Template Context
 import { getAgent } from "../api/axiosApi";
-import './header.css'
+import "./header.css";
 const Navbar = () => {
   const { template, switchTemplate } = useTemplate(); // ✅ Use Template Context
   const navigate = useNavigate();
@@ -20,11 +20,13 @@ const Navbar = () => {
     // You can also add logic here if needed before navigating
     navigate(path);
   };
-
+  // console.log('agent',mainAgent)
   return (
     <nav
       className="navbar navbar-expand-lg bg-white px-3"
-      style={{ backgroundColor: template==='template2'?("#FFFFFF" ):("#F8F9FA")}}
+      style={{
+        backgroundColor: template === "template2" ? "#FFFFFF" : "#F8F9FA",
+      }}
     >
       <div className="container-fluid">
         <a
@@ -34,11 +36,11 @@ const Navbar = () => {
           style={{
             fontFamily: "Poppins, sans-serif",
             cursor: "pointer",
-            fontSize: "20px",
+            fontSize: "18px",
             fontWeight: 600,
           }}
         >
-          TESLA REALTY SDN. BHD
+          {mainAgent.name}{" "}
         </a>
 
         <button
@@ -63,7 +65,7 @@ const Navbar = () => {
                 className="nav-link text-nowrap"
                 to="/"
                 style={{
-                  fontSize: "16px",
+                  fontSize: "14px",
                   fontWeight: 400,
                   fontFamily: "Poppins",
                 }}
@@ -78,7 +80,7 @@ const Navbar = () => {
                   to="/search"
                   state={{ activeTab: "Buy", autoSearch: true }} // ✅ send desired active tab
                   style={{
-                    fontSize: "16px",
+                    fontSize: "14px",
                     fontWeight: 400,
                     fontFamily: "Poppins",
                   }}
@@ -94,7 +96,7 @@ const Navbar = () => {
                   to="/search"
                   state={{ activeTab: "Rent", autoSearch: true }} // ✅
                   style={{
-                    fontSize: "16px",
+                    fontSize: "14px",
                     fontWeight: 400,
                     fontFamily: "Poppins",
                   }}
@@ -110,7 +112,7 @@ const Navbar = () => {
                   to="/search"
                   state={{ activeTab: "New Project", autoSearch: true }} // ✅
                   style={{
-                    fontSize: "16px",
+                    fontSize: "14px",
                     fontWeight: 400,
                     fontFamily: "Poppins",
                   }}
@@ -126,7 +128,7 @@ const Navbar = () => {
                   to="/search"
                   state={{ activeTab: "Auction", autoSearch: true }} // ✅
                   style={{
-                    fontSize: "16px",
+                    fontSize: "14px",
                     fontWeight: 400,
                     fontFamily: "Poppins",
                   }}
@@ -141,7 +143,7 @@ const Navbar = () => {
                 className="nav-link text-nowrap"
                 to="/donedeal"
                 style={{
-                  fontSize: "16px",
+                  fontSize: "14px",
                   fontWeight: 400,
                   fontFamily: "Poppins",
                 }}
@@ -154,7 +156,7 @@ const Navbar = () => {
                 className="nav-link text-nowrap"
                 to="/articles"
                 style={{
-                  fontSize: "16px",
+                  fontSize: "14px",
                   fontWeight: 400,
                   fontFamily: "Poppins",
                 }}
@@ -167,7 +169,7 @@ const Navbar = () => {
                 className="nav-link text-nowrap"
                 to="/business-card"
                 style={{
-                  fontSize: "16px",
+                  fontSize: "14px",
                   fontWeight: 400,
                   fontFamily: "Poppins",
                 }}
@@ -186,7 +188,7 @@ const Navbar = () => {
                   data-bs-toggle="dropdown"
                   aria-expanded="false"
                   style={{
-                    fontSize: "16px",
+                    fontSize: "14px",
                     fontWeight: 400,
                     fontFamily: "Poppins",
                   }}
@@ -203,7 +205,7 @@ const Navbar = () => {
                       to="/buy"
                       onClick={() => handleNavigate("/buy")}
                       style={{
-                        fontSize: "16px",
+                        fontSize: "14px",
                         fontWeight: 400,
                         fontFamily: "Poppins",
                       }}
@@ -216,7 +218,7 @@ const Navbar = () => {
                       className="dropdown-item"
                       to="/buy"
                       style={{
-                        fontSize: "16px",
+                        fontSize: "14px",
                         fontWeight: 400,
                         fontFamily: "Poppins",
                       }}
@@ -233,7 +235,7 @@ const Navbar = () => {
                       to="/saleprops"
                       onClick={() => handleNavigate("/saleprops")}
                       style={{
-                        fontSize: "16px",
+                        fontSize: "14px",
                         fontWeight: 400,
                         fontFamily: "Poppins",
                       }}
@@ -247,7 +249,7 @@ const Navbar = () => {
                       to="/saleprops"
                       onClick={() => handleNavigate("/saleprops")}
                       style={{
-                        fontSize: "16px",
+                        fontSize: "14px",
                         fontWeight: 400,
                         fontFamily: "Poppins",
                       }}
@@ -264,7 +266,7 @@ const Navbar = () => {
                   className="nav-link text-nowrap"
                   to="/tools"
                   style={{
-                    fontSize: "16px",
+                    fontSize: "14px",
                     fontWeight: 400,
                     fontFamily: "Poppins",
                   }}

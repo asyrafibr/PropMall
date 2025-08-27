@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Container, Row, Col, Card, Button, Dropdown } from "react-bootstrap";
 import {
   FaEnvelope,
@@ -14,11 +14,17 @@ import {
 } from "react-icons/fa";
 import profileImage from "../image/Profile.jpg";
 import BackgroundImage from "../image/Landing_Hero.jpg";
+import BackgroundImage2 from "../image/template2bg.png";
+import BackgroundImage3 from "../image/bg3.png";
+import BackgroundImage4 from "../image/bg4.jpg";
+
 import icon1 from "../image/door_open.png";
 import icon2 from "../image/house.png";
 import icon3 from "../image/create_new_folder.png";
 import icon4 from "../image/browse.png";
 import BusinessHeader from "./BusinessHeader";
+import { useTemplate } from "../context/TemplateContext";
+import { getAgent } from "../api/axiosApi";
 
 const buttonStyle = {
   width: "660px",
@@ -32,9 +38,9 @@ const buttonStyle = {
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
-  position: "relative",   // <-- make Button relative for icon absolute positioning
+  position: "relative", // <-- make Button relative for icon absolute positioning
   fontWeight: "500",
-  fontSize: "16px",
+  fontSize: "14px",
 };
 const iconContainerStyle = {
   position: "absolute",
@@ -46,25 +52,60 @@ const iconContainerStyle = {
   height: "24px",
 };
 function BusinessCard() {
+    const { template, switchTemplate } = useTemplate(); // ✅ Use Template Context
+  
+  // const { template } = useTemplate();
+  const [agent, setAgent] = useState({});
+  useEffect(() => {
+    const fetchAgentData = async () => {
+      try {
+        const agentRes = await getAgent();
+
+        setAgent(agentRes.data.agent); // ✅ schedules agent update
+
+        // ❌ agent is NOT updated here yet
+      } catch (error) {
+        console.error("Error fetching agent:", error);
+      }
+    };
+
+    fetchAgentData();
+  }, []);
+  useEffect(() => {
+    if (agent) {
+    }
+  }, [agent]);
+    const backgroundMap = {
+    template1: BackgroundImage,
+    template2: BackgroundImage2,
+    template3: BackgroundImage3,
+    template4: BackgroundImage4,
+  };
+
+  // pick the right one (fallback to template1 if not found)
+  const bgImage = backgroundMap[template] || BackgroundImage;
   return (
-    <div      style={{
+    <div
+      style={{
         overflowX: "hidden", // Prevent horizontal scroll globally
-      }}>
+      }}
+    >
       <div
         style={{
-          backgroundImage: `url(${BackgroundImage})`,
+          backgroundImage: `url(${bgImage})`,
           backgroundSize: "cover",
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
           minHeight: "100vh",
           position: "relative",
-          paddingTop: "150px",paddingBottom:'50px'
+          paddingTop: "150px",
+          paddingBottom: "50px",
         }}
       >
         <div
           style={{ position: "absolute", top: 0, width: "100%", zIndex: 10 }}
         >
-          <BusinessHeader />
+          <BusinessHeader domain={agent.domain} />
         </div>
         <Container>
           {/* Header Card with Floating Image */}
@@ -75,7 +116,7 @@ function BusinessCard() {
             <Card.Body
               style={{
                 boxShadow: "4px 4px 10px rgba(0,0,0,0.5)",
-                paddingTop: "60px"
+                paddingTop: "60px",
               }}
             >
               <Row className="align-items-start">
@@ -94,18 +135,20 @@ function BusinessCard() {
                         height: "120px",
                         border: "4px solid white",
                       }}
-                      src={profileImage}
+                      src={agent.photo}
                       alt="Agent"
                       className="rounded-circle shadow"
                     />
                   </div>
                   {/* Text Below Image */}
                   <div style={{ marginTop: "100px", marginLeft: "20px" }}>
-                    <h5 className="mb-0">ARIF FIKRI</h5>
+                    <h5 className="mb-0">{agent.name}</h5>
                     <p className="text-muted mb-1">
-                      Probationary Estate Agent (PEA 2467)
+                      {agent.title} {agent.reg_no}{" "}
                     </p>
-                    <p className="text-muted">IQI REALTY SDN BHD (E(1)1584)</p>
+                    <p className="text-muted">
+                      {agent.agency_name} {agent.agency_reg_no}
+                    </p>
                   </div>
                 </Col>
 
@@ -260,7 +303,7 @@ function BusinessCard() {
 
                           <div className="ms-2">
                             <small
-                              style={{ fontSize: "14px", fontWeight: "400" }}
+                              style={{ fontSize: "12px", fontWeight: "400" }}
                             >
                               New Project
                             </small>
@@ -337,8 +380,13 @@ function BusinessCard() {
             style={{ backgroundColor: "rgba(250, 250, 250, 0.8)" }}
           >
             <Card.Body style={{ boxShadow: "4px 4px 10px rgba(0,0,0,0.5)" }}>
-              <div className="mb-3 text-center" style={{paddingTop:'20px'}}>
-                <video width="640px" height="280px" controls style={{borderRadius:'12px'}}>
+              <div className="mb-3 text-center" style={{ paddingTop: "20px" }}>
+                <video
+                  width="640px"
+                  height="280px"
+                  controls
+                  style={{ borderRadius: "12px" }}
+                >
                   <source
                     src="https://www.w3schools.com/html/mov_bbb.mp4"
                     type="video/mp4"
@@ -351,10 +399,14 @@ function BusinessCard() {
                 style={{
                   width: "640px",
                   margin: "0 auto",
-                  textAlign: "center", fontSize:'16px',fontWeight:400,fontFamily:'Poppins',paddingTop:'20px'
+                  textAlign: "center",
+                  fontSize: "14px",
+                  fontWeight: 400,
+                  fontFamily: "Poppins",
+                  paddingTop: "20px",
                 }}
               >
-                Welcome to agentv2.laskea.net! I’m Arif Fikri, your trusted
+                Welcome to {agent.domain}! I’m {agent.name}, your trusted
                 partner in finding the perfect home. Whether you're buying,
                 selling, or investing, I’m here to guide you through the process
                 with personalized service and expert market knowledge. Let’s
@@ -369,47 +421,47 @@ function BusinessCard() {
             className="mb-4 shadow-sm position-relative overflow-visible"
             style={{ backgroundColor: "rgba(250, 250, 250, 0.8)" }}
           >
-            <Card.Body style={{ boxShadow: "4px 4px 10px rgba(0,0,0,0.5)",}}>
+            <Card.Body style={{ boxShadow: "4px 4px 10px rgba(0,0,0,0.5)" }}>
               <div className="d-flex flex-column align-items-center gap-2">
                 <Button style={buttonStyle}>
                   <span style={iconContainerStyle}>
                     <FaInstagram
-                      style={{ color: "#E4405F", fontSize: "20px" }}
+                      style={{ color: "#E4405F", fontSize: "18px" }}
                     />
                   </span>
-                  Follow @Ariffikri
+                  Follow @{agent.domain}
                 </Button>
 
                 <Button style={buttonStyle}>
                   <span style={iconContainerStyle}>
                     <FaFacebook
-                      style={{ color: "#1877F2", fontSize: "20px" }}
+                      style={{ color: "#1877F2", fontSize: "18px" }}
                     />
                   </span>
-                  Follow @Ariffikri
+                  Follow @{agent.domain}
                 </Button>
 
                 <Button style={buttonStyle}>
                   <span style={iconContainerStyle}>
-                    <FaYoutube style={{ color: "#FF0000", fontSize: "20px" }} />
+                    <FaYoutube style={{ color: "#FF0000", fontSize: "18px" }} />
                   </span>
-                  Subscribe @Ariffikri
+                  Subscribe @{agent.domain}
                 </Button>
 
                 <Button style={buttonStyle}>
                   <span style={iconContainerStyle}>
-                    <FaTiktok style={{ color: "#000000", fontSize: "20px" }} />
+                    <FaTiktok style={{ color: "#000000", fontSize: "18px" }} />
                   </span>
-                  Follow @Ariffikri
+                  Follow @{agent.domain}
                 </Button>
 
                 <Button style={buttonStyle}>
                   <span style={iconContainerStyle}>
                     <FaLinkedin
-                      style={{ color: "#0A66C2", fontSize: "20px" }}
+                      style={{ color: "#0A66C2", fontSize: "18px" }}
                     />
                   </span>
-                  Follow @Ariffikri
+                  Follow @{agent.domain}
                 </Button>
               </div>
             </Card.Body>

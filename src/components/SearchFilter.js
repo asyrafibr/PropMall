@@ -9,6 +9,7 @@ import {
   getLocationTree,
 } from "../api/axiosApi";
 import { useLocation } from "react-router-dom";
+import RangeSliderModal from "../components/RangeSliderModal";
 
 const SearchFilter = ({
   locations,
@@ -66,6 +67,8 @@ const SearchFilter = ({
   const [selectedState, setSelectedState] = useState(null);
   const [locationTree, setLocationTree] = useState([]);
   const location = useLocation();
+  const [openModalLabel, setOpenModalLabel] = useState(null);
+  const [priceModalOpen, setPriceModalOpen] = useState(false);
 
   const BUY_AMOUNTS = [
     0, 100000, 200000, 300000, 400000, 500000, 600000, 700000, 800000, 900000,
@@ -160,7 +163,6 @@ const SearchFilter = ({
         setSelectedAreaObjects([area]);
       }
     }
-
   };
 
   // --- Back Navigation ---
@@ -212,7 +214,7 @@ const SearchFilter = ({
 
   useEffect(() => {
     // If autoSearch flag is set, run handleSearch after tab is updated
-    console.log("LOCATION NOW",location.state.activeTab)
+    console.log("LOCATION NOW", location.state.activeTab);
     if (location.state?.autoSearch && location.state?.activeTab) {
       handleSearch(location.state.activeTab);
     }
@@ -282,6 +284,17 @@ const SearchFilter = ({
   };
   const toggleDropdown = (label) => {
     setOpenDropdown(openDropdown === label ? null : label);
+  };
+    const handleButtonClick = (label) => {
+    if (
+      label === "Price Ranges (RM)" ||
+      label === "Bedroom(s)" ||
+      label === "Bathroom(s)"
+    ) {
+      setOpenModalLabel(label); // open modal for that label
+    } else {
+      toggleDropdown(label); // old dropdown logic
+    }
   };
   const handleClear = () => {
     setSelectedAreaIds([]);
@@ -399,9 +412,13 @@ const SearchFilter = ({
         <div
           style={{
             backgroundColor: "#FAFAFA",
-            borderRadius: "8px",
+            // borderRadius: "8px",
             padding: "20px 15px",
             width: "100%",
+            backgroundImage: `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url(${agentBoxbg})`,
+            backgroundSize: "cover",
+            backgroundRepeat: "no-repeat",
+            backgroundPosition: "center center",
           }}
         >
           {/* Rent / Sell Toggle Buttons */}
@@ -417,14 +434,14 @@ const SearchFilter = ({
                       onClick={() => setActiveTab(label)}
                       style={{
                         background: "transparent",
-                        fontSize: "16px",
+                        fontSize: "14px",
                         fontFamily: "Poppins",
                         borderBottom:
                           activeTab === label
                             ? "3px solid #F4980E"
                             : "3px solid transparent",
                         borderRadius: 0,
-                        color: "black",
+                        color: "#FAFAFA",
                       }}
                     >
                       {label}
@@ -455,7 +472,7 @@ const SearchFilter = ({
                 <span
                   style={{
                     fontFamily: "Poppins",
-                    fontSize: "20px",
+                    fontSize: "18px",
                     fontWeight: 400,
                     whiteSpace: "nowrap",
                     overflow: "hidden",
@@ -547,658 +564,269 @@ const SearchFilter = ({
             </div>
           </div>
           <div className="row mt-4" ref={containerRef}>
-            <div className="col-12 d-flex flex-column flex-md-row gap-3">
-              {Object.entries(filters).map(([label, options]) => (
-                <div
-                  key={label}
-                  style={{ position: "relative", width: "100%" }}
-                >
-                  <button
-                    onClick={() => toggleDropdown(label)}
-                    className="btn p-0 d-flex align-items-center"
-                    style={{
-                      justifyContent: "space-between",
-                      width: "100%",
-                      background: "transparent",
-                      border: "none",
-                      fontSize: "16px",
-                      fontFamily: "Poppins",
-                      color: "black",
-                      textDecoration: "none",
-                    }}
-                  >
-                    <span>
-                      {label === "All Categories"
-                        ? selectedCategory?.name || label
-                        : label === "All Holding Types"
-                        ? selectedHolding?.name || label
-                        : label === "Price Ranges (RM)"
-                        ? priceRangeDisplay || label
-                        : label === "Bedroom(s)"
-                        ? bedroomDisplay || label
-                        : label === "Bathroom(s)"
-                        ? bathroomDisplay || label
-                        : label}
-                    </span>
-                    <span style={{ marginLeft: "6px", fontSize: "0.7rem" }}>
-                      ▼
-                    </span>
-                  </button>
-
-                  {/* --- Keep dropdown ONLY for All Categories / All Holding Types --- */}
-                  {openDropdown === label &&
-                    (label === "All Categories" ||
-                      label === "All Holding Types") && (
-                      <div
-                        style={{
-                          position: "absolute",
-                          top: "100%",
-                          width: "100%",
-                          // width: "750px",
-                          // height: "500px",
-                          background: "white",
-                          zIndex: 1000,
-                          borderRadius: "8px",
-                          padding: "10px",
-                          boxShadow: "0 4px 8px rgba(0,0,0,0.15)",
-                        }}
-                      >
-                        <ul
-                          style={{ listStyle: "none", padding: 0, margin: 0 }}
-                        >
-                          {(options && Array.isArray(options) ? options : [])
-                            .length === 0 ? (
-                            <li
-                              style={{
-                                padding: "6px 0",
-                                color: "gray",
-                                fontFamily: "Poppins",
-                              }}
-                            >
-                              No options available.
-                            </li>
-                          ) : (
-                            (options || []).map((item, i) => (
-                              <li
-                                key={i}
-                                style={{
-                                  cursor: "pointer",
-                                  padding: "6px 0",
-                                }}
-                                onClick={() => {
-                                  if (label === "All Categories") {
-                                    setSelectedCategory({
-                                      id: item.id,
-                                      name: item.desc,
-                                    });
-                                    setOpenDropdown(null);
-                                  }
-                                }}
-                              >
-                                <label
-                                  style={{
-                                    display: "flex",
-                                    justifyContent: "space-between",
-                                    alignItems: "center",
-                                    width: "100%",
-                                  }}
-                                >
-                                  <span
+                    <div className="col-12 d-flex flex-column flex-md-row gap-3">
+                      {Object.entries(filters).map(([label, options]) => (
+                        <div key={label} style={{ position: "relative", width: "100%" }}>
+                          <button
+                                onClick={() => handleButtonClick(label)}
+                            className="btn p-0 d-flex align-items-center"
+                            style={{
+                              justifyContent: "space-between",
+                              width: "100%",
+                              background: "transparent",
+                              border: "none",
+                              fontSize: "14px",
+                              fontFamily: "Poppins",
+                              color: "white",
+                              textDecoration: "none",
+                            }}
+                          >
+                            <span>
+                              {label === "All Categories"
+                                ? selectedCategory?.name || label
+                                : label === "All Holding Types"
+                                ? selectedHolding?.name || label
+                                : label === "Price Ranges (RM)"
+                                ? priceRangeDisplay || label
+                                : label === "Bedroom(s)"
+                                ? bedroomDisplay || label
+                                : label === "Bathroom(s)"
+                                ? bathroomDisplay || label
+                                : label}
+                            </span>
+                            <span style={{ marginLeft: "6px", fontSize: "0.7rem" }}>
+                              ▼
+                            </span>
+                          </button>
+          
+                          {/* --- Keep dropdown ONLY for All Categories / All Holding Types --- */}
+                                              {openDropdown === label &&
+                                (label === "All Categories" ||
+                                  label === "All Holding Types") && (
+                                  <div
                                     style={{
-                                      fontFamily: "Poppins",
-                                      fontSize: 16,
-                                      fontStyle: "normal",
-                                      fontWeight: 400,
-                                      lineHeight: "normal",
-                                      color: "black",
+                                      position: "absolute",
+                                      top: "100%",
+                                      width: "100%",
+                                      // width: "750px",
+                                      // height: "500px",
+                                      background: "white",
+                                      zIndex: 1000,
+                                      borderRadius: "8px",
+                                      padding: "10px",
+                                      boxShadow: "0 4px 8px rgba(0,0,0,0.15)",
                                     }}
                                   >
-                                    {item.desc}
-                                  </span>
-
-                                  {label === "All Holding Types" && (
-                                    <label
-                                      style={{
-                                        position: "relative",
-                                        display: "inline-flex",
-                                        alignItems: "center",
-                                        cursor: "pointer",
-                                      }}
+                                    <ul
+                                      style={{ listStyle: "none", padding: 0, margin: 0 }}
                                     >
-                                      <input
-                                        type="checkbox"
-                                        onChange={(e) => {
-                                          e.stopPropagation();
-                                          setSelectedHolding((prev) => {
-                                            const isChecked = e.target.checked;
-                                            if (isChecked) {
-                                              return [
-                                                ...prev,
-                                                {
+                                      {(options && Array.isArray(options) ? options : [])
+                                        .length === 0 ? (
+                                        <li
+                                          style={{
+                                            padding: "6px 0",
+                                            color: "gray",
+                                            fontFamily: "Poppins",
+                                          }}
+                                        >
+                                          No options available.
+                                        </li>
+                                      ) : (
+                                        (options || []).map((item, i) => (
+                                          <li
+                                            key={i}
+                                            style={{
+                                              cursor: "pointer",
+                                              padding: "6px 0",
+                                            }}
+                                            onClick={() => {
+                                              if (label === "All Categories") {
+                                                setSelectedCategory({
                                                   id: item.id,
                                                   name: item.desc,
-                                                },
-                                              ];
-                                            } else {
-                                              return prev.filter(
-                                                (holding) =>
-                                                  holding.id !== item.id
-                                              );
-                                            }
-                                          });
-                                        }}
-                                        checked={selectedHolding.some(
-                                          (holding) => holding.id === item.id
-                                        )}
-                                        style={{ display: "none" }} // hide native checkbox
-                                      />
-                                      <span
-                                        style={{
-                                          width: "18px",
-                                          height: "18px",
-                                          border: "2px solid #F4980E",
-                                          borderRadius: "3px",
-                                          display: "inline-block",
-                                          backgroundColor: selectedHolding.some(
-                                            (holding) => holding.id === item.id
-                                          )
-                                            ? "#F4980E"
-                                            : "#fff",
-                                          position: "relative",
-                                          transition: "all 0.2s ease",
-                                        }}
-                                      >
-                                        {selectedHolding.some(
-                                          (holding) => holding.id === item.id
-                                        ) && (
-                                          <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            viewBox="0 0 16 16"
-                                            fill="white"
-                                            width="14"
-                                            height="14"
-                                            style={{
-                                              position: "absolute",
-                                              top: "50%",
-                                              left: "50%",
-                                              transform:
-                                                "translate(-50%, -50%)",
+                                                });
+                                                setOpenDropdown(null);
+                                              }
                                             }}
                                           >
-                                            <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7.25 7.25a.5.5 0 0 1-.708 0l-3.25-3.25a.5.5 0 1 1 .708-.708L6.25 10.043l6.896-6.897a.5.5 0 0 1 .708 0z" />
-                                          </svg>
-                                        )}
-                                      </span>
-                                    </label>
-                                  )}
-                                </label>
-                              </li>
-                            ))
-                          )}
-                        </ul>
-                      </div>
-                    )}
-
-                  {/* --- Modal for Price Ranges / Bedroom(s) / Bathroom(s) --- */}
-                  {(label === "Price Ranges (RM)" ||
-                    label === "Bedroom(s)" ||
-                    label === "Bathroom(s)") && (
-                    <Modal
-                      isOpen={openDropdown === label}
-                      onClose={() => setOpenDropdown(null)}
-                      title={
-                        label === "Price Ranges (RM)"
-                          ? "Select Price Range (RM)"
-                          : `Enter ${label.toLowerCase()} range`
-                      }
-                      width={750}
-                      height={380}
-                    >
-                      {label === "Price Ranges (RM)"
-                        ? (() => {
-                            const scale =
-                              activeTab === "Buy" ? BUY_AMOUNTS : RENT_AMOUNTS;
-
-                            const minIdx = nearestIndex(
-                              scale,
-                              priceRange?.min ?? 0
-                            );
-                            const maxIdx = nearestIndex(
-                              scale,
-                              priceRange?.max ?? 0
-                            );
-
-                            const setMinFromNumber = (num) => {
-                              const idx = nearestIndex(scale, num);
-                              const v = scale[idx];
-                              setPriceRange((r) => {
-                                const nextMax =
-                                  r?.max == null ? v : Math.max(v, r.max);
-                                return { ...(r || {}), min: v, max: nextMax };
-                              });
-                            };
-
-                            const setMaxFromNumber = (num) => {
-                              const idx = nearestIndex(scale, num);
-                              const v = scale[idx];
-                              setPriceRange((r) => {
-                                const nextMin =
-                                  r?.min == null ? v : Math.min(v, r.min);
-                                return { ...(r || {}), min: nextMin, max: v };
-                              });
-                            };
-
-                            return (
+                                            <label
+                                              style={{
+                                                display: "flex",
+                                                justifyContent: "space-between",
+                                                alignItems: "center",
+                                                width: "100%",
+                                              }}
+                                            >
+                                              <span
+                                                style={{
+                                                  fontFamily: "Poppins",
+                                                  fontSize: 14,
+                                                  fontStyle: "normal",
+                                                  fontWeight: 400,
+                                                  lineHeight: "normal",
+                                                  color: "black",
+                                                }}
+                                              >
+                                                {item.desc}
+                                              </span>
+          
+                                              {label === "All Holding Types" && (
+                                                <label
+                                                  style={{
+                                                    position: "relative",
+                                                    display: "inline-flex",
+                                                    alignItems: "center",
+                                                    cursor: "pointer",
+                                                  }}
+                                                >
+                                                  <input
+                                                    type="checkbox"
+                                                    onChange={(e) => {
+                                                      e.stopPropagation();
+                                                      setSelectedHolding((prev) => {
+                                                        const isChecked =
+                                                          e.target.checked;
+                                                        if (isChecked) {
+                                                          return [
+                                                            ...prev,
+                                                            {
+                                                              id: item.id,
+                                                              name: item.desc,
+                                                            },
+                                                          ];
+                                                        } else {
+                                                          return prev.filter(
+                                                            (holding) =>
+                                                              holding.id !== item.id
+                                                          );
+                                                        }
+                                                      });
+                                                    }}
+                                                    checked={selectedHolding.some(
+                                                      (holding) => holding.id === item.id
+                                                    )}
+                                                    style={{ display: "none" }} // hide native checkbox
+                                                  />
+                                                  <span
+                                                    style={{
+                                                      width: "18px",
+                                                      height: "18px",
+                                                      border: "2px solid #F4980E",
+                                                      borderRadius: "3px",
+                                                      display: "inline-block",
+                                                      backgroundColor:
+                                                        selectedHolding.some(
+                                                          (holding) =>
+                                                            holding.id === item.id
+                                                        )
+                                                          ? "#F4980E"
+                                                          : "#fff",
+                                                      position: "relative",
+                                                      transition: "all 0.2s ease",
+                                                    }}
+                                                  >
+                                                    {selectedHolding.some(
+                                                      (holding) => holding.id === item.id
+                                                    ) && (
+                                                      <svg
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                        viewBox="0 0 16 16"
+                                                        fill="white"
+                                                        width="14"
+                                                        height="14"
+                                                        style={{
+                                                          position: "absolute",
+                                                          top: "50%",
+                                                          left: "50%",
+                                                          transform:
+                                                            "translate(-50%, -50%)",
+                                                        }}
+                                                      >
+                                                        <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7.25 7.25a.5.5 0 0 1-.708 0l-3.25-3.25a.5.5 0 1 1 .708-.708L6.25 10.043l6.896-6.897a.5.5 0 0 1 .708 0z" />
+                                                      </svg>
+                                                    )}
+                                                  </span>
+                                                </label>
+                                              )}
+                                            </label>
+                                          </li>
+                                        ))
+                                      )}
+                                    </ul>
+                                  </div>
+                                )}
+          
+                          {(label === "Price Ranges (RM)" ||
+                            label === "Bedroom(s)" ||
+                            label === "Bathroom(s)") &&
+                            openModalLabel === label && (
                               <div
-                                style={{
-                                  display: "flex",
-                                  flexDirection: "column",
-                                  gap: 16,
-                                }}
+                                className="modal-overlay"
+                                onClick={() => setPriceModalOpen(false)}
                               >
-                                {/* Min column */}
                                 <div
+                                  // className="modal-box"
                                   style={{
-                                    display: "flex",
-                                    flexDirection: "column",
-                                    gap: 8,
+                                    background: "#fff",
+                                    borderRadius: 12,
+                                    padding: 35,
+                                    boxShadow: `0 10px 30px rgba(0, 0, 0, 0.25)`,
+                                    overflow: "auto",
+                                    zIndex: 2,
+                                    height: 400,
+                                    width: 1000,
                                   }}
+                                  onClick={(e) => e.stopPropagation()}
                                 >
-                                  <div
-                                    style={{
-                                      fontSize: 12,
-                                      fontFamily: "Poppins",
-                                      color: "black",
-                                    }}
-                                  >
-                                    Min
-                                  </div>
-                                  <input
-                                    type="number"
-                                    placeholder="Min"
-                                    className="form-control"
-                                    value={priceRange?.min ?? ""}
-                                    onChange={(e) => {
-                                      const raw = e.target.value
-                                        ? +e.target.value
-                                        : null;
-                                      if (raw == null)
-                                        setPriceRange((r) => ({
-                                          ...(r || {}),
-                                          min: null,
-                                        }));
-                                      else setMinFromNumber(raw);
-                                    }}
+                                  <h5 style={{ color: "black" }}>
+                                    {label === "Price Ranges (RM)"
+                                      ? "Select Price Range (RM)"
+                                      : label === "Bedroom(s)"
+                                      ? "Select Bedroom Range"
+                                      : "Select Bathroom Range"}
+                                  </h5>
+          
+                                  <RangeSliderModal
+                                    label={label}
+                                    setOpenModalLabel={setOpenModalLabel}
+                                    scale={
+                                      label === "Price Ranges (RM)"
+                                        ? activeTab === "Buy"
+                                          ? BUY_AMOUNTS
+                                          : RENT_AMOUNTS
+                                        : ROOM_COUNTS
+                                    }
+                                    range={
+                                      label === "Price Ranges (RM)"
+                                        ? priceRange
+                                        : label === "Bedroom(s)"
+                                        ? roomRange
+                                        : bathroomRange
+                                    }
+                                    setRange={
+                                      label === "Price Ranges (RM)"
+                                        ? setPriceRange
+                                        : label === "Bedroom(s)"
+                                        ? setRoomRange
+                                        : setBathroomRange
+                                    }
+                                    setRangeDisplay={
+                                      label === "Price Ranges (RM)"
+                                        ? setPriceRangeDisplay
+                                        : label === "Bedroom(s)"
+                                        ? setBedroomDisplay
+                                        : setBathroomDisplay
+                                    }
+                                    handleSearch={handleSearch}
+                                    setOpenDropdown={setOpenDropdown}
                                   />
-                                  <input
-                                    type="range"
-                                    min={0}
-                                    max={scale.length - 1}
-                                    step={1}
-                                    value={minIdx}
-                                    onChange={(e) => {
-                                      const v = scale[+e.target.value];
-                                      setPriceRange((r) => {
-                                        const nextMax =
-                                          r?.max == null
-                                            ? v
-                                            : Math.max(v, r.max);
-                                        return {
-                                          ...(r || {}),
-                                          min: v,
-                                          max: nextMax,
-                                        };
-                                      });
-                                    }}
-                                  />
-                                  <div
-                                    style={{
-                                      fontSize: 12,
-                                      fontFamily: "Poppins",
-                                    }}
-                                  >
-                                    RM {formatRM(scale[minIdx])}
-                                  </div>
-                                </div>
-
-                                {/* Max column */}
-                                <div
-                                  style={{
-                                    display: "flex",
-                                    flexDirection: "column",
-                                    gap: 8,
-                                  }}
-                                >
-                                  <div
-                                    style={{
-                                      fontSize: 12,
-                                      fontFamily: "Poppins",
-                                      color: "black",
-                                    }}
-                                  >
-                                    Max
-                                  </div>
-                                  <input
-                                    type="number"
-                                    placeholder="Max"
-                                    className="form-control"
-                                    value={priceRange?.max ?? ""}
-                                    onChange={(e) => {
-                                      const raw = e.target.value
-                                        ? +e.target.value
-                                        : null;
-                                      if (raw == null)
-                                        setPriceRange((r) => ({
-                                          ...(r || {}),
-                                          max: null,
-                                        }));
-                                      else setMaxFromNumber(raw);
-                                    }}
-                                  />
-                                  <input
-                                    type="range"
-                                    min={0}
-                                    max={scale.length - 1}
-                                    step={1}
-                                    value={maxIdx}
-                                    onChange={(e) => {
-                                      const v = scale[+e.target.value];
-                                      setPriceRange((r) => {
-                                        const nextMin =
-                                          r?.min == null
-                                            ? v
-                                            : Math.min(v, r.min);
-                                        return {
-                                          ...(r || {}),
-                                          min: nextMin,
-                                          max: v,
-                                        };
-                                      });
-                                    }}
-                                  />
-                                  <div
-                                    style={{
-                                      fontSize: 12,
-                                      fontFamily: "Poppins",
-                                    }}
-                                  >
-                                    RM {formatRM(scale[maxIdx])}
-                                  </div>
-                                </div>
-
-                                {/* Actions */}
-                                <div
-                                  className="d-flex"
-                                  style={{
-                                    justifyContent: "space-between",
-                                    marginTop: 8,
-                                  }}
-                                >
-                                  <button
-                                    className="btn"
-                                    onClick={() => {
-                                      setPriceRange({ min: null, max: null });
-                                      setPriceRangeDisplay("Price Ranges (RM)");
-                                      setOpenDropdown(null);
-                                    }}
-                                    style={{
-                                      backgroundColor: "#6c757d",
-                                      color: "white",
-                                      fontFamily: "Poppins",
-                                    }}
-                                  >
-                                    Clear
-                                  </button>
-                                  <button
-                                    className="btn"
-                                    onClick={() => {
-                                      const display = `RM ${formatRM(
-                                        priceRange?.min ?? 0
-                                      )} - RM ${formatRM(
-                                        priceRange?.max ?? 0
-                                      )}`;
-                                      setPriceRangeDisplay(display);
-                                      setOpenDropdown(null);
-                                    }}
-                                    style={{
-                                      backgroundColor: "#F4980E",
-                                      color: "white",
-                                      fontFamily: "Poppins",
-                                    }}
-                                  >
-                                    Apply
-                                  </button>
                                 </div>
                               </div>
-                            );
-                          })()
-                        : null}
-
-                      {label === "Bedroom(s)" || label === "Bathroom(s)"
-                        ? (() => {
-                            const isBedroom = label === "Bedroom(s)";
-                            const scale = ROOM_COUNTS;
-
-                            const cur = isBedroom ? roomRange : bathroomRange;
-                            const setCur = isBedroom
-                              ? setRoomRange
-                              : setBathroomRange;
-                            const setDisplay = isBedroom
-                              ? setBedroomDisplay
-                              : setBathroomDisplay;
-
-                            const minIdx = nearestIndex(scale, cur?.min ?? 0);
-                            const maxIdx = nearestIndex(scale, cur?.max ?? 0);
-
-                            const setMinFromNumber = (num) => {
-                              const idx = nearestIndex(scale, num);
-                              const v = scale[idx];
-                              setCur((r) => {
-                                const nextMax =
-                                  r?.max == null ? v : Math.max(v, r.max);
-                                return { ...(r || {}), min: v, max: nextMax };
-                              });
-                            };
-
-                            const setMaxFromNumber = (num) => {
-                              const idx = nearestIndex(scale, num);
-                              const v = scale[idx];
-                              setCur((r) => {
-                                const nextMin =
-                                  r?.min == null ? v : Math.min(v, r.min);
-                                return { ...(r || {}), min: nextMin, max: v };
-                              });
-                            };
-
-                            return (
-                              <div
-                                style={{
-                                  display: "flex",
-                                  flexDirection: "column",
-                                  gap: 16,
-                                }}
-                              >
-                                {/* Min column */}
-                                <div
-                                  style={{
-                                    display: "flex",
-                                    flexDirection: "column",
-                                    gap: 8,
-                                  }}
-                                >
-                                  <div
-                                    style={{
-                                      fontSize: 12,
-                                      fontFamily: "Poppins",
-                                      color: "black",
-                                    }}
-                                  >
-                                    Min
-                                  </div>
-                                  <input
-                                    type="number"
-                                    placeholder="Min"
-                                    className="form-control"
-                                    value={cur?.min ?? ""}
-                                    onChange={(e) => {
-                                      const raw = e.target.value
-                                        ? +e.target.value
-                                        : null;
-                                      if (raw == null)
-                                        setCur((r) => ({
-                                          ...(r || {}),
-                                          min: null,
-                                        }));
-                                      else setMinFromNumber(raw);
-                                    }}
-                                  />
-                                  <input
-                                    type="range"
-                                    min={0}
-                                    max={scale.length - 1}
-                                    step={1}
-                                    value={minIdx}
-                                    onChange={(e) => {
-                                      const v = scale[+e.target.value];
-                                      setCur((r) => {
-                                        const nextMax =
-                                          r?.max == null
-                                            ? v
-                                            : Math.max(v, r.max);
-                                        return {
-                                          ...(r || {}),
-                                          min: v,
-                                          max: nextMax,
-                                        };
-                                      });
-                                    }}
-                                  />
-                                  <div
-                                    style={{
-                                      fontSize: 12,
-                                      fontFamily: "Poppins",
-                                    }}
-                                  >
-                                    {scale[minIdx]}
-                                  </div>
-                                </div>
-
-                                {/* Max column */}
-                                <div
-                                  style={{
-                                    display: "flex",
-                                    flexDirection: "column",
-                                    gap: 8,
-                                  }}
-                                >
-                                  <div
-                                    style={{
-                                      fontSize: 12,
-                                      fontFamily: "Poppins",
-                                      color: "black",
-                                    }}
-                                  >
-                                    Max
-                                  </div>
-                                  <input
-                                    type="number"
-                                    placeholder="Max"
-                                    className="form-control"
-                                    value={cur?.max ?? ""}
-                                    onChange={(e) => {
-                                      const raw = e.target.value
-                                        ? +e.target.value
-                                        : null;
-                                      if (raw == null)
-                                        setCur((r) => ({
-                                          ...(r || {}),
-                                          max: null,
-                                        }));
-                                      else setMaxFromNumber(raw);
-                                    }}
-                                  />
-                                  <input
-                                    type="range"
-                                    min={0}
-                                    max={scale.length - 1}
-                                    step={1}
-                                    value={maxIdx}
-                                    onChange={(e) => {
-                                      const v = scale[+e.target.value];
-                                      setCur((r) => {
-                                        const nextMin =
-                                          r?.min == null
-                                            ? v
-                                            : Math.min(v, r.min);
-                                        return {
-                                          ...(r || {}),
-                                          min: nextMin,
-                                          max: v,
-                                        };
-                                      });
-                                    }}
-                                  />
-                                  <div
-                                    style={{
-                                      fontSize: 12,
-                                      fontFamily: "Poppins",
-                                    }}
-                                  >
-                                    {scale[maxIdx]}
-                                  </div>
-                                </div>
-
-                                {/* Actions */}
-                                <div
-                                  className="d-flex"
-                                  style={{
-                                    justifyContent: "space-between",
-                                    marginTop: 8,
-                                  }}
-                                >
-                                  <button
-                                    className="btn"
-                                    onClick={() => {
-                                      setCur({ min: null, max: null });
-                                      setDisplay(label);
-                                      setOpenDropdown(null);
-                                    }}
-                                    style={{
-                                      backgroundColor: "#6c757d",
-                                      color: "white",
-                                      fontFamily: "Poppins",
-                                    }}
-                                  >
-                                    Clear
-                                  </button>
-                                  <button
-                                    className="btn"
-                                    onClick={() => {
-                                      const display = `${cur?.min ?? 0} - ${
-                                        cur?.max ?? 0
-                                      } ${label}`;
-                                      setDisplay(display);
-                                      setOpenDropdown(null);
-                                    }}
-                                    style={{
-                                      backgroundColor: "#F4980E",
-                                      color: "white",
-                                      fontFamily: "Poppins",
-                                    }}
-                                  >
-                                    Apply
-                                  </button>
-                                </div>
-                              </div>
-                            );
-                          })()
-                        : null}
-                    </Modal>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
+                            )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
         </div>
       </div>
       {showModal && (
@@ -1251,7 +879,7 @@ const SearchFilter = ({
                     style={{
                       width: "16px",
                       height: "16px",
-                      fontSize: "14px",
+                      fontSize: "12px",
                       lineHeight: "1",
                       border: "none",
                       background: "transparent",
@@ -1280,7 +908,7 @@ const SearchFilter = ({
                           margin: 0,
                           textAlign: "left",
                           fontWeight: "600",
-                          fontSize: "16px",
+                          fontSize: "14px",
                           fontFamily: "Poppins",
                           marginBottom: "5px",
                         }}
@@ -1298,7 +926,7 @@ const SearchFilter = ({
                         <p
                           style={{
                             margin: 0,
-                            fontSize: "14px",
+                            fontSize: "12px",
                             color: "#555",
                             fontFamily: "Poppins",
                           }}
@@ -1311,7 +939,7 @@ const SearchFilter = ({
                         <p
                           style={{
                             margin: 0,
-                            fontSize: "14px",
+                            fontSize: "12px",
                             color: "#555",
                             fontFamily: "Poppins",
                           }}

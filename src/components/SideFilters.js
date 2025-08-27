@@ -42,7 +42,7 @@ const SidebarFilters = ({ selectedLocationName, searchType }) => {
               boxShadow: "0px 4px 10px rgba(0,0,0,0.1)",
             }}
           >
-            <div style={{ padding: "8px", fontSize: "12px", color: "#999" ,textAlign:'center'}}>
+            <div style={{ padding: "8px", fontSize: "10px", color: "#999" ,textAlign:'center'}}>
               Advertisement
             </div>
             <img
@@ -56,10 +56,10 @@ const SidebarFilters = ({ selectedLocationName, searchType }) => {
               }}
             />
             <div style={{ padding: "16px" }}>
-              <h5 style={{ fontSize: "16px", fontWeight: "600", marginBottom: "8px" }}>
+              <h5 style={{ fontSize: "14px", fontWeight: "600", marginBottom: "8px" }}>
                 {ad.title}
               </h5>
-              <p style={{ fontSize: "14px", color: "#555", marginBottom: "16px" }}>
+              <p style={{ fontSize: "12px", color: "#555", marginBottom: "16px" }}>
                 {ad.text}
               </p>
               <button
@@ -70,7 +70,7 @@ const SidebarFilters = ({ selectedLocationName, searchType }) => {
                   color: "#fff",
                   fontWeight: "bold",
                   borderRadius: "4px",
-                  fontSize: "14px",
+                  fontSize: "12px",
                   cursor: "pointer",
                 }}
               >

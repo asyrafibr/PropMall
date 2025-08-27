@@ -14,6 +14,7 @@ import { useTemplate } from "../../context/TemplateContext";
 import DashboardListingT1 from "./DashboardListingT1";
 import FilterT2 from "./DashboardT2";
 import FilterT3 from "./DashboardT3";
+import FilterT4 from "./DashboardT4";
 
 const data = {};
 const Dashboard = () => {
@@ -199,9 +200,30 @@ const Dashboard = () => {
               listings={featuredList.featured_rows}
             ></DashboardListingT1>
           </>
-        );;
+        );
       case "template4":
-        return null;
+         return (
+          <>
+            <FilterT4
+              locations={locations}
+              agent={agent}
+              years={years}
+              selectedLocation={selectedLocation}
+              selectedYear={selectedYear}
+              searchTerm={searchTerm}
+              setSelectedLocation={setSelectedLocation}
+              setSelectedYear={setSelectedYear}
+              setSearchTerm={setSearchTerm}
+              handleSearch={handleSearch}
+              activeTab={activeTab}
+              setActiveTab={setActiveTab}
+            />
+            <DashboardListingT1
+              handleViewDetails={handleViewDetails}
+              listings={featuredList.featured_rows}
+            ></DashboardListingT1>
+          </>
+        );
       default:
         return <p>No template selected</p>;
     }

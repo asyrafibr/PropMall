@@ -450,7 +450,7 @@ useEffect(() => {
         <h2
           style={{
             fontFamily: "Poppins",
-            fontSize: "35px",
+            fontSize: "33px",
             fontWeight: 500,
             marginTop: "-100px",
           }}
@@ -507,7 +507,7 @@ useEffect(() => {
                   ref={(el) => (buttonRefs.current[tab.label] = el)}
                   className="btn rounded-pill flex-fill"
                   style={{
-                    fontSize: "16px",
+                    fontSize: "14px",
                     background: "transparent",
                     color: activeTab === tab.label ? "#fff" : "#000",
                     border: "none",
@@ -545,7 +545,7 @@ useEffect(() => {
           >
             <span
               style={{
-                fontSize: "16px",
+                fontSize: "14px",
                 fontWeight: 400,
                 whiteSpace: "nowrap",
                 overflow: "hidden",
@@ -568,7 +568,7 @@ useEffect(() => {
               flex: 1,
               border: "none",
               outline: "none",
-              fontSize: "16px",
+              fontSize: "14px",
               padding: "0 16px",
             }}
           />
@@ -581,7 +581,7 @@ useEffect(() => {
               backgroundColor: "#f7a21b",
               color: "#fff",
               fontWeight: 500,
-              fontSize: "16px",
+              fontSize: "14px",
               height: "100%",
               border: "none",
               borderRadius: "0 16px 16px 0", // keep flush with container
@@ -605,7 +605,7 @@ useEffect(() => {
                     width: "100%",
                     background: "transparent",
                     border: "none",
-                    fontSize: "16px",
+                    fontSize: "14px",
                     fontFamily: "Poppins",
                     color: "white",
                     textDecoration: "none",
@@ -690,7 +690,7 @@ useEffect(() => {
                                     <span
                                       style={{
                                         fontFamily: "Poppins",
-                                        fontSize: 16,
+                                        fontSize: 14,
                                         fontStyle: "normal",
                                         fontWeight: 400,
                                         lineHeight: "normal",
@@ -908,7 +908,7 @@ useEffect(() => {
                     style={{
                       width: "16px",
                       height: "16px",
-                      fontSize: "14px",
+                      fontSize: "12px",
                       lineHeight: "1",
                       border: "none",
                       background: "transparent",
@@ -937,7 +937,7 @@ useEffect(() => {
                           margin: 0,
                           textAlign: "left",
                           fontWeight: "600",
-                          fontSize: "16px",
+                          fontSize: "14px",
                           fontFamily: "Poppins",
                           marginBottom: "5px",
                         }}
@@ -955,7 +955,7 @@ useEffect(() => {
                         <p
                           style={{
                             margin: 0,
-                            fontSize: "14px",
+                            fontSize: "12px",
                             color: "#555",
                             fontFamily: "Poppins",
                           }}
@@ -968,7 +968,7 @@ useEffect(() => {
                         <p
                           style={{
                             margin: 0,
-                            fontSize: "14px",
+                            fontSize: "12px",
                             color: "#555",
                             fontFamily: "Poppins",
                           }}

@@ -11,7 +11,7 @@ import saveImage from "../image/kid_star.svg";
 import SimilarListing from "../components/SimilarListingCardT2";
 import "./ProductDetail.css";
 import { FiCamera } from "react-icons/fi";
-import MortgageCalculator from "./MortgageCalculator";
+import MortgageCalculator from "./MortgageCalculator2";
 import { useTemplate } from "../context/TemplateContext"; // ✅ Import Template Context
 import bgImage from "../image/template2bg.png";
 import bedIcon from "../image/bed.png";
@@ -135,7 +135,7 @@ const ProductDetail = () => {
       <div style={{ paddingTop: "20px", backgroundColor: "#FAFAFA" }}>
         <div
           className="container"
-          style={{ maxWidth: "2000px", padding: "0 50px" }}
+          style={{ maxWidth: "1200px", padding: "0 50px" }}
         >
           {/* Agent Box */}
 
@@ -144,7 +144,7 @@ const ProductDetail = () => {
             className="pb-4"
             style={{
               backgroundImage: `url(${bgImage})`,
-              maxWidth: "2000px",
+              maxWidth: "1300px",
               paddingLeft: 50,
               paddingTop: 50,
               marginBottom: 50,
@@ -161,7 +161,7 @@ const ProductDetail = () => {
                     style={{
                       textDecoration: "none",
                       color: "inherit",
-                      fontSize: "16px",
+                      fontSize: "14px",
                       fontFamily: "Poppins",
                     }}
                   >
@@ -177,7 +177,7 @@ const ProductDetail = () => {
                     style={{
                       textDecoration: "none",
                       color: "inherit",
-                      fontSize: "16px",
+                      fontSize: "14px",
                       fontFamily: "Poppins",
                     }}
                   >
@@ -193,7 +193,7 @@ const ProductDetail = () => {
                     style={{
                       textDecoration: "none",
                       color: "inherit",
-                      fontSize: "16px",
+                      fontSize: "14px",
                       fontFamily: "Poppins",
                     }}
                   >
@@ -209,7 +209,7 @@ const ProductDetail = () => {
                   style={{
                     color: "inherit",
                     fontWeight: 600,
-                    fontSize: "16px",
+                    fontSize: "14px",
                     fontFamily: "Poppins",
                   }} // optional bold for active item
                 >
@@ -238,7 +238,7 @@ const ProductDetail = () => {
                   className="img-fluid rounded"
                   style={{
                     width: "100%",
-                    height: "480px",
+                    height: "450px",
                     objectFit: "cover",
                     cursor: "pointer",
                   }}
@@ -258,7 +258,7 @@ const ProductDetail = () => {
                       border: "1px solid #999",
                       background: "#FAFAFA",
                       fontFamily: "Poppins",
-                      fontSize: "16px",
+                      fontSize: "14px",
                       fontWeight: 400,
                       color: "var(--Grey-4, #737373)",
                       cursor: "pointer",
@@ -277,12 +277,12 @@ const ProductDetail = () => {
 
               {/* Thumbnail Grid (hidden on mobile) */}
               <div
-                className="d-none d-lg-grid gap-3"
+                className="d-none d-lg-grid gap-2"
                 style={{
                   gridTemplateColumns: "repeat(2, 1fr)",
-                  maxWidth: "880px",
+                  maxWidth: "480px",
                   width: "100%",
-                  height: "480px",
+                  height: "450px",
                 }}
               >
                 {product.photos.slice(1, 5).map((photo, i) => {
@@ -293,7 +293,7 @@ const ProductDetail = () => {
                         key="show-all"
                         className="position-relative rounded overflow-hidden"
                         style={{
-                          height: "calc(480px / 2 - 12px)",
+                          height: "calc(480px / 2 - 22px)",
                           backgroundImage: `url(${photo})`,
                           backgroundSize: "cover",
                           backgroundPosition: "center",
@@ -321,7 +321,7 @@ const ProductDetail = () => {
                               width: "122px",
                               height: "48px",
                               fontFamily: "Poppins",
-                              fontSize: "16px",
+                              fontSize: "14px",
                               fontWeight: 400,
                               color: "var(--Grey-4, #737373)",
                               cursor: "pointer",
@@ -341,7 +341,7 @@ const ProductDetail = () => {
                       key={photo}
                       className="rounded overflow-hidden"
                       style={{
-                        height: "calc(480px / 2 - 12px)",
+                        height: "calc(460px / 2 - 12px)",
                         backgroundImage: `url(${photo})`,
                         backgroundSize: "cover",
                         backgroundPosition: "center",
@@ -429,7 +429,7 @@ const ProductDetail = () => {
                       className="fw-bold text-dark"
                       style={{
                         fontFamily: "Poppins",
-                        fontSize: 28,
+                        fontSize: 18,
                         fontWeight: 600,
                       }}
                     >
@@ -442,7 +442,7 @@ const ProductDetail = () => {
                   className="mb-1"
                   style={{
                     fontFamily: "Poppins",
-                    fontSize: 16,
+                    fontSize: 10,
                     fontWeight: 400,
                     color: "#737373",
                   }}
@@ -467,7 +467,7 @@ const ProductDetail = () => {
                         className="fw-bold text-dark"
                         style={{
                           fontFamily: "Poppins",
-                          fontSize: 20,
+                          fontSize: 14,
                           fontWeight: 600,
                         }}
                       >
@@ -477,7 +477,7 @@ const ProductDetail = () => {
                         className="text-muted"
                         style={{
                           fontFamily: "Poppins",
-                          fontSize: 12,
+                          fontSize: 8,
                           fontWeight: 400,
                           marginTop: 2,
                           color: "#737373",
@@ -505,7 +505,7 @@ const ProductDetail = () => {
                             alt="Bed"
                             style={{ width: "24px", height: "24px" }}
                           />
-                          <span style={{ paddingTop: "10px" }}>
+                          <span style={{ paddingTop: "10px",fontSize:10 }}>
                             {product.room} beds
                           </span>
                         </span>
@@ -519,7 +519,7 @@ const ProductDetail = () => {
                             alt="Bath"
                             style={{ width: "24px", height: "24px" }}
                           />
-                          <span style={{ paddingTop: "10px" }}>
+                          <span style={{ paddingTop: "10px" ,fontSize:10}}>
                             {product.bathroom} baths
                           </span>
                         </span>
@@ -530,7 +530,7 @@ const ProductDetail = () => {
                             alt="Area"
                             style={{ width: "24px", height: "24px" }}
                           />
-                          <span style={{ paddingTop: "10px" }}>
+                          <span style={{ paddingTop: "10px" ,fontSize:10}}>
                             {product.land_price_per_sqft} sq.ft
                           </span>
                         </span>
@@ -568,7 +568,7 @@ const ProductDetail = () => {
                     <div>
                       <text
                         style={{
-                          fontSize: 16,
+                          fontSize: 14,
                           fontFamily: "Poppins",
                           fontWeight: 400,
                           color: "#3A3A3A",
@@ -579,7 +579,7 @@ const ProductDetail = () => {
                       <p
                         className="text-muted mb-0"
                         style={{
-                          fontSize: "9px",
+                          fontSize: "7px",
                           fontFamily: "Poppins",
                           fontWeight: 400,
                           color: "#3A3A3A",
@@ -601,7 +601,7 @@ const ProductDetail = () => {
                     <i className="bi bi-whatsapp me-2"></i>{" "}
                     <text
                       style={{
-                        fontSize: 16,
+                        fontSize: 14,
                         fontFamily: "Poppins",
                         fontWeight: 400,
                         color: "#FAFAFA",
@@ -617,7 +617,7 @@ const ProductDetail = () => {
                   <div className="mb-3">
                     <text
                       style={{
-                        fontSize: "20px",
+                        fontSize: "16px",
                         fontFamily: "Poppins",
                         fontWeight: 600,
                       }}
@@ -637,7 +637,7 @@ const ProductDetail = () => {
                       <div className="col-6 p-3">
                         <text
                           style={{
-                            fontSize: "20px",
+                            fontSize: "14px",
                             fontFamily: "Poppins",
                             fontWeight: 400,
                           }}
@@ -648,7 +648,7 @@ const ProductDetail = () => {
                         <text
                           style={{
                             color: "#737373",
-                            fontSize: "16px",
+                            fontSize: "14px",
                             fontFamily: "Poppins",
                             fontWeight: 400,
                           }}
@@ -660,7 +660,7 @@ const ProductDetail = () => {
                       <div className="col-6 pt-3">
                         <text
                           style={{
-                            fontSize: "20px",
+                            fontSize: "14px",
                             fontFamily: "Poppins",
                             fontWeight: 400,
                           }}
@@ -671,7 +671,7 @@ const ProductDetail = () => {
                         <text
                           style={{
                             color: "#737373",
-                            fontSize: "16px",
+                            fontSize: "14px",
                             fontFamily: "Poppins",
                             fontWeight: 400,
                           }}
@@ -683,7 +683,7 @@ const ProductDetail = () => {
                       <div className="col-6 p-3">
                         <text
                           style={{
-                            fontSize: "20px",
+                            fontSize: "14px",
                             fontFamily: "Poppins",
                             fontWeight: 400,
                           }}
@@ -694,7 +694,7 @@ const ProductDetail = () => {
                         <text
                           style={{
                             color: "#737373",
-                            fontSize: "16px",
+                            fontSize: "14px",
                             fontFamily: "Poppins",
                             fontWeight: 400,
                           }}
@@ -706,7 +706,7 @@ const ProductDetail = () => {
                       <div className="col-6 pt-3">
                         <text
                           style={{
-                            fontSize: "20px",
+                            fontSize: "14px",
                             fontFamily: "Poppins",
                             fontWeight: 400,
                           }}
@@ -717,7 +717,7 @@ const ProductDetail = () => {
                         <text
                           style={{
                             color: "#737373",
-                            fontSize: "16px",
+                            fontSize: "14px",
                             fontFamily: "Poppins",
                             fontWeight: 400,
                           }}
@@ -729,7 +729,7 @@ const ProductDetail = () => {
                       <div className="col-6 p-3">
                         <text
                           style={{
-                            fontSize: "20px",
+                            fontSize: "14px",
                             fontFamily: "Poppins",
                             fontWeight: 400,
                           }}
@@ -740,7 +740,7 @@ const ProductDetail = () => {
                         <text
                           style={{
                             color: "#737373",
-                            fontSize: "16px",
+                            fontSize: "14px",
                             fontFamily: "Poppins",
                             fontWeight: 400,
                           }}
@@ -752,7 +752,7 @@ const ProductDetail = () => {
                       <div className="col-6 pt-3">
                         <text
                           style={{
-                            fontSize: "20px",
+                            fontSize: "14px",
                             fontFamily: "Poppins",
                             fontWeight: 400,
                           }}
@@ -764,7 +764,7 @@ const ProductDetail = () => {
                           <text
                             style={{
                               color: "#737373",
-                              fontSize: "16px",
+                              fontSize: "14px",
                               fontFamily: "Poppins",
                               fontWeight: 400,
                             }}
@@ -776,7 +776,7 @@ const ProductDetail = () => {
                           <text
                             style={{
                               color: "#737373",
-                              fontSize: "16px",
+                              fontSize: "14px",
                               fontFamily: "Poppins",
                               fontWeight: 400,
                             }}
@@ -802,7 +802,7 @@ const ProductDetail = () => {
                 <div className="p-3">
                   <text
                     style={{
-                      fontSize: "20px",
+                      fontSize: "16px",
                       fontFamily: "Poppins",
                       fontWeight: 600,
                       paddingBottom: "20px",
@@ -815,7 +815,7 @@ const ProductDetail = () => {
                     style={{
                       whiteSpace: "pre-line",
                       fontFamily: "Poppins",
-                      fontSize: "20px",
+                      fontSize: "12px",
                       paddingTop: "30px",
                     }}
                   >

@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import { FaBed, FaBath } from "react-icons/fa";
 import { useTemplate } from "../../context/TemplateContext";
 import "./DashboardListingT1.css"; // Create this for modal CSS
-
+import bg from '../../image/titlebg3.png'
 const DashboardListingT1 = ({ listings, handleViewDetails }) => {
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
@@ -101,11 +101,22 @@ const DashboardListingT1 = ({ listings, handleViewDetails }) => {
 
   return (
     <div className="container-fluid" style={{ padding: "60px 70px" }}>
-      <div style={{ marginBottom: "40px" }}>
+      <div   style={{
+    marginBottom: "40px",
+    ...(template === "template3" && {
+      backgroundImage: `url(${bg})`,
+      backgroundSize: "cover",
+      backgroundPosition: "center",
+      backgroundRepeat: "no-repeat",
+      height: "50px",
+      width:'20%',
+      paddingTop:10
+    }),
+  }}>
         <span
           style={{
             fontWeight: 600,
-            fontSize: "20px",
+            fontSize: "18px",
             fontFamily: "Poppins",
             paddingLeft: "20px",
           }}
@@ -150,7 +161,7 @@ const DashboardListingT1 = ({ listings, handleViewDetails }) => {
                       className="mb-1"
                       style={{
                         fontFamily: "Poppins",
-                        fontSize: "16px",
+                        fontSize: "14px",
                         fontWeight: 400,
                         padding: "12px",
                       }}
@@ -202,7 +213,7 @@ const DashboardListingT1 = ({ listings, handleViewDetails }) => {
                                 alignItems: "center",
                                 justifyContent: "center",
                                 fontWeight: 600,
-                                fontSize: "16px",
+                                fontSize: "14px",
                                 zIndex:1
                                 // marginTop: "20px",
                               }}
@@ -223,7 +234,7 @@ const DashboardListingT1 = ({ listings, handleViewDetails }) => {
                                 height: "30px",
                                 color: "#FAFAFA",
                                 fontFamily: "Poppins",
-                                fontSize: "16px",
+                                fontSize: "14px",
                                 fontWeight: 600,
                                 marginTop: "5px",
                               }}
@@ -249,7 +260,7 @@ const DashboardListingT1 = ({ listings, handleViewDetails }) => {
                     <div className="card-body d-flex flex-column flex-grow-1">
                       <h5
                         style={{
-                          fontSize: "20px",
+                          fontSize: "18px",
                           fontWeight: 600,
                           fontFamily: "Poppins",
                         }}
@@ -259,7 +270,7 @@ const DashboardListingT1 = ({ listings, handleViewDetails }) => {
                       <p className="text-muted mb-1">
                         <text
                           style={{
-                            fontSize: "20px",
+                            fontSize: "18px",
                             fontWeight: 400,
                             fontFamily: "Poppins",
                           }}
@@ -269,7 +280,7 @@ const DashboardListingT1 = ({ listings, handleViewDetails }) => {
                         <br />
                         <text
                           style={{
-                            fontSize: "16px",
+                            fontSize: "14px",
                             fontWeight: 400,
                             fontFamily: "Poppins",
                           }}
@@ -280,7 +291,7 @@ const DashboardListingT1 = ({ listings, handleViewDetails }) => {
                       <p className="text-muted mb-2">
                         <text
                           style={{
-                            fontSize: "16px",
+                            fontSize: "14px",
                             fontWeight: 400,
                             fontFamily: "Poppins",
                           }}
@@ -292,7 +303,7 @@ const DashboardListingT1 = ({ listings, handleViewDetails }) => {
                           <div>
                             <text
                               style={{
-                                fontSize: "16px",
+                                fontSize: "14px",
                                 fontWeight: 400,
                                 fontFamily: "Poppins",
                               }}
@@ -312,7 +323,7 @@ const DashboardListingT1 = ({ listings, handleViewDetails }) => {
                           <div>
                             <text
                               style={{
-                                fontSize: "16px",
+                                fontSize: "14px",
                                 fontWeight: 400,
                                 fontFamily: "Poppins",
                               }}
@@ -345,7 +356,7 @@ const DashboardListingT1 = ({ listings, handleViewDetails }) => {
                             <div>
                               <text
                                 style={{
-                                  fontSize: "16px",
+                                  fontSize: "14px",
                                   fontWeight: 400,
                                   fontFamily: "Poppins",
                                 }}

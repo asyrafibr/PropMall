@@ -12,6 +12,10 @@ import { getLocations, getListings } from "../../api/axiosApi";
 import debounce from "lodash.debounce";
 import { useTemplate } from "../../context/TemplateContext"; // ✅ Import Template Context
 import FilterT2 from "../../pages/SearchPage/SearchPageT2";
+import FilterT3 from "../../pages/SearchPage/SearchPageT3";
+import FilterT4 from "../../pages/SearchPage/SearchPageT4";
+import ListingCard3 from "../../components/ListingCard3";
+import ListingCard4 from "../../components/ListingCard4";
 
 const SearchFilter = lazy(() => import("../../components/SearchFilter"));
 const SidebarFilters = lazy(() => import("../../components/SideFilters"));
@@ -181,49 +185,93 @@ const SearchPage = () => {
   );
   useEffect(() => {
     console.log("Selected Category:", selectedCategory);
-  }, [selectedCategory]);
-  const memoizedListings = useMemo(() => {
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    const endIndex = startIndex + itemsPerPage;
-    const paginatedProducts = products.slice(startIndex, endIndex);
+        // console.log("Selected Category:", template);
 
-    if (loading)
-      return [...Array(5)].map((_, idx) => <ListingCardSkeleton key={idx} />);
+  }, [selectedCategory,template]);
+const memoizedListings = useMemo(() => {
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedProducts = products.slice(startIndex, endIndex);
 
-    if (products.length === 0) {
+  if (loading)
+    return [...Array(5)].map((_, idx) => <ListingCardSkeleton key={idx} />);
+
+  if (products.length === 0) {
+    return (
+      <div
+        style={{
+          minHeight: "300px",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <NoResults />
+      </div>
+    );
+  }
+
+  return paginatedProducts.map((product) => {
+          console.log('PRoduct',product)
+
+    if (template === "template1" || template === "template2") {
       return (
-        <div
-          style={{
-            minHeight: "300px",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <NoResults />
-        </div>
+        <ListingCard
+          key={product.id_listing}
+          product={product}
+          years={years}
+          handleViewDetails={handleViewDetails}
+          activeYear={activeYear}
+        />
       );
     }
 
-    return paginatedProducts.map((product) => (
-      <ListingCard
-        key={product.id_listing}
-        product={product}
-        years={years}
-        handleViewDetails={handleViewDetails}
-        activeYear={activeYear}
-      />
-    ));
-  }, [loading, products, years, handleViewDetails, activeYear, currentPage]);
+    if (template === "template3") {
+      return (
+        <ListingCard3
+          key={product.id_listing}
+          product={product}
+          years={years}
+          handleViewDetails={handleViewDetails}
+          activeYear={activeYear}
+        />
+      );
+    }
+
+    if (template === "template4") {
+      return (
+        <ListingCard4
+          key={product.id_listing}
+          product={product}
+          years={years}
+          handleViewDetails={handleViewDetails}
+          activeYear={activeYear}
+        />
+      );
+    }
+
+    // fallback if no template matches
+    return null;
+  });
+}, [
+  loading,
+  products,
+  years,
+  handleViewDetails,
+  activeYear,
+  currentPage,
+  template,
+]);
+
 
   return (
     <div
       style={{
         boxSizing: "border-box",
         width: "100%", // ✅ Fill available space
-        maxWidth: "2000px", // ✅ Limit max size on big monitors
+        maxWidth: "1200px", // ✅ Limit max size on big monitors
         margin: "0 auto", // ✅ Center on large screens
-        // padding: "0 16px",
+        padding: "0 16px",
         backgroundColor: "#FAFAFA",
 
         //
@@ -272,7 +320,7 @@ const SearchPage = () => {
                 setSelectedAreaIds={setSelectedAreaIds}
                 selectedAreaIds={selectedAreaIds}
               />
-            ) : (
+            ) : template === "template2" ? (
               <FilterT2
                 locations={locations}
                 agent={agent}
@@ -304,7 +352,72 @@ const SearchPage = () => {
                 roomRange={roomRange}
                 setSelectedAreaIds={setSelectedAreaIds}
                 selectedAreaIds={selectedAreaIds}
-              ></FilterT2>
+              />
+            ) : template === "template3" ? (
+              <FilterT3
+                locations={locations}
+                years={years}
+                selectedLocation={selectedLocation}
+                selectedYear={selectedYear}
+                searchTerm={searchTerm}
+                setSelectedLocation={setSelectedLocation}
+                setSelectedYear={setSelectedYear}
+                setSearchTerm={setSearchTerm}
+                handleSearch={handleSearch}
+                activeTab={activeTab}
+                setActiveTab={setActiveTab}
+                setSelectedCategory={setSelectedCategory}
+                selectedCategory={selectedCategory}
+                setSelectedHolding={setSelectedHolding}
+                selectedHolding={selectedHolding}
+                setPriceRangeDisplay={setPriceRangeDisplay}
+                priceRangeDisplay={priceRangeDisplay}
+                setBedroomDisplay={setBedroomDisplay}
+                bedroomDisplay={bedroomDisplay}
+                setBathroomDisplay={setBathroomDisplay}
+                bathroomDisplay={bathroomDisplay}
+                setPriceRange={setPriceRange}
+                priceRange={priceRange}
+                setBathroomRange={setBathroomRange}
+                bathroomRange={bathroomRange}
+                setRoomRange={setRoomRange}
+                roomRange={roomRange}
+                setSelectedAreaIds={setSelectedAreaIds}
+                selectedAreaIds={selectedAreaIds}
+              />
+            ) : (
+              <FilterT4
+                locations={locations}
+                agent={agent}
+                years={years}
+                selectedLocation={selectedLocation}
+                selectedYear={selectedYear}
+                searchTerm={searchTerm}
+                setSelectedLocation={setSelectedLocation}
+                setSelectedYear={setSelectedYear}
+                setSearchTerm={setSearchTerm}
+                handleSearch={handleSearch}
+                activeTab={activeTab}
+                setActiveTab={setActiveTab}
+                setSelectedCategory={setSelectedCategory}
+                selectedCategory={selectedCategory}
+                setSelectedHolding={setSelectedHolding}
+                selectedHolding={selectedHolding}
+                setPriceRangeDisplay={setPriceRangeDisplay}
+                priceRangeDisplay={priceRangeDisplay}
+                setBedroomDisplay={setBedroomDisplay}
+                bedroomDisplay={bedroomDisplay}
+                setBathroomDisplay={setBathroomDisplay}
+                bathroomDisplay={bathroomDisplay}
+                setPriceRange={setPriceRange}
+                priceRange={priceRange}
+                setBathroomRange={setBathroomRange}
+                bathroomRange={bathroomRange}
+                setRoomRange={setRoomRange}
+                roomRange={roomRange}
+                setSelectedAreaIds={setSelectedAreaIds}
+                selectedAreaIds={selectedAreaIds}
+              />
             )}
           </Suspense>
         </div>

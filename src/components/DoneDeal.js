@@ -4,6 +4,8 @@ import "./DoneDeal.css";
 import { useNavigate } from "react-router-dom";
 import { getFeaturedList } from "../api/axiosApi";
 import { FaBed, FaBath, FaPhone, FaStar } from "react-icons/fa";
+import { useTemplate } from "../context/TemplateContext";
+import bg from "../image/titlebg3.png";
 
 const DoneDeal = () => {
   const [doneDeal, setDoneDeal] = useState([]);
@@ -15,6 +17,7 @@ const DoneDeal = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [similarListing, setSimilarListing] = useState([]);
+  const { template } = useTemplate();
 
   useEffect(() => {
     const fetchFilterData = async () => {
@@ -240,14 +243,35 @@ const DoneDeal = () => {
 
   return (
     <>
-      <div style={{ padding: "30px 60px 5px 60px" }}>
+      <div
+        style={{
+          // default padding
+          padding: "30px 60px 5px 60px",
+          // override when template3
+          ...(template === "template3" && {
+            backgroundImage: `url(${bg})`,
+
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat",
+            height: "50px",
+            width: "20%",
+            marginTop: "3%",
+            marginBottom: "3%",
+            display: "flex", // ✅ enable flex
+            alignItems: "center", // ✅ vertical center
+            justifyContent: "center",
+            paddingTop: 10,
+          }),
+        }}
+      >
         <p
           style={{
             color: "#212529",
-            fontSize: "20px",
+            fontSize: "16px",
             fontFamily: "Poppins",
             fontWeight: 600,
-            marginBottom: 40,
+            // marginBottom: 40,
           }}
         >
           Done Deals
@@ -288,7 +312,7 @@ const DoneDeal = () => {
                         className="mb-1"
                         style={{
                           fontFamily: "Poppins",
-                          fontSize: "16px",
+                          fontSize: "14px",
                           fontWeight: 400,
                           padding: "12px",
                         }}
@@ -325,7 +349,7 @@ const DoneDeal = () => {
                           className="done-deal-banner"
                           style={{
                             paddingLeft: "20px",
-                            fontSize: "16px",
+                            fontSize: "14px",
                             fontFamily: "Poppins",
                             fontWeight: 600,
                           }}
@@ -342,7 +366,7 @@ const DoneDeal = () => {
                               height: "40px",
                               borderRadius: "4px",
                               color: "white",
-                              fontSize: "0.9rem",
+                                fontSize: "14px",
                               padding: "8px 16px",
                               display: "flex",
                               alignItems: "center",
@@ -351,7 +375,7 @@ const DoneDeal = () => {
                           >
                             <text
                               style={{
-                                fontSize: "16px",
+                                fontSize: "14px",
                                 fontFamily: "Poppins",
                                 fontWeight: 600,
                               }}
@@ -376,7 +400,7 @@ const DoneDeal = () => {
                       <div className="card-body d-flex flex-column flex-grow-1">
                         <h5
                           style={{
-                            fontSize: "20px",
+                            fontSize: "18px",
                             fontWeight: 600,
                             fontFamily: "Poppins",
                           }}
@@ -386,7 +410,7 @@ const DoneDeal = () => {
                         <p className="text-muted mb-1">
                           <text
                             style={{
-                              fontSize: "20px",
+                              fontSize: "18px",
                               fontWeight: 400,
                               fontFamily: "Poppins",
                             }}
@@ -396,7 +420,7 @@ const DoneDeal = () => {
                           <br />
                           <text
                             style={{
-                              fontSize: "16px",
+                              fontSize: "14px",
                               fontWeight: 400,
                               fontFamily: "Poppins",
                             }}
@@ -407,7 +431,7 @@ const DoneDeal = () => {
                         <p className="text-muted mb-2">
                           <text
                             style={{
-                              fontSize: "16px",
+                              fontSize: "14px",
                               fontWeight: 400,
                               fontFamily: "Poppins",
                             }}
@@ -419,7 +443,7 @@ const DoneDeal = () => {
                             <div>
                               <text
                                 style={{
-                                  fontSize: "16px",
+                                  fontSize: "14px",
                                   fontWeight: 400,
                                   fontFamily: "Poppins",
                                 }}
@@ -440,7 +464,7 @@ const DoneDeal = () => {
                             <div>
                               <text
                                 style={{
-                                  fontSize: "16px",
+                                  fontSize: "14px",
                                   fontWeight: 400,
                                   fontFamily: "Poppins",
                                 }}
@@ -474,7 +498,7 @@ const DoneDeal = () => {
                               <div>
                                 <text
                                   style={{
-                                    fontSize: "16px",
+                                    fontSize: "14px",
                                     fontWeight: 400,
                                     fontFamily: "Poppins",
                                   }}

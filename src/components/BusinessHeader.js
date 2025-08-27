@@ -1,13 +1,16 @@
 import React from "react";
 import { Navbar } from "react-bootstrap";
+import { useTemplate } from "../context/TemplateContext";
 
-const BusinessHeader = () => {
+const BusinessHeader = (props) => {
+      const { template, switchTemplate } = useTemplate(); // ✅ Use Template Context
+  
   return (
     <Navbar
       variant="dark"
       style={{
         backgroundColor: "#00000080",
-        width: "100vw",       // full viewport width, no gaps
+        width: "100vw", // full viewport width, no gaps
         paddingTop: "16px",
         paddingBottom: "16px",
         paddingLeft: 0,
@@ -21,8 +24,9 @@ const BusinessHeader = () => {
         className="mx-auto text-center fs-4 fw-bold"
         style={{ margin: 0 }}
       >
-        ARIF FIKRI - IQI Realty
+        {props.domain}{" "}
       </Navbar.Brand>
+      
     </Navbar>
   );
 };

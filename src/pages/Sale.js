@@ -149,7 +149,7 @@ const SalesPage = () => {
         <span
           style={{
             fontWeight: 600,
-            fontSize: "20px",
+            fontSize: "18px",
             fontFamily: "Poppins",
             paddingLeft: "20px",
           }}
@@ -173,7 +173,7 @@ const SalesPage = () => {
               return (
                 <div key={card.id_listing} className="col-12 col-md-4 mb-4 d-flex">
                   <div className="card h-100 d-flex flex-column w-100" style={{ borderRadius: "8px", boxShadow: "2px 2px 15px 0 rgba(0, 0, 0, 0.15)" }}>
-                    <div className="mb-1" style={{ fontFamily: "Poppins", fontSize: "16px", fontWeight: 400, padding: "12px" }}>
+                    <div className="mb-1" style={{ fontFamily: "Poppins", fontSize: "14px", fontWeight: 400, padding: "12px" }}>
                       Posted on {card.publish_dt}
                     </div>
                     <div className="position-relative" style={{ overflow: "hidden", height: "260px" }}>
@@ -187,12 +187,12 @@ const SalesPage = () => {
                       {(showTag || belowMarket) && (
                         <div className="position-absolute top-0 start-0 m-2 d-flex flex-column gap-1" style={{ zIndex: 2 }}>
                           {showTag && (
-                            <div style={{ backgroundColor: statusColor, width: "100px", height: "32px", borderRadius: "4px", color: "white", padding: "8px 16px", display: "flex", fontFamily: "Poppins", alignItems: "center", justifyContent: "center", fontWeight: 600, fontSize: "16px" }}>
+                            <div style={{ backgroundColor: statusColor, width: "100px", height: "32px", borderRadius: "4px", color: "white", padding: "8px 16px", display: "flex", fontFamily: "Poppins", alignItems: "center", justifyContent: "center", fontWeight: 600, fontSize: "14px" }}>
                               {statusText}
                             </div>
                           )}
                           {belowMarket && (
-                            <div style={{ display: "flex", padding: "4px 12px", justifyContent: "center", alignItems: "flex-start", borderRadius: "4px", backgroundColor: "#7C9A2C", width: "150px", height: "30px", color: "#FAFAFA", fontFamily: "Poppins", fontSize: "16px", fontWeight: 600, marginTop: "5px" }}>
+                            <div style={{ display: "flex", padding: "4px 12px", justifyContent: "center", alignItems: "flex-start", borderRadius: "4px", backgroundColor: "#7C9A2C", width: "150px", height: "30px", color: "#FAFAFA", fontFamily: "Poppins", fontSize: "14px", fontWeight: 600, marginTop: "5px" }}>
                               Below Market
                             </div>
                           )}
@@ -205,10 +205,10 @@ const SalesPage = () => {
                       </span>
                     </div>
                     <div className="card-body d-flex flex-column flex-grow-1">
-                      <h5 style={{ fontSize: "20px", fontWeight: 600, fontFamily: "Poppins" }}>RM {card.price}</h5>
+                      <h5 style={{ fontSize: "18px", fontWeight: 600, fontFamily: "Poppins" }}>RM {card.price}</h5>
                       <p className="text-muted mb-1">
-                        <div style={{ fontSize: "20px", fontWeight: 400, fontFamily: "Poppins" }}>{card.ads_title}</div>
-                        <div style={{ fontSize: "16px", fontWeight: 400, fontFamily: "Poppins" }}>{card.location_area}</div>
+                        <div style={{ fontSize: "18px", fontWeight: 400, fontFamily: "Poppins" }}>{card.ads_title}</div>
+                        <div style={{ fontSize: "14px", fontWeight: 400, fontFamily: "Poppins" }}>{card.location_area}</div>
                       </p>
                       <div className="mt-auto">
                         {card.bathroom && card.room > 0 && (

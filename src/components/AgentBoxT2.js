@@ -57,9 +57,9 @@ const AgentBox = () => {
 
       {/* Agent Info */}
       <div>
-        <div style={{ fontSize: "18px", fontWeight: "bold" }}>{agent.name}</div>
-        <div style={{ fontSize: "14px" }}>{agent.agency_name}</div>
-        <div style={{ fontSize: "14px" }}>{agent.phone}</div>
+        <div style={{ fontSize: "16px", fontWeight: "bold" }}>{agent.name}</div>
+        <div style={{ fontSize: "12px" }}>{agent.agency_name}</div>
+        <div style={{ fontSize: "12px" }}>{agent.phone}</div>
       </div>
     </div>
   );

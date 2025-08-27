@@ -38,7 +38,7 @@ const PropertyRequestForm = () => {
     border: "1px solid #ccc",
     borderRadius: "4px",
     width: "100%",
-    fontSize: "14px",
+    fontSize: "12px",
   };
 
   const rowStyle = {
@@ -52,14 +52,14 @@ const PropertyRequestForm = () => {
     width: "200px",
     fontFamily: "Poppins",
     fontWeight: "500",
-    fontSize: "14px",
+    fontSize: "12px",
     flexShrink: 0,
     textAlign: "left",
   };
 
   const colonStyle = {
     fontWeight: "500",
-    fontSize: "14px",
+    fontSize: "12px",
     padding: "0 12px",
     flexShrink: 0,
     textAlign: "center",
@@ -149,7 +149,7 @@ const PropertyRequestForm = () => {
             style={{
               fontWeight: "600",
               marginBottom: "40px",
-              fontSize: "20px",
+              fontSize: "18px",
               fontFamily: "Poppins",
             }}
           >
@@ -567,7 +567,7 @@ const PropertyRequestForm = () => {
                     border: "1px solid #ccc",
                     padding: "8px 12px",
                     borderRadius: "6px",
-                    fontSize: "14px",
+                    fontSize: "12px",
                     fontWeight: 500,
                   }}
                 >
@@ -582,7 +582,7 @@ const PropertyRequestForm = () => {
                     border: "1px solid #ccc",
                     padding: "8px 12px",
                     borderRadius: "6px",
-                    fontSize: "14px",
+                    fontSize: "12px",
                     fontWeight: 500,
                   }}
                 >
@@ -639,7 +639,7 @@ const styles = {
   },
   loadingText: {
     marginTop: "16px",
-    fontSize: "16px",
+    fontSize: "14px",
     fontFamily: "Poppins",
     color: "#555",
   },

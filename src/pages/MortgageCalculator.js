@@ -56,7 +56,7 @@ const MortgageCalculator = ({ product }) => {
 
   return (
     <div className=" mt-4" style={{ fontFamily: "Poppins", width:'70%' }}>
-      <text style={{fontSize:'20px',fontWeight:600}}>Mortgage Calculator</text>
+      <text style={{fontSize:'18px',fontWeight:600}}>Mortgage Calculator</text>
 
       <div className="row">
         {/* LEFT SECTION */}

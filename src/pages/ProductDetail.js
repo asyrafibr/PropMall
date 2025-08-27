@@ -12,6 +12,10 @@ import SimilarListing from "../components/SimilarListingCard";
 import "./ProductDetail.css";
 import { FiCamera } from "react-icons/fi";
 import MortgageCalculator from "./MortgageCalculator";
+import MortgageCalculator2 from "./MortgageCalculator2";
+import MortgageCalculator3 from "./MortgageCalculator3";
+import MortgageCalculator4 from "./MortgageCalculator4";
+
 import { useTemplate } from "../context/TemplateContext"; // ✅ Import Template Context
 import bgImage from "../image/template2bg.png";
 
@@ -32,6 +36,7 @@ const ProductDetail = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const thumbnailRefs = useRef([]);
   useEffect(() => {
+    console.log('template',template)
     const fetchProductDetails = async () => {
       try {
         const hostname = window.location.hostname;
@@ -132,7 +137,7 @@ const ProductDetail = () => {
       <div style={{ paddingTop: "20px", backgroundColor: "#FAFAFA" }}>
         <div
           className="container"
-          style={{ maxWidth: "2000px", padding: "0 50px" }}
+          style={{ maxWidth: "1200px", padding: "0 50px" }}
         >
           {/* Agent Box */}
 
@@ -140,10 +145,8 @@ const ProductDetail = () => {
           <div
             className="pb-4"
             style={{
-              maxWidth: "2000px",
+              maxWidth: "1300px",
               paddingLeft: 50,
-              paddingTop: 50,
-              marginBottom: 50,
             }}
           >
             <nav aria-label="breadcrumb">
@@ -188,7 +191,7 @@ const ProductDetail = () => {
             {template === "template1" && (
               <text
                 style={{
-                  fontSize: "20px",
+                  fontSize: "18px",
                   fontFamily: "Poppins",
                   fontWeight: 600,
                 }}
@@ -217,7 +220,7 @@ const ProductDetail = () => {
                   className="img-fluid rounded"
                   style={{
                     width: "100%",
-                    height: "480px",
+                    height: "450px",
                     objectFit: "cover",
                     cursor: "pointer",
                   }}
@@ -237,7 +240,7 @@ const ProductDetail = () => {
                       border: "1px solid #999",
                       background: "#FAFAFA",
                       fontFamily: "Poppins",
-                      fontSize: "16px",
+                      fontSize: "14px",
                       fontWeight: 400,
                       color: "var(--Grey-4, #737373)",
                       cursor: "pointer",
@@ -259,9 +262,9 @@ const ProductDetail = () => {
                 className="d-none d-lg-grid gap-3"
                 style={{
                   gridTemplateColumns: "repeat(2, 1fr)",
-                  maxWidth: "880px",
+                  maxWidth: "480px",
                   width: "100%",
-                  height: "480px",
+                  maxHeight: "480px",
                 }}
               >
                 {product.photos.slice(1, 5).map((photo, i) => {
@@ -272,7 +275,7 @@ const ProductDetail = () => {
                         key="show-all"
                         className="position-relative rounded overflow-hidden"
                         style={{
-                          height: "calc(480px / 2 - 12px)",
+                          height: "calc(480px / 2 - 23px)",
                           backgroundImage: `url(${photo})`,
                           backgroundSize: "cover",
                           backgroundPosition: "center",
@@ -300,7 +303,7 @@ const ProductDetail = () => {
                               width: "122px",
                               height: "48px",
                               fontFamily: "Poppins",
-                              fontSize: "16px",
+                              fontSize: "14px",
                               fontWeight: 400,
                               color: "var(--Grey-4, #737373)",
                               cursor: "pointer",
@@ -320,7 +323,7 @@ const ProductDetail = () => {
                       key={photo}
                       className="rounded overflow-hidden"
                       style={{
-                        height: "calc(480px / 2 - 12px)",
+                        height: "calc(460px / 2 - 12px)",
                         backgroundImage: `url(${photo})`,
                         backgroundSize: "cover",
                         backgroundPosition: "center",
@@ -408,7 +411,7 @@ const ProductDetail = () => {
                       className="fw-bold text-dark"
                       style={{
                         fontFamily: "Poppins",
-                        fontSize: 20,
+                        fontSize: 14,
                         fontWeight: 600,
                       }}
                     >
@@ -418,9 +421,9 @@ const ProductDetail = () => {
                       className="text-muted"
                       style={{
                         fontFamily: "Poppins",
-                        fontSize: 16,
+                        fontSize: "1rem", // 16px
                         fontWeight: 600,
-                        marginTop: 2,
+                        // marginTop: "0.125rem", // 2px
                       }}
                     >
                       (RM {product.built_price_per_sqft} per sq ft)
@@ -434,7 +437,7 @@ const ProductDetail = () => {
                       <img
                         src={sharImage}
                         alt="Share"
-                        style={{ width: 16, height: 16 }}
+                        style={{ width: "1rem", height: "1rem" }} // 16px
                       />
                       Share
                     </button>
@@ -445,7 +448,7 @@ const ProductDetail = () => {
                       <img
                         src={saveImage}
                         alt="Save"
-                        style={{ width: 16, height: 16 }}
+                        style={{ width: "1rem", height: "1rem" }} // 16px
                       />
                       Save
                     </button>
@@ -456,7 +459,7 @@ const ProductDetail = () => {
                   className="mb-1"
                   style={{
                     fontFamily: "Poppins",
-                    fontSize: 20,
+                    fontSize: "1.25rem", // 20px
                     fontWeight: 400,
                   }}
                 >
@@ -466,7 +469,7 @@ const ProductDetail = () => {
                   className="text-muted d-block mb-3"
                   style={{
                     fontFamily: "Poppins",
-                    fontSize: 16,
+                    fontSize: "1rem", // 16px
                     fontWeight: 400,
                   }}
                 >
@@ -476,15 +479,15 @@ const ProductDetail = () => {
                   className="text-muted d-flex align-items-center gap-2 mb-3"
                   style={{
                     fontFamily: "Poppins",
-                    fontSize: 16,
+                    fontSize: "1rem", // 16px
                     fontWeight: 400,
                   }}
                 >
                   {product.category_type_title_holding_lottype_storey}
                   <span
                     style={{
-                      width: "8px",
-                      height: "8px",
+                      width: "0.5rem", // 8px
+                      height: "0.5rem", // 8px
                       borderRadius: "50%",
                       backgroundColor: "#666",
                       display: "inline-block",
@@ -589,7 +592,7 @@ const ProductDetail = () => {
               <div className="card p-3 shadow-sm mb-3">
                 <text
                   style={{
-                    fontSize: "20px",
+                    fontSize: "16px",
                     fontFamily: "Poppins",
                     fontWeight: 600,
                   }}
@@ -598,18 +601,18 @@ const ProductDetail = () => {
                 </text>
                 <div
                   style={{
-                    width: "100%", // or a fixed width
-                    height: "1px",
+                    width: "100%",
+                    height: "0.0625rem", // 1px
                     backgroundColor: "var(--Grey-2, #DBDBDB)",
-                    marginTop: "20px",
-                    marginBottom: "20px",
+                    marginTop: "1.25rem", // 20px
+                    marginBottom: "1.25rem", // 20px
                   }}
                 />
                 <div className="row">
                   <div className="col-6">
                     <text
                       style={{
-                        fontSize: "20px",
+                        fontSize: "14px",
                         fontFamily: "Poppins",
                         fontWeight: 400,
                       }}
@@ -620,19 +623,18 @@ const ProductDetail = () => {
                     <text
                       style={{
                         color: "#737373",
-                        fontSize: "16px",
+                        fontSize: "1rem", // 16px
                         fontFamily: "Poppins",
                         fontWeight: 400,
                       }}
                     >
-                      {" "}
                       {product.property_type_description}
                     </text>
                   </div>
                   <div className="col-6">
                     <text
                       style={{
-                        fontSize: "20px",
+                        fontSize: "16px",
                         fontFamily: "Poppins",
                         fontWeight: 400,
                       }}
@@ -643,19 +645,18 @@ const ProductDetail = () => {
                     <text
                       style={{
                         color: "#737373",
-                        fontSize: "16px",
+                        fontSize: "1rem", // 16px
                         fontFamily: "Poppins",
                         fontWeight: 400,
                       }}
                     >
-                      {" "}
                       {product.property_lot_type_description}
                     </text>
                   </div>
                   <div className="col-6">
                     <text
                       style={{
-                        fontSize: "20px",
+                        fontSize: "16px",
                         fontFamily: "Poppins",
                         fontWeight: 400,
                       }}
@@ -666,19 +667,18 @@ const ProductDetail = () => {
                     <text
                       style={{
                         color: "#737373",
-                        fontSize: "16px",
+                        fontSize: "1rem", // 16px
                         fontFamily: "Poppins",
                         fontWeight: 400,
                       }}
                     >
-                      {" "}
                       {product.property_title}
                     </text>
                   </div>
                   <div className="col-6">
                     <text
                       style={{
-                        fontSize: "20px",
+                        fontSize: "16px",
                         fontFamily: "Poppins",
                         fontWeight: 400,
                       }}
@@ -689,19 +689,18 @@ const ProductDetail = () => {
                     <text
                       style={{
                         color: "#737373",
-                        fontSize: "16px",
+                        fontSize: "1rem", // 16px
                         fontFamily: "Poppins",
                         fontWeight: 400,
                       }}
                     >
-                      {" "}
                       {product.property_title}
                     </text>
                   </div>
                   <div className="col-6">
                     <text
                       style={{
-                        fontSize: "20px",
+                        fontSize: "16px",
                         fontFamily: "Poppins",
                         fontWeight: 400,
                       }}
@@ -712,19 +711,18 @@ const ProductDetail = () => {
                     <text
                       style={{
                         color: "#737373",
-                        fontSize: "16px",
+                        fontSize: "1rem", // 16px
                         fontFamily: "Poppins",
                         fontWeight: 400,
                       }}
                     >
-                      {" "}
                       {product.property_holding}
                     </text>
                   </div>
                   <div className="col-6">
                     <text
                       style={{
-                        fontSize: "20px",
+                        fontSize: "16px",
                         fontFamily: "Poppins",
                         fontWeight: 400,
                       }}
@@ -736,7 +734,7 @@ const ProductDetail = () => {
                       <text
                         style={{
                           color: "#737373",
-                          fontSize: "16px",
+                          fontSize: "1rem", // 16px
                           fontFamily: "Poppins",
                           fontWeight: 400,
                         }}
@@ -747,7 +745,7 @@ const ProductDetail = () => {
                       <text
                         style={{
                           color: "#737373",
-                          fontSize: "16px",
+                          fontSize: "1rem", // 16px
                           fontFamily: "Poppins",
                           fontWeight: 400,
                         }}
@@ -755,18 +753,19 @@ const ProductDetail = () => {
                         {product.land_price_per_sqft}{" "}
                         {product.land_size_unit || "sqft"}
                       </text>
-                    ) : null}{" "}
+                    ) : null}
                   </div>
                 </div>
               </div>
             </div>
           </div>
+
           {/* Property Description */}
           {product.ads_description && (
             <div className="card p-3 shadow-sm">
               <text
                 style={{
-                  fontSize: "20px",
+                  fontSize: "18px",
                   fontFamily: "Poppins",
                   fontWeight: 600,
                   paddingBottom: "20px",
@@ -786,16 +785,36 @@ const ProductDetail = () => {
                 style={{
                   whiteSpace: "pre-line",
                   fontFamily: "Poppins",
-                  fontSize: "20px",
+                  fontSize: "14px",
                 }}
               >
                 {formatAdsDescription(product.ads_description)}
               </p>
             </div>
           )}
-          <div>
-            <MortgageCalculator product={product}></MortgageCalculator>
-          </div>
+          {template === "template1" && (
+            <div className="card p-3 shadow-sm mt-3">
+              <MortgageCalculator product={product} />
+            </div>
+          )}
+
+          {template === "template2" && (
+            <div className="card p-3 shadow-sm mt-3">
+              <MortgageCalculator2 product={product} />
+            </div>
+          )}
+
+          {template === "template3" && (
+            <div className="card p-3 shadow-sm mt-3">
+              <MortgageCalculator3 product={product} />
+            </div>
+          )}
+
+          {template === "template4" && (
+            <div className="card p-3 shadow-sm mt-3">
+              <MortgageCalculator4 product={product} />
+            </div>
+          )}
 
           {/* Similar Listings */}
           <SimilarListing listings={similarListing?.featured_rows ?? []} />

@@ -150,7 +150,7 @@ const SimilarListing = ({ listings }) => {
               >
                 <text
                   style={{
-                    fontSize: 16,
+                    fontSize: 14,
                     fontFamily: "Poppins",
                     paddingTop: 10,
                     paddingBottom: 10,
@@ -189,7 +189,7 @@ const SimilarListing = ({ listings }) => {
                             height: "32px",
                             borderRadius: "4px",
                             color: "white",
-                            fontSize: "16px",
+                            fontSize: "14px",
                             display: "flex",
                             fontFamily: "Poppins",
                             alignItems: "center",
@@ -213,7 +213,7 @@ const SimilarListing = ({ listings }) => {
                             height: "30px",
                             color: "#FAFAFA",
                             fontFamily: "Poppins",
-                            fontSize: "14px",
+                            fontSize: "12px",
                             fontWeight: 600,
                           }}
                         >

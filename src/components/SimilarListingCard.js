@@ -59,7 +59,9 @@ const SimilarListing = ({ listings }) => {
     const container = scrollRef.current;
     if (!container) return;
     setShowLeft(container.scrollLeft > 0);
-    setShowRight(container.scrollLeft + container.offsetWidth < container.scrollWidth - 1);
+    setShowRight(
+      container.scrollLeft + container.offsetWidth < container.scrollWidth - 1
+    );
   };
 
   const scrollLeft = () => {
@@ -71,10 +73,15 @@ const SimilarListing = ({ listings }) => {
   };
 
   return (
-    <div className="container-fluid px-4" style={{ paddingTop: "60px", position: "relative" }}>
+    <div
+      className="container-fluid px-4"
+      style={{ paddingTop: "60px", position: "relative" }}
+    >
       <div className="d-flex justify-content-between align-items-center mb-3">
         <h5 className="fw-bold">Similar Properties</h5>
-        <a href="#" className="text-decoration-none">View all</a>
+        <a href="#" className="text-decoration-none">
+          View all
+        </a>
       </div>
 
       {/* Scroll buttons outside the scroll wrapper */}
@@ -100,8 +107,16 @@ const SimilarListing = ({ listings }) => {
             const modus = card.listing_modus?.toUpperCase();
             const isForSale = modus === "FOR SALE";
             const isForRental = modus === "FOR RENT";
-            const statusText = isForSale ? "For Sale" : isForRental ? "For Rent" : "";
-            const statusColor = isForSale ? "#FF7A00" : isForRental ? "#007B83" : "#ccc";
+            const statusText = isForSale
+              ? "For Sale"
+              : isForRental
+              ? "For Rent"
+              : "";
+            const statusColor = isForSale
+              ? "#FF7A00"
+              : isForRental
+              ? "#007B83"
+              : "#ccc";
             const belowMarket = card.below_market === "Y";
 
             return (
@@ -110,59 +125,69 @@ const SimilarListing = ({ listings }) => {
                 className="card shadow-sm border-0"
                 style={{
                   flex: "0 0 auto",
-                  width: `${CARD_WIDTH}px`,
-                  height: "582px",
-                  borderRadius: "8px",
+                  width: "100%",
+                  maxWidth: "21rem", // instead of 335px
+                  minHeight: "32rem", // instead of 582px
+                  borderRadius: "0.5rem",
                 }}
               >
                 <div className="position-relative">
                   <img
-                    src={card.photos?.[0] || "https://via.placeholder.com/300x200"}
+                    src={
+                      card.photos?.[0] || "https://via.placeholder.com/300x200"
+                    }
                     className="card-img-top"
                     alt={card.ads_title}
                     style={{
-                      height: "260px",
+                      height: "16rem", // instead of 260px
                       objectFit: "cover",
-                      borderTopLeftRadius: "8px",
-                      borderTopRightRadius: "8px",
+                      borderTopLeftRadius: "0.5rem",
+                      borderTopRightRadius: "0.5rem",
                       cursor: "pointer",
                     }}
                     onClick={() => openModal(card.photos || [], 0)}
                   />
                   {(statusText || belowMarket) && (
-                    <div className="position-absolute top-0 start-0 m-2 d-flex flex-column gap-1" style={{ zIndex: 2 }}>
+                    <div
+                      className="position-absolute top-0 start-0 m-2 d-flex flex-column gap-1"
+                      style={{ zIndex: 2 }}
+                    >
                       {statusText && (
-                        <div style={{
-                          backgroundColor: statusColor,
-                          width: "100px",
-                          height: "32px",
-                          borderRadius: "4px",
-                          color: "white",
-                          fontSize: "16px",
-                          display: "flex",
-                          fontFamily: "Poppins",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          fontWeight: 600,
-                        }}>
+                        <div
+                          style={{
+                            backgroundColor: statusColor,
+                            width: "100px",
+                            height: "32px",
+                            borderRadius: "4px",
+                            color: "white",
+                            fontSize: "14px",
+                            display: "flex",
+                            fontFamily: "Poppins",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            fontWeight: 600,
+                          }}
+                        >
                           {statusText}
                         </div>
                       )}
                       {belowMarket && (
-                        <div style={{
-                          display: "flex",
-                          padding: "4px 12px",
-                          justifyContent: "center",
-                          alignItems: "center",
-                          borderRadius: "4px",
-                          backgroundColor: "#7C9A2C",
-                          width: "150px",
-                          height: "30px",
-                          color: "#FAFAFA",
-                          fontFamily: "Poppins",
-                          fontSize: "14px",
-                          fontWeight: 600,
-                        }}>
+                        <div
+                          style={{
+                            display: "flex",
+                            padding: "4px 12px",
+                            justifyContent: "center",
+                            alignItems: "center",
+                            borderRadius: "4px",
+                            backgroundColor: "#7C9A2C",
+                            width: "150px",
+                            height: "30px",
+                            color: "#FAFAFA",
+                            fontFamily: "Poppins",
+                            fontSize: "12px",
+                            fontWeight: 600,
+                          }}
+                        >
                           Below Market
                         </div>
                       )}
@@ -170,29 +195,44 @@ const SimilarListing = ({ listings }) => {
                   )}
                 </div>
                 <div className="card-body d-flex flex-column">
-                  <h5 className="card-title fw-bold text-dark">RM {card.price}</h5>
-                  <p className="text-muted small mb-1">
-                    <strong>{card.ads_title}</strong><br />
+                  <h5 className="card-title fw-bold text-dark" style={{ fontSize: "1.25rem" }}>
+                    RM {card.price}
+                  </h5>
+                  <p className="text-muted small mb-1" style={{ fontSize: "0.9rem" }}>
+                    <strong>{card.ads_title}</strong>
+                    <br />
                     {card.location_area}
                   </p>
-                  <p className="text-muted small mb-2">
+                  <p className="text-muted small mb-2" style={{ fontSize: "0.85rem" }}>
                     {card.property_type_description} |{" "}
                     {card.category_type_title_holding_lottype_storey}
                     {card.built_size && (
-                      <div>Built-up Size: {card.built_size} {card.built_size_unit}</div>
+                      <div>
+                        Built-up Size: {card.built_size} {card.built_size_unit}
+                      </div>
                     )}
                     {!card.built_size && card.land_size && (
-                      <div>Land Size: {card.land_size} {card.land_size_unit}</div>
+                      <div>
+                        Land Size: {card.land_size} {card.land_size_unit}
+                      </div>
                     )}
                     {card.built_size && card.land_size && (
-                      <div>Land Size: {card.land_size} {card.land_size_unit}</div>
+                      <div>
+                        Land Size: {card.land_size} {card.land_size_unit}
+                      </div>
                     )}
                   </p>
                   <div className="d-flex flex-wrap gap-3 mb-3">
-                    <span className="d-flex align-items-center" style={{ gap: "6px" }}>
+                    <span
+                      className="d-flex align-items-center"
+                      style={{ gap: "0.4rem" ,}}
+                    >
                       <FaBed /> {card.room}
                     </span>
-                    <span className="d-flex align-items-center" style={{ gap: "6px" }}>
+                    <span
+                      className="d-flex align-items-center"
+                      style={{ gap: "0.4rem" }}
+                    >
                       <FaBath /> {card.bathroom}
                     </span>
                   </div>
@@ -207,8 +247,14 @@ const SimilarListing = ({ listings }) => {
       {modalOpen && (
         <div className="modal-overlay" onClick={closeModal}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <button className="close-button" onClick={closeModal}>&times;</button>
-            <img src={modalImages[currentImageIndex]} alt="Full" className="modal-image" />
+            <button className="close-button" onClick={closeModal}>
+              &times;
+            </button>
+            <img
+              src={modalImages[currentImageIndex]}
+              alt="Full"
+              className="modal-image"
+            />
             <div className="image-counter">
               {currentImageIndex + 1} / {modalImages.length}
             </div>
@@ -229,7 +275,9 @@ const SimilarListing = ({ listings }) => {
                   ref={(el) => (thumbnailRefs.current[idx] = el)}
                   src={img}
                   alt={`Thumbnail ${idx}`}
-                  className={`thumbnail ${currentImageIndex === idx ? "active" : ""}`}
+                  className={`thumbnail ${
+                    currentImageIndex === idx ? "active" : ""
+                  }`}
                   onClick={() => setCurrentImageIndex(idx)}
                 />
               ))}

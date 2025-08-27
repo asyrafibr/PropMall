@@ -21,7 +21,7 @@ const inputStyle = {
   padding: "8px 10px",
   border: "1px solid #ddd",
   borderRadius: "6px",
-  fontSize: "14px",
+  fontSize: "12px",
 };
 
 /* ----- CALCULATORS ----- */
@@ -339,7 +339,7 @@ const calculateTenancy = (monthlyRent, durationMonths) => {
               </p>
               <small
                 style={{
-                  fontSize: "12px",
+                  fontSize: "10px",
                   marginTop: "10px",
                   display: "block",
                 }}
@@ -1021,7 +1021,7 @@ const styles = {
   },
   textTitle: {
     fontFamily: "Poppins",
-    fontSize: "20px",
+    fontSize: "18px",
     fontStyle: "normal",
     fontWeight: 400,
     lineHeight: "normal",
@@ -1047,7 +1047,7 @@ const styles = {
     padding: "8px 12px",
     border: "1px solid #ccc",
     borderRadius: "5px",
-    fontSize: "14px",
+    fontSize: "12px",
   },
   button: {
     marginTop: "10px",
@@ -1066,16 +1066,16 @@ const styles = {
   totalAmount: {
     color: "red",
     fontWeight: "bold",
-    fontSize: "20px",
+    fontSize: "18px",
   },
   title: { marginBottom: "20px" },
   // flexRow: { display: "flex", gap: "20px" },
   // leftCol: { flex: 1 },
   // rightCol: { flex: 1, display: "flex", flexDirection: "column", gap: "10px" },
   section: { marginBottom: "30px" },
-  sectionTitle: { fontWeight: "bold", fontSize: "20px", fontFamily: "Poppins" },
-  smallText: { fontSize: "12px", color: "#666" },
-  monthlyText: { fontSize: "16px", fontWeight: "bold" },
+  sectionTitle: { fontWeight: "bold", fontSize: "18px", fontFamily: "Poppins" },
+  smallText: { fontSize: "10px", color: "#666" },
+  monthlyText: { fontSize: "14px", fontWeight: "bold" },
   progressContainer: {
     display: "flex",
     height: "8px",
@@ -1089,7 +1089,7 @@ const styles = {
   legend: {
     display: "flex",
     justifyContent: "space-between",
-    fontSize: "12px",
+    fontSize: "10px",
     marginTop: "8px",
   },
   legendItem: { display: "flex", alignItems: "center", gap: "5px" },
