@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import { FaBed, FaBath } from "react-icons/fa";
 import { useTemplate } from "../../context/TemplateContext";
 import "./DashboardListingT1.css"; // Create this for modal CSS
-import bg from '../../image/titlebg3.png'
+import bg from "../../image/titlebg3.png";
 const DashboardListingT1 = ({ listings, handleViewDetails }) => {
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
@@ -100,19 +100,21 @@ const DashboardListingT1 = ({ listings, handleViewDetails }) => {
   );
 
   return (
-    <div className="container-fluid" style={{ padding: "60px 70px" }}>
-      <div   style={{
-    marginBottom: "40px",
-    ...(template === "template3" && {
-      backgroundImage: `url(${bg})`,
-      backgroundSize: "cover",
-      backgroundPosition: "center",
-      backgroundRepeat: "no-repeat",
-      height: "50px",
-      width:'20%',
-      paddingTop:10
-    }),
-  }}>
+    <div className="container-fluid" style={{ padding: "60px 70px",marginTop:'50px' }}>
+      <div
+        style={{
+          marginBottom: "40px",
+          ...(template === "template3" && {
+            backgroundImage: `url(${bg})`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat",
+            height: "50px",
+            width: "20%",
+            paddingTop: 10,
+          }),
+        }}
+      >
         <span
           style={{
             fontWeight: 600,
@@ -214,7 +216,7 @@ const DashboardListingT1 = ({ listings, handleViewDetails }) => {
                                 justifyContent: "center",
                                 fontWeight: 600,
                                 fontSize: "14px",
-                                zIndex:1
+                                zIndex: 1,
                                 // marginTop: "20px",
                               }}
                             >
