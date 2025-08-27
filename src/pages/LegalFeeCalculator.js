@@ -7,6 +7,11 @@ import {
   FaChartLine,
   FaArrowLeft
 } from "react-icons/fa";
+import buy from "../image/buy.svg";
+import loan from "../image/loan.svg";
+import legal from "../image/legal.svg";
+import mortgage from "../image/mortgage.svg";
+import gtax from "../image/gtax.svg";
 
 // Currency formatter
 const formatCurrency = (value) =>
@@ -932,11 +937,11 @@ const CalculatorMenuPage = () => {
   const [selectedCalculator, setSelectedCalculator] = useState(null);
 
   const calculators = [
-    { id: "buySell", name: "Buy & Sell Legal Fee & Stamp Duty", icon: <FaHome size={40} />, component: <BuySellCalculator /> },
-    { id: "loan", name: "Loan Legal Fee & Stamp Duty", icon: <FaMoneyCheckAlt size={40} />, component: <LoanCalculator /> },
-    { id: "tenancy", name: "Tenancy Legal Fee & Stamp Duty", icon: <FaFileContract size={40} />, component: <TenancyCalculator /> },
-    { id: "mortgage", name: "Mortgage Loan", icon: <FaCalculator size={40} />, component: <MortgageCalculator /> },
-    { id: "rpgt", name: "Real Property Gain Tax (RPGT", icon: <FaChartLine size={40} />, component: <RPGTCalculator /> },
+    { id: "buySell", name: "Buy & Sell Legal Fee & Stamp Duty", icon: <img src={buy} alt="Buy & Sell" style={{ width: 40, height: 40 }} />, component: <BuySellCalculator /> },
+    { id: "loan", name: "Loan Legal Fee & Stamp Duty", icon: <img src={loan} alt="Loan Legal" style={{ width: 40, height: 40 }} />, component: <LoanCalculator /> },
+    { id: "tenancy", name: "Tenancy Legal Fee & Stamp Duty", icon: <img src={legal} alt="Tenancy Legal" style={{ width: 40, height: 40 }} />, component: <TenancyCalculator /> },
+    { id: "mortgage", name: "Mortgage Loan", icon: <img src={mortgage} alt="Mortgage Loan" style={{ width: 40, height: 40 }} />, component: <MortgageCalculator /> },
+    { id: "rpgt", name: "Real Property Gain Tax (RPGT", icon: <img src={gtax} alt="Real Property Gain Tax" style={{ width: 40, height: 40 }} />, component: <RPGTCalculator /> },
   ];
 
   if (selectedCalculator) {
