@@ -31,9 +31,11 @@ const PropertyRequestForm = () => {
   const [areas, setAreas] = useState([]);
   const [selectedAreaId, setSelectedAreaId] = useState("");
   const { mainAgent } = useTemplate();
+const [isSuccess, setIsSuccess] = useState(null); // null | true | false
 
   // ✅ Loading state
   const [isLoading, setIsLoading] = useState(true);
+const [isLoading2, setIsLoading2] = useState(false);
 
   const inputStyle = {
     padding: "10px",
@@ -76,23 +78,27 @@ const PropertyRequestForm = () => {
     </>
   );
 const handleViewDetails = useCallback(async () => {
-          const url_fe = window.location.href;
+  const url_fe = window.location.href;
+      setIsLoading(true); // ✅ start loading
+
+  setIsSuccess(null);
 
   try {
+
     const payload = {
-      domain:mainAgent.name,
+      domain: mainAgent.name,
       url_fe: url_fe,
       id_country: 1,
       [purpose === "buy" ? "want_to_buy" : "want_to_rent"]: {
-        leads_objective: purpose==='buy'?("WTB"):("WTR"),
-        leads_name: name,              // from your state
+        leads_objective: purpose === "buy" ? "WTB" : "WTR",
+        leads_name: name,
         leads_phone: phone,
         leads_email: email,
         property_id_country: 1,
         property_id_province: null,
         property_id_state: selectedStateId,
         property_id_city: null,
-        property_id_area: selectedAreaId,        // add if you have
+        property_id_area: selectedAreaId,
         property_category: category,
         property_type: landType,
         property_type_others: otherCategory,
@@ -102,31 +108,36 @@ const handleViewDetails = useCallback(async () => {
         property_built_size: builtUpArea,
         property_land_size: landArea,
         property_lot_type: landLotType,
-        property_budget_price_min: 800000,  // replace with state if dynamic
-        property_budget_price_max: 1000000, // replace with state if dynamic
+        property_budget_price_min: 800000,  // TODO: make dynamic if needed
+        property_budget_price_max: 1000000, // TODO: make dynamic if needed
         leads_acquire_soon: planToBuy,
         leads_agree_agent_assist: "YES",
       },
     };
-    if (purpose==='buy')
-    {
-      const response = await getSubmitBuy(payload);
-    console.log("✅ Success Buy:", response.data);
-    }
-    else{
-      const response = await getSubmitRent(payload);
-    console.log("✅ Success Rent:", response.data);
-    }
 
+    let response;
+    if (purpose === "buy") {
+      response = await getSubmitBuy(payload);
+      console.log("✅ Success Buy:", response.data);
+    } else {
+      response = await getSubmitRent(payload);
+      console.log("✅ Success Rent:", response.data);
+    }
+        setIsSuccess(true);
 
   } catch (err) {
     console.error("❌ Error submitting form:", err);
+  } finally {
+    setIsLoading(false); // ✅ stop loading
   }
 }, [
+  purpose,
+  mainAgent?.name,
   name,
   phone,
   email,
   selectedStateId,
+  selectedAreaId,
   category,
   landType,
   otherCategory,
@@ -138,6 +149,7 @@ const handleViewDetails = useCallback(async () => {
   landLotType,
   planToBuy,
 ]);
+
 
   useEffect(() => {
     const fetchFilterData = async () => {
@@ -190,6 +202,66 @@ const handleViewDetails = useCallback(async () => {
       </>
     );
   }
+  if (isLoading2) {
+  return (
+    <>
+      <style>
+        {`
+          @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
+        `}
+      </style>
+      <div style={styles.loadingContainer}>
+        <div style={styles.spinner}></div>
+        <p style={styles.loadingText}>Submitting form...</p>
+      </div>
+    </>
+  );
+}
+
+if (isSuccess === true) {
+  return (
+    <div
+      style={{
+        minHeight: "100vh",      // take full height
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        flexDirection: "column",
+        gap: "16px",
+      }}
+    >
+      <span style={{ fontSize: "60px", color: "green" }}>✔</span>
+      <p style={{ color: "green", fontWeight: "600", fontSize: "20px" }}>
+        Form successfully submitted!
+      </p>
+    </div>
+  );
+}
+
+if (isSuccess === false) {
+  return (
+    <div
+      style={{
+        minHeight: "90vh",      // take full height
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        flexDirection: "column",
+        gap: "16px",
+      }}
+    >
+      <span style={{ fontSize: "60px", color: "red" }}>✘</span>
+      <p style={{ color: "red", fontWeight: "600", fontSize: "20px" }}>
+        Form submission failed. Please try again.
+      </p>
+    </div>
+  );
+}
+
+
 
   return (
     <div

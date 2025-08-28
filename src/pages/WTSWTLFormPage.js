@@ -1,5 +1,5 @@
-import React, { useState, useEffect,useCallback } from "react";
-import { getLocationTree ,getSubmitSell,getSubmitLet } from "../api/axiosApi";
+import React, { useState, useEffect, useCallback } from "react";
+import { getLocationTree, getSubmitSell, getSubmitLet } from "../api/axiosApi";
 import { useTemplate } from "../context/TemplateContext";
 
 const PropertyRequestForm = () => {
@@ -33,6 +33,9 @@ const PropertyRequestForm = () => {
   const [selectedAreaId, setSelectedAreaId] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const { mainAgent } = useTemplate();
+const [status, setStatus] = useState(null); 
+  const [isLoading2, setIsLoading2] = useState(false);
+const [isSuccess, setIsSuccess] = useState(null); // null | true | false
 
   const inputStyle = {
     padding: "10px",
@@ -88,71 +91,75 @@ const PropertyRequestForm = () => {
     };
     fetchFilterData();
   }, []);
-  const handleViewDetails = useCallback(async () => {
-          const url_fe = window.location.href;
+const handleViewDetails = useCallback(async () => {
+  const url_fe = window.location.href;
+  setIsLoading(true);
+  setIsSuccess(null);
 
-    try {
-      const payload = {
-        domain: mainAgent.name,
-        url_fe: url_fe,
-        id_country: 1,
-        [purpose === "buy" ? "want_to_sell" : "want_to_let"]: {
-          leads_objective: purpose === "buy" ? "WTS" : "WTL",
-          leads_name: name, // from your state
-          leads_phone: phone,
-          leads_email: email,
-          leads_ownership_testimony: ownProperty,
-          property_address: address,
-          property_location_map_url: wazeLocation,
-          property_id_country: 1,
-          property_id_province: null,
-          property_id_state: selectedStateId,
-          property_id_city: null,
-          property_id_area: selectedAreaId, // add if you have
-          property_category: category,
-          property_type: landType,
-          property_type_others: otherCategory,
-          property_floor: floorCount,
-          property_room: bedroom,
-          property_bathroom: bathroom,
-          property_built_size: builtUpArea,
-          property_land_size: landArea,
-          property_lot_type: landLotType,
-            			leads_ownership_testimony: "YES",
+  try {
+    const payload = {
+      domain: mainAgent.name,
+      url_fe: url_fe,
+      id_country: 1,
+      [purpose === "buy" ? "want_to_sell" : "want_to_let"]: {
+        leads_objective: purpose === "buy" ? "WTS" : "WTL",
+        leads_name: name,
+        leads_phone: phone,
+        leads_email: email,
+        leads_ownership_testimony: ownProperty,
+        property_address: address,
+        property_location_map_url: wazeLocation,
+        property_id_country: 1,
+        property_id_province: null,
+        property_id_state: selectedStateId,
+        property_id_city: null,
+        property_id_area: selectedAreaId,
+        property_category: category,
+        property_type: landType,
+        property_type_others: otherCategory,
+        property_floor: floorCount,
+        property_room: bedroom,
+        property_bathroom: bathroom,
+        property_built_size: builtUpArea,
+        property_land_size: landArea,
+        property_lot_type: landLotType,
+        leads_ownership_testimony: "YES",
+        property_asking_price: 700000,
+        leads_divest_soon: "YES",
+        leads_agree_agent_assist: helpWithSelling === true ? "YES" : "NO",
+      },
+    };
 
-      				property_asking_price: 700000,
-// replace with state if dynamic
-          leads_divest_soon: "YES",
-          leads_agree_agent_assist: helpWithSelling===true ?('YES'):("NO"),
-        },
-      };
-if (purpose=='buy')
-{    const response = await getSubmitSell(payload);
-      console.log("✅ Success Sell:", response.data);}
-else
-{
- const response = await getSubmitLet(payload);
+    if (purpose === "buy") {
+      const response = await getSubmitSell(payload);
+      console.log("✅ Success Sell:", response.data);
+    } else {
+      const response = await getSubmitLet(payload);
       console.log("✅ Success Let:", response.data);
-}
-  
-    } catch (err) {
-      console.error("❌ Error submitting form:", err);
     }
-  }, [
-    name,
-    phone,
-    email,
-    selectedStateId,
-    category,
-    landType,
-    otherCategory,
-    floorCount,
-    bedroom,
-    bathroom,
-    builtUpArea,
-    landArea,
-    landLotType,
-  ]);
+
+    setIsSuccess(true);
+  } catch (err) {
+    console.error("❌ Error submitting form:", err);
+    setIsSuccess(false);
+  } finally {
+    setIsLoading(false);
+  }
+}, [
+  name,
+  phone,
+  email,
+  selectedStateId,
+  category,
+  landType,
+  otherCategory,
+  floorCount,
+  bedroom,
+  bathroom,
+  builtUpArea,
+  landArea,
+  landLotType,
+]);
   const handleStateChange = (e) => {
     const stateId = e.target.value;
     setSelectedStateId(stateId);
@@ -187,6 +194,64 @@ else
       </>
     );
   }
+  if (isLoading2) {
+  return (
+    <>
+      <style>
+        {`
+          @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
+        `}
+      </style>
+      <div style={styles.loadingContainer}>
+        <div style={styles.spinner}></div>
+        <p style={styles.loadingText}>Submitting form...</p>
+      </div>
+    </>
+  );
+}
+if (isSuccess === true) {
+  return (
+    <div
+      style={{
+        minHeight: "100vh",      // take full height
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        flexDirection: "column",
+        gap: "16px",
+      }}
+    >
+      <span style={{ fontSize: "60px", color: "green" }}>✔</span>
+      <p style={{ color: "green", fontWeight: "600", fontSize: "20px" }}>
+        Form successfully submitted!
+      </p>
+    </div>
+  );
+}
+
+if (isSuccess === false) {
+  return (
+    <div
+      style={{
+        minHeight: "90vh",      // take full height
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        flexDirection: "column",
+        gap: "16px",
+      }}
+    >
+      <span style={{ fontSize: "60px", color: "red" }}>✘</span>
+      <p style={{ color: "red", fontWeight: "600", fontSize: "20px" }}>
+        Form submission failed. Please try again.
+      </p>
+    </div>
+  );
+}
+
   return (
     <div
       style={{
