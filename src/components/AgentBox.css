@@ -1,0 +1,45 @@
+.agent-box {
+  position: relative;
+  inset: 0;
+  z-index: 1;
+  height: clamp(120px, 12vw, 180px);
+  width: 100%;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center center;
+  padding: clamp(12px, 3vw, 20px) clamp(40px, 8vw, 100px);
+  display: flex;
+  align-items: center;
+  color: #fff;
+}
+
+.agent-photo {
+  width: clamp(60px, 6vw, 80px);
+  height: clamp(60px, 6vw, 80px);
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: clamp(12px, 2vw, 20px);
+  border: 2px solid white;
+}
+
+.agent-name {
+  font-size: clamp(14px, 1.6vw, 18px);
+  font-weight: bold;
+}
+
+.agent-agency,
+.agent-phone {
+  font-size: clamp(12px, 1.3vw, 14px);
+}
+@media (max-width: 576px) {
+  .agent-box {
+    flex-direction: row;
+    justify-content: left;
+    text-align: left;
+    padding: clamp(16px, 4vw, 24px);
+  }
+
+  .agent-photo {
+    margin-right: 0;
+  }
+}

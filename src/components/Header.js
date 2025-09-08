@@ -1,48 +1,38 @@
-// components/Header.js
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useTemplate } from "../context/TemplateContext"; // ✅ Import Template Context
-import { getAgent } from "../api/axiosApi";
+import { useTemplate } from "../context/TemplateContext";
 import "./header.css";
+
 const Navbar = () => {
-  const { template, switchTemplate } = useTemplate(); // ✅ Use Template Context
+  const { template, switchTemplate, agent, category, mainAgent } = useTemplate();
   const navigate = useNavigate();
 
   const handleLogoClick = (e) => {
     e.preventDefault();
     navigate("/");
   };
-  // const [agent, setAgent] = useState({});
-  // const [category, setCategory] = useState({});
-  const { agent, category, mainAgent } = useTemplate();
 
   const handleNavigate = (path) => {
-    // You can also add logic here if needed before navigating
     navigate(path);
   };
-  // console.log('agent',mainAgent)
+
   return (
     <nav
-      className="navbar navbar-expand-lg bg-white px-3"
-      style={{
-        backgroundColor: template === "template2" ? "#FFFFFF" : "#F8F9FA",
-      }}
+      className={`navbar navbar-expand-lg px-3 py-2 py-md-3 ${
+        template === "template2" ? "bg-white" : "bg-light"
+      }`}
     >
       <div className="container-fluid">
+        {/* Logo */}
         <a
           href="/"
-          className="navbar-brand fs-5 fw-semibold text-start"
+          className="navbar-brand fw-semibold text-start font-poppins fs-5 fs-md-3"
           onClick={handleLogoClick}
-          style={{
-            fontFamily: "Poppins, sans-serif",
-            cursor: "pointer",
-            fontSize: "18px",
-            fontWeight: 600,
-          }}
         >
-          {mainAgent.name}{" "}
+          {mainAgent.name}
         </a>
 
+        {/* Mobile Toggle */}
         <button
           className="navbar-toggler"
           type="button"
@@ -55,83 +45,57 @@ const Navbar = () => {
           <span className="navbar-toggler-icon"></span>
         </button>
 
-        <div
-          className="collapse navbar-collapse fs-6 fw-normal p-2"
-          id="navcol-2"
-        >
+        {/* Nav Links */}
+        <div className="collapse navbar-collapse p-2" id="navcol-2">
           <ul className="navbar-nav ms-auto align-items-xl-center">
             <li className="nav-item">
-              <Link
-                className="nav-link text-nowrap"
-                to="/"
-                style={{
-                  fontSize: "14px",
-                  fontWeight: 400,
-                  fontFamily: "Poppins",
-                }}
-              >
+              <Link className="nav-link text-nowrap fw-normal font-poppins fs-6 fs-md-5" to="/">
                 Home
               </Link>
             </li>
+
             {category?.sale && (
               <li className="nav-item">
                 <Link
-                  className="nav-link text-nowrap"
+                  className="nav-link text-nowrap fw-normal font-poppins fs-6 fs-md-5"
                   to="/search"
-                  state={{ activeTab: "Buy", autoSearch: true }} // ✅ send desired active tab
-                  style={{
-                    fontSize: "14px",
-                    fontWeight: 400,
-                    fontFamily: "Poppins",
-                  }}
+                  state={{ activeTab: "Buy", autoSearch: true }}
                 >
                   Sale
                 </Link>
               </li>
             )}
+
             {category?.rent && (
               <li className="nav-item">
                 <Link
-                  className="nav-link text-nowrap"
+                  className="nav-link text-nowrap fw-normal font-poppins fs-6 fs-md-5"
                   to="/search"
-                  state={{ activeTab: "Rent", autoSearch: true }} // ✅
-                  style={{
-                    fontSize: "14px",
-                    fontWeight: 400,
-                    fontFamily: "Poppins",
-                  }}
+                  state={{ activeTab: "Rent", autoSearch: true }}
                 >
                   Rent
                 </Link>
               </li>
             )}
+
             {category?.project && (
               <li className="nav-item">
                 <Link
-                  className="nav-link text-nowrap"
+                  className="nav-link text-nowrap fw-normal font-poppins fs-6 fs-md-5"
                   to="/search"
-                  state={{ activeTab: "New Project", autoSearch: true }} // ✅
-                  style={{
-                    fontSize: "14px",
-                    fontWeight: 400,
-                    fontFamily: "Poppins",
-                  }}
+                  state={{ activeTab: "New Project", autoSearch: true }}
                 >
                   New Project
                 </Link>
               </li>
             )}
+
             {category?.auction && (
               <li className="nav-item">
                 <Link
-                  className="nav-link text-nowrap"
+                  className="nav-link text-nowrap fw-normal font-poppins fs-6 fs-md-5"
                   to="/search"
-                  state={{ activeTab: "Auction", autoSearch: true }} // ✅
-                  style={{
-                    fontSize: "14px",
-                    fontWeight: 400,
-                    fontFamily: "Poppins",
-                  }}
+                  state={{ activeTab: "Auction", autoSearch: true }}
                 >
                   Auction
                 </Link>
@@ -139,90 +103,48 @@ const Navbar = () => {
             )}
 
             <li className="nav-item">
-              <Link
-                className="nav-link text-nowrap"
-                to="/donedeal"
-                style={{
-                  fontSize: "14px",
-                  fontWeight: 400,
-                  fontFamily: "Poppins",
-                }}
-              >
+              <Link className="nav-link text-nowrap fw-normal font-poppins fs-6 fs-md-5" to="/donedeal">
                 Done Deals
               </Link>
             </li>
+
             <li className="nav-item">
-              <Link
-                className="nav-link text-nowrap"
-                to="/articles"
-                style={{
-                  fontSize: "14px",
-                  fontWeight: 400,
-                  fontFamily: "Poppins",
-                }}
-              >
+              <Link className="nav-link text-nowrap fw-normal font-poppins fs-6 fs-md-5" to="/articles">
                 Articles
               </Link>
             </li>
+
             <li className="nav-item">
-              <Link
-                className="nav-link text-nowrap"
-                to="/business-card"
-                style={{
-                  fontSize: "14px",
-                  fontWeight: 400,
-                  fontFamily: "Poppins",
-                }}
-              >
+              <Link className="nav-link text-nowrap fw-normal font-poppins fs-6 fs-md-5" to="/business-card">
                 About Me
               </Link>
             </li>
 
+            {/* Dropdown - I Want To */}
             {agent.i_want_to && (
               <li className="nav-item dropdown">
                 <a
                   href="#"
-                  className="nav-link dropdown-toggle text-nowrap"
+                  className="nav-link dropdown-toggle text-nowrap fw-normal font-poppins fs-6 fs-md-5"
                   id="iWantToDropdown"
                   role="button"
                   data-bs-toggle="dropdown"
                   aria-expanded="false"
-                  style={{
-                    fontSize: "14px",
-                    fontWeight: 400,
-                    fontFamily: "Poppins",
-                  }}
                 >
                   I Want To
                 </a>
-                <ul
-                  className="dropdown-menu dropdown-menu-end border-0 px-2"
-                  aria-labelledby="iWantToDropdown"
-                >
+                <ul className="dropdown-menu dropdown-menu-end border-0 px-2">
                   <li>
                     <Link
-                      className="dropdown-item"
+                      className="dropdown-item font-poppins fs-6 fs-md-5"
                       to="/buy"
                       onClick={() => handleNavigate("/buy")}
-                      style={{
-                        fontSize: "14px",
-                        fontWeight: 400,
-                        fontFamily: "Poppins",
-                      }}
                     >
                       Buy a Property (WTB)
                     </Link>
                   </li>
                   <li>
-                    <Link
-                      className="dropdown-item"
-                      to="/buy"
-                      style={{
-                        fontSize: "14px",
-                        fontWeight: 400,
-                        fontFamily: "Poppins",
-                      }}
-                    >
+                    <Link className="dropdown-item font-poppins fs-6 fs-md-5" to="/buy">
                       Rent a Property (WTR)
                     </Link>
                   </li>
@@ -231,28 +153,18 @@ const Navbar = () => {
                   </li>
                   <li>
                     <Link
-                      className="dropdown-item"
+                      className="dropdown-item font-poppins fs-6 fs-md-5"
                       to="/i-want-to"
                       onClick={() => handleNavigate("/saleprops")}
-                      style={{
-                        fontSize: "14px",
-                        fontWeight: 400,
-                        fontFamily: "Poppins",
-                      }}
                     >
                       Sell a Property (WTS)
                     </Link>
                   </li>
                   <li>
                     <Link
-                      className="dropdown-item"
+                      className="dropdown-item font-poppins fs-6 fs-md-5"
                       to="/i-want-to"
                       onClick={() => handleNavigate("/saleprops")}
-                      style={{
-                        fontSize: "14px",
-                        fontWeight: 400,
-                        fontFamily: "Poppins",
-                      }}
                     >
                       Buy a Property (WTB)
                     </Link>
@@ -260,27 +172,20 @@ const Navbar = () => {
                 </ul>
               </li>
             )}
+
+            {/* Tools */}
             {agent.tools && (
               <li className="nav-item">
-                <Link
-                  className="nav-link text-nowrap"
-                  to="/tools"
-                  style={{
-                    fontSize: "14px",
-                    fontWeight: 400,
-                    fontFamily: "Poppins",
-                  }}
-                >
+                <Link className="nav-link text-nowrap fw-normal font-poppins fs-6 fs-md-5" to="/tools">
                   Tools
                 </Link>
               </li>
             )}
 
-            {/* ✅ Template Switch Dropdown */}
+            {/* Template Selector */}
             <li className="nav-item ms-3">
               <select
-                className="form-select"
-                style={{ width: "150px" }}
+                className="form-select w-auto font-poppins fs-6 fs-md-5"
                 value={template}
                 onChange={(e) => switchTemplate(e.target.value)}
               >

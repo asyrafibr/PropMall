@@ -28,6 +28,7 @@ import Articles from "./pages/Articles";
 import AboutMe from "./pages/Aboutme";
 import Tools from "./pages/Tools";
 import AgentBox from "./components/AgentBox";
+import './custom-bootstrap.scss';
 
 // remove the static CSS import here
 // import "./index.css";

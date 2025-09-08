@@ -10,7 +10,7 @@ import { createPortal } from "react-dom";
 import { useTemplate } from "../context/TemplateContext"; // ✅ Import Template Context
 import RangeSliderModal from "./RangeSliderModal";
 import { useLocation } from "react-router-dom";
-
+import "./FilterSection.css";
 import {
   getCategory,
   getHolding,
@@ -26,6 +26,7 @@ const Filters = ({
   setSearchTerm,
 }) => {
   const navigate = useNavigate();
+  const { mainAgent, template } = useTemplate();
 
   const containerRef = useRef(null); // ✅ ref to the whole dropdown group
   const [selectedCategory, setSelectedCategory] = useState([]);
@@ -63,7 +64,6 @@ const Filters = ({
 
   // when clicking a button
   const handleButtonClick = (label) => {
-    
     if (
       label === "Price Ranges (RM)" ||
       label === "Bedroom(s)" ||
@@ -170,7 +170,6 @@ const Filters = ({
     }
     return best;
   };
-
 
   // === Reusable Modal (same-file), with optional Portal ===
   function Modal({
@@ -468,183 +467,89 @@ const Filters = ({
       </div>
 
       <div
-        className="hero-section d-flex flex-column flex-md-row align-items-start justify-content-center flex-wrap"
+        className="d-flex flex-column flex-md-row align-items-start justify-content-center flex-wrap position-relative w-100 min-vh-50 text-white p-3 p-md-5"
         style={{
-          position: "relative",
-          width: "100%",
-          minHeight: "541px",
           backgroundImage: `url(${headerImage})`,
           backgroundSize: "cover",
           backgroundRepeat: "no-repeat",
           backgroundPosition: "center center",
-          color: "white",
         }}
       >
-        <div
-          className="container-fluid order-2 order-md-1"
-          style={{
-            position: "relative",
-            zIndex: 2,
-            flex: 1,
-            paddingTop: "100px",
-            paddingLeft: "100px",
-            paddingRight: "100px",
-          }}
-        >
-          <h4
-            className="text-white fw-bold text-end mb-4"
-            style={{ fontSize: "32px", fontFamily: "Poppins", fontWeight: 600 }}
-          >
-            Discover Dream Properties at {domain.name}
-          </h4>
-
-          <div
-            style={{
-              backgroundColor: "rgba(0,0,0,0.6)",
-              borderRadius: "8px",
-              padding: "20px",
-            }}
-          >
+        <div className="container-fluid order-2 order-md-1 position-relative z-2 flex-fill pt-5 px-5">
+          <div className="hero-heading text-white fw-bold text-end mb-4">
+            Discover Your Dream Properties at {mainAgent.name}
+          </div>
+          <div className="bg-dark bg-opacity-50 rounded-2 p-4">
+            {/* Tabs */}
             <div className="d-flex">
               {tabMap
-                .filter(({ key }) => category[key]) // only include true items
+                .filter(({ key }) => category[key])
                 .map(({ label }) => (
                   <button
                     key={label}
-                    className="btn text-white me-3"
+                    className={`btn text-white me-3 rounded-0 fs-6 ${
+                      activeTab === label ? "border-orange-bottom" : ""
+                    }`}
                     onClick={() => setActiveTab(label)}
-                    style={{
-                      background: "transparent",
-                      fontSize: "14px",
-                      fontFamily: "Poppins",
-                      borderBottom:
-                        activeTab === label
-                          ? "3px solid #F4980E"
-                          : "3px solid transparent",
-                      borderRadius: 0,
-                    }}
                   >
                     {label}
                   </button>
                 ))}
             </div>
-            <div
-              style={{
-                borderBottom: "2px solid #3A3A3A",
-                marginBottom: "15px",
-              }}
-            ></div>
 
-            <div className="row g-3">
+            <div className="border-bottom border-2 border-secondary mb-3"></div>
+
+            {/* Location + Search */}
+            <div className="row g-2">
+              {/* All States Dropdown */}
               <div className="col-12 col-md-3">
                 <div
-                  className="form-control d-flex align-items-center justify-content-between"
-                  onClick={() => {
-                    console.log("click");
-                    setShowModal(true);
-                  }}
-                  style={{
-                    height: "60px",
-                    cursor: "pointer",
-                    backgroundColor: "#fff",
-                    fontFamily: "Poppins",
-                    padding: "0 16px", // add some padding
-                    overflow: "hidden",
-                  }}
+                  className="form-control d-flex align-items-center justify-content-between cursor-pointer bg-white text-truncate"
+                  role="button"
+                  onClick={() => setShowModal(true)}
+                  style={{ height: "60px" }}
                 >
-                  <span
-                    style={{
-                      fontFamily: "Poppins",
-                      fontSize: "18px",
-                      fontWeight: 400,
-                      whiteSpace: "nowrap",
-                      overflow: "hidden",
-                      textOverflow: "ellipsis",
-                      flex: 1,
-                    }}
-                  >
+                  <span className="flex-grow-1 text-truncate fs-5 fw-normal">
                     {selectedLocation || "All States"}
                   </span>
-                  <span
-                    style={{
-                      fontSize: "0.8rem",
-                      marginLeft: "8px",
-                      flexShrink: 0,
-                    }}
-                  >
-                    ▼
-                  </span>
+                  <span className="small ms-2">▼</span>
                 </div>
               </div>
-              <div className="col-12 col-md-9">
-                <div className="d-flex flex-column flex-md-row gap-3">
-                  <div className="position-relative flex-grow-1">
-                    <FaSearch
-                      style={{
-                        position: "absolute",
-                        left: "16px",
-                        top: "50%",
-                        transform: "translateY(-50%)",
-                        fontSize: "18px",
-                        color: "#999",
-                      }}
-                    />
-                    <input
-                      type="text"
-                      className="form-control"
-                      placeholder="Search"
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      style={{
-                        height: "60px",
-                        paddingLeft: "48px", // room for the icon
-                        fontFamily: "Poppins",
-                        fontSize: "18px",
-                        fontStyle: "normal",
-                        fontWeight: 400,
-                        lineHeight: "normal",
-                      }}
-                    />
-                  </div>
 
-                  <button
-                    className="btn btn-primary"
-                    onClick={handleSearch}
-                    style={{
-                      backgroundColor: "#F4980E",
-                      borderRadius: "8px",
-                      height: "60px",
-                      minWidth: "160px",
-                      fontFamily: "Poppins",
-                      borderWidth: 0,
-                    }}
-                  >
-                    Search
-                  </button>
-                </div>
+              {/* Search Input + Button */}
+              <div className="col-12 col-md-9 d-flex flex-column flex-md-row gap-2">
+                <input
+                  id="search"
+                  type="text"
+                  className="form-control flex-grow-1 h-100"
+                  placeholder="Search"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  style={{ height: "60px", fontFamily: "Poppins" }}
+                />
+                <button
+                  className="btn text-white w-md-auto"
+                  style={{
+                    backgroundColor: "#F4980E",
+                    width: "120px",
+                    height: "60px",
+                    borderRadius: "8px",
+                  }}
+                  onClick={handleSearch}
+                >
+                  Search
+                </button>
               </div>
             </div>
 
+            {/* Filters */}
             <div className="row mt-4" ref={containerRef}>
               <div className="col-12 d-flex flex-column flex-md-row gap-3">
                 {Object.entries(filters).map(([label, options]) => (
-                  <div
-                    key={label}
-                    style={{ position: "relative", width: "100%" }}
-                  >
+                  <div key={label} className="position-relative w-100">
                     <button
                       onClick={() => handleButtonClick(label)}
-                      className="btn p-0 d-flex align-items-center"
-                      style={{
-                        justifyContent: "space-between",
-                        width: "100%",
-                        background: "transparent",
-                        border: "none",
-                        fontSize: "14px",
-                        fontFamily: "Poppins",
-                        color: "white",
-                        textDecoration: "none",
-                      }}
+                      className="btn w-100 text-white text-decoration-none border-0 d-flex justify-content-between align-items-center fs-6"
                     >
                       <span>
                         {label === "All Categories"
@@ -659,51 +564,25 @@ const Filters = ({
                           ? bathroomDisplay || label
                           : label}
                       </span>
-                      <span style={{ marginLeft: "6px", fontSize: "0.7rem" }}>
-                        ▼
-                      </span>
+                      <span className="small ms-2">▼</span>
                     </button>
 
-                    {/* --- Keep dropdown ONLY for All Categories / All Holding Types --- */}
+                    {/* Dropdown for Categories / Holdings */}
                     {openDropdown === label &&
                       (label === "All Categories" ||
                         label === "All Holding Types") && (
-                        <div
-                          style={{
-                            position: "absolute",
-                            top: "100%",
-                            width: "100%",
-                            // width: "750px",
-                            // height: "500px",
-                            background: "white",
-                            zIndex: 1000,
-                            borderRadius: "8px",
-                            padding: "10px",
-                            boxShadow: "0 4px 8px rgba(0,0,0,0.15)",
-                          }}
-                        >
-                          <ul
-                            style={{ listStyle: "none", padding: 0, margin: 0 }}
-                          >
-                            {(options && Array.isArray(options) ? options : [])
-                              .length === 0 ? (
-                              <li
-                                style={{
-                                  padding: "6px 0",
-                                  color: "gray",
-                                  fontFamily: "Poppins",
-                                }}
-                              >
+                        <div className="position-absolute top-100 w-100 bg-white rounded-2 p-2 shadow">
+                          <ul className="list-unstyled m-0">
+                            {(options || []).length === 0 ? (
+                              <li className="text-muted">
                                 No options available.
                               </li>
                             ) : (
-                              (options || []).map((item, i) => (
+                              options.map((item, i) => (
                                 <li
                                   key={i}
-                                  style={{
-                                    cursor: "pointer",
-                                    padding: "6px 0",
-                                  }}
+                                  className="py-1"
+                                  style={{ cursor: "pointer" }}
                                   onClick={() => {
                                     if (label === "All Categories") {
                                       setSelectedCategory({
@@ -714,134 +593,56 @@ const Filters = ({
                                     }
                                   }}
                                 >
-                                  <label
-                                    style={{
-                                      display: "flex",
-                                      justifyContent: "space-between",
-                                      alignItems: "center",
-                                      width: "100%",
-                                    }}
-                                  >
-                                    <span
-                                      style={{
-                                        fontFamily: "Poppins",
-                                        fontSize: 14,
-                                        fontStyle: "normal",
-                                        fontWeight: 400,
-                                        lineHeight: "normal",
-                                        color: "black",
+                                  <span className="text-dark fs-6">
+                                    {item.desc}
+                                  </span>
+                                  {label === "All Holding Types" && (
+                                    <input
+                                      type="checkbox"
+                                      className="form-check-input ms-2"
+                                      checked={selectedHolding.some(
+                                        (holding) => holding.id === item.id
+                                      )}
+                                      onChange={(e) => {
+                                        e.stopPropagation();
+                                        setSelectedHolding((prev) => {
+                                          if (e.target.checked) {
+                                            return [
+                                              ...prev,
+                                              { id: item.id, name: item.desc },
+                                            ];
+                                          } else {
+                                            return prev.filter(
+                                              (holding) =>
+                                                holding.id !== item.id
+                                            );
+                                          }
+                                        });
                                       }}
-                                    >
-                                      {item.desc}
-                                    </span>
-
-                                    {label === "All Holding Types" && (
-                                      <label
-                                        style={{
-                                          position: "relative",
-                                          display: "inline-flex",
-                                          alignItems: "center",
-                                          cursor: "pointer",
-                                        }}
-                                      >
-                                        <input
-                                          type="checkbox"
-                                          onChange={(e) => {
-                                            e.stopPropagation();
-                                            setSelectedHolding((prev) => {
-                                              const isChecked =
-                                                e.target.checked;
-                                              if (isChecked) {
-                                                return [
-                                                  ...prev,
-                                                  {
-                                                    id: item.id,
-                                                    name: item.desc,
-                                                  },
-                                                ];
-                                              } else {
-                                                return prev.filter(
-                                                  (holding) =>
-                                                    holding.id !== item.id
-                                                );
-                                              }
-                                            });
-                                          }}
-                                          checked={selectedHolding.some(
-                                            (holding) => holding.id === item.id
-                                          )}
-                                          style={{ display: "none" }} // hide native checkbox
-                                        />
-                                        <span
-                                          style={{
-                                            width: "18px",
-                                            height: "18px",
-                                            border: "2px solid #F4980E",
-                                            borderRadius: "3px",
-                                            display: "inline-block",
-                                            backgroundColor:
-                                              selectedHolding.some(
-                                                (holding) =>
-                                                  holding.id === item.id
-                                              )
-                                                ? "#F4980E"
-                                                : "#fff",
-                                            position: "relative",
-                                            transition: "all 0.2s ease",
-                                          }}
-                                        >
-                                          {selectedHolding.some(
-                                            (holding) => holding.id === item.id
-                                          ) && (
-                                            <svg
-                                              xmlns="http://www.w3.org/2000/svg"
-                                              viewBox="0 0 16 16"
-                                              fill="white"
-                                              width="14"
-                                              height="14"
-                                              style={{
-                                                position: "absolute",
-                                                top: "50%",
-                                                left: "50%",
-                                                transform:
-                                                  "translate(-50%, -50%)",
-                                              }}
-                                            >
-                                              <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7.25 7.25a.5.5 0 0 1-.708 0l-3.25-3.25a.5.5 0 1 1 .708-.708L6.25 10.043l6.896-6.897a.5.5 0 0 1 .708 0z" />
-                                            </svg>
-                                          )}
-                                        </span>
-                                      </label>
-                                    )}
-                                  </label>
+                                    />
+                                  )}
                                 </li>
                               ))
                             )}
                           </ul>
                         </div>
                       )}
+
+                    {/* Modal for Price, Bedroom, Bathroom */}
                     {(label === "Price Ranges (RM)" ||
                       label === "Bedroom(s)" ||
                       label === "Bathroom(s)") &&
-                       openModalLabel === label && (
+                      openModalLabel === label && (
                         <div
                           className="modal-overlay"
                           onClick={() => setPriceModalOpen(false)}
                         >
                           <div
-                            // className="modal-box"
-                            style={{background:'#fff',
-                              borderRadius:12,
-                              padding:35,
-                              boxShadow:`0 10px 30px rgba(0, 0, 0, 0.25)`,
-                              overflow:'auto',
-                              zIndex:2,
-                              height:400,
-                              width:1000
-                            }}
+                            className="bg-white rounded-3 p-4 shadow-lg"
+                            style={{ width: "1000px", height: "400px" }}
                             onClick={(e) => e.stopPropagation()}
                           >
-                            <h5 style={{color:'black'}}>
+                            <h5 className="text-dark mb-3">
                               {label === "Price Ranges (RM)"
                                 ? "Select Price Range (RM)"
                                 : label === "Bedroom(s)"
@@ -883,8 +684,6 @@ const Filters = ({
                               handleSearch={handleSearch}
                               setOpenDropdown={setOpenDropdown}
                             />
-
-       
                           </div>
                         </div>
                       )}
@@ -898,68 +697,30 @@ const Filters = ({
 
       {showModal && (
         <div
-          className="modal-overlay"
+          className="position-fixed top-0 start-0 vw-100 vh-100 d-flex justify-content-center align-items-start bg-dark bg-opacity-50"
+          style={{ zIndex: 9999, paddingTop: "6rem" }} // push down overlay
           onClick={() => setShowModal(false)}
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            width: "100vw",
-            height: "100vh",
-            backgroundColor: "rgba(0,0,0,0.6)",
-            zIndex: 9999,
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
         >
           <div
-            className="modal-box"
+            className="bg-white rounded-4 d-flex flex-column position-relative shadow w-100"
+            style={{ maxWidth: "750px", maxHeight: "80vh" }}
             onClick={(e) => e.stopPropagation()}
-            style={{
-              width: "750px",
-              height: "500px",
-              backgroundColor: "white",
-              borderRadius: "16px",
-              display: "flex",
-              flexDirection: "column",
-              position: "relative",
-            }}
           >
             {/* ===== Header ===== */}
-            <div
-              style={{
-                backgroundColor: "transparent",
-                color: "black",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                padding: "12px 20px",
-                fontFamily: "Poppins",
-              }}
-            >
-              <div>
+            <div className="d-flex align-items-center justify-content-between px-3 py-2">
+              <div className="d-flex align-items-center">
                 {navigationStack.length > 1 && (
                   <button
                     onClick={handleBack}
-                    className="btn p-0 d-flex justify-content-center align-items-center"
-                    style={{
-                      width: "16px",
-                      height: "16px",
-                      fontSize: "12px",
-                      lineHeight: "1",
-                      border: "none",
-                      background: "transparent",
-                      color: "black",
-                      marginRight: "10px",
-                    }}
+                    className="btn p-0 d-flex justify-content-center align-items-center me-2 fs-6"
+                    style={{ width: "16px", height: "16px" }}
                   >
                     &lt;
                   </button>
                 )}
               </div>
 
-              <div style={{ flex: 1 }}>
+              <div className="flex-grow-1">
                 {(() => {
                   const levelNum =
                     typeof currentLevel === "object"
@@ -970,50 +731,17 @@ const Filters = ({
 
                   return (
                     <>
-                      <h6
-                        style={{
-                          margin: 0,
-                          textAlign: "left",
-                          fontWeight: "600",
-                          fontSize: "14px",
-                          fontFamily: "Poppins",
-                          marginBottom: "5px",
-                        }}
-                      >
+                      <h6 className="mb-1 fw-semibold fs-6">
                         {levelNum === 0
                           ? `Search by State`
-                          : levelNum === 1
-                          ? `Select City/Area`
-                          : levelNum === 2
-                          ? `Select City/Area`
-                          : `Select Area `}
+                          : `Select City/Area`}
                       </h6>
-
-                      {levelNum === 1 && navigationStack[0] && (
-                        <p
-                          style={{
-                            margin: 0,
-                            fontSize: "12px",
-                            color: "#555",
-                            fontFamily: "Poppins",
-                          }}
-                        >
-                          {navigationStack[1].name}
-                        </p>
-                      )}
-
-                      {levelNum === 2 && navigationStack[1] && (
-                        <p
-                          style={{
-                            margin: 0,
-                            fontSize: "12px",
-                            color: "#555",
-                            fontFamily: "Poppins",
-                          }}
-                        >
-                          {navigationStack[1].name}
-                        </p>
-                      )}
+                      {(levelNum === 1 || levelNum === 2) &&
+                        navigationStack[levelNum - 1] && (
+                          <p className="mb-0 text-secondary fs-7">
+                            {navigationStack[levelNum - 1].name}
+                          </p>
+                        )}
                     </>
                   );
                 })()}
@@ -1021,168 +749,129 @@ const Filters = ({
 
               <div>
                 <button
-                  onClick={() => {
-                    console.log("data location", selectedCountry);
-                    setShowModal(false);
-                  }}
-                  className="btn btn-sm"
-                  style={{
-                    border: "none",
-                    background: "transparent",
-                    color: "black",
-                  }}
-                >
-                  ✕
-                </button>
+                  onClick={() => setShowModal(false)}
+                  className="btn btn-sm btn-close"
+                ></button>
               </div>
             </div>
 
             {/* ===== Content ===== */}
-            <div style={{ flex: 1, overflowY: "auto", padding: "20px" }}>
+            <div className="flex-grow-1 overflow-auto p-3">
               {loadingLocationData ? (
-                <div
-                  className="d-flex justify-content-center align-items-center"
-                  style={{ height: "100%" }}
-                >
+                <div className="d-flex justify-content-center align-items-center h-100">
                   <div className="spinner-border text-primary" role="status">
                     <span className="visually-hidden">Loading...</span>
                   </div>
                 </div>
               ) : (
                 <>
-                  {navigationStack.length > 0 && (
-                    <>
-                      {(() => {
-                        const depth = navigationStack.length;
-                        const isLeafLevel =
-                          Array.isArray(displayList) &&
-                          displayList.length > 0 &&
-                          displayList.every(
-                            (n) =>
-                              !n.child_list ||
-                              (Array.isArray(n.child_list) &&
-                                n.child_list.length === 0) ||
-                              n.child_count === 0
-                          );
-
-                        const showCheckboxes = depth >= 3 || isLeafLevel;
-
-                        return (
-                          <>
-                            {showCheckboxes && displayList.length > 0 && (
-                              <div
-                                className="py-2 d-flex align-items-center"
-                                style={{ cursor: "pointer" }}
-                                onClick={() => {
-                                  const allIds = displayList.map(
-                                    (item) => item.id
-                                  );
-                                  const allObjects = displayList;
-
-                                  const isAllSelected = allIds.every((id) =>
-                                    selectedAreaIds.includes(id)
-                                  );
-
-                                  if (isAllSelected) {
-                                    setSelectedAreaIds([]);
-                                    setSelectedAreaNames([]);
-                                    setSelectedAreaObjects([]);
-                                  } else {
-                                    setSelectedAreaIds(allIds);
-                                    setSelectedAreaNames(
-                                      allObjects.map((a) => a.name)
-                                    );
-                                    setSelectedAreaObjects(allObjects);
-                                  }
-                                }}
-                              >
-                                <input
-                                  type="checkbox"
-                                  style={{
-                                    appearance: "none",
-                                    width: "16px",
-                                    height: "16px",
-                                    border: "2px solid #F4980E",
-                                    borderRadius: "4px",
-                                    marginRight: "2%",
-                                    position: "relative",
-                                    cursor: "pointer",
-                                    backgroundColor:
-                                      displayList.length > 0 &&
-                                      displayList.every((item) =>
-                                        selectedAreaIds.includes(item.id)
-                                      )
-                                        ? "#F4980E"
-                                        : "#fff",
-                                  }}
-                                  checked={
-                                    displayList.length > 0 &&
-                                    displayList.every((item) =>
-                                      selectedAreaIds.includes(item.id)
-                                    )
-                                  }
-                                  readOnly
-                                />
-                                <span>Select All</span>
-                              </div>
-                            )}
-
-                            {Array.isArray(displayList) &&
-                              displayList.map((node) => {
-                                const nodeIsLeaf =
-                                  !node.child_list ||
-                                  (Array.isArray(node.child_list) &&
-                                    node.child_list.length === 0) ||
-                                  node.child_count === 0;
-
-                                return (
-                                  <div
-                                    key={node.id}
-                                    className="py-2 d-flex align-items-center"
-                                    style={{ cursor: "pointer" }}
-                                    onClick={() =>
-                                      node.child_count > 0
-                                        ? handleNodeClick(node)
-                                        : handleAreaToggle(node)
-                                    }
-                                  >
-                                    {showCheckboxes && nodeIsLeaf ? (
-                                      <>
-                                        <input
-                                          type="checkbox"
-                                          checked={selectedAreaIds.includes(
-                                            node.id
-                                          )}
-                                          onChange={() =>
-                                            handleAreaToggle(node)
-                                          }
-                                          onClick={(e) => e.stopPropagation()}
-                                          style={{
-                                            accentColor: "#F4980E", // ✅ Orange box
-                                            color: "white", // ✅ White tick (modern browsers support this)
-                                            cursor: "pointer",
-                                            marginRight: "2%",
-                                          }}
-                                        />
-
-                                        <span>{node.name}</span>
-                                      </>
-                                    ) : (
-                                      <div className="py-2 d-flex align-items-center justify-content-between w-100">
-                                        <span>{node.name}</span>
-                                        {node.child_count > 0 && (
-                                          <span>&#x276F;</span>
-                                        )}
-                                      </div>
-                                    )}
-                                  </div>
-                                );
-                              })}
-                          </>
+                  {navigationStack.length > 0 &&
+                    (() => {
+                      const depth = navigationStack.length;
+                      const isLeafLevel =
+                        Array.isArray(displayList) &&
+                        displayList.length > 0 &&
+                        displayList.every(
+                          (n) =>
+                            !n.child_list ||
+                            n.child_list.length === 0 ||
+                            n.child_count === 0
                         );
-                      })()}
-                    </>
-                  )}
+
+                      const showCheckboxes = depth >= 3 || isLeafLevel;
+
+                      return (
+                        <>
+                          {showCheckboxes && displayList.length > 0 && (
+                            <div
+                              className="form-check d-flex align-items-center mb-2"
+                              onClick={() => {
+                                const allIds = displayList.map(
+                                  (item) => item.id
+                                );
+                                const allObjects = displayList;
+                                const isAllSelected = allIds.every((id) =>
+                                  selectedAreaIds.includes(id)
+                                );
+                                if (isAllSelected) {
+                                  setSelectedAreaIds([]);
+                                  setSelectedAreaNames([]);
+                                  setSelectedAreaObjects([]);
+                                } else {
+                                  setSelectedAreaIds(allIds);
+                                  setSelectedAreaNames(
+                                    allObjects.map((a) => a.name)
+                                  );
+                                  setSelectedAreaObjects(allObjects);
+                                }
+                              }}
+                              style={{ cursor: "pointer" }}
+                            >
+                              <input
+                                type="checkbox"
+                                className="form-check-input checkbox-orange"
+                                checked={
+                                  displayList.length > 0 &&
+                                  displayList.every((item) =>
+                                    selectedAreaIds.includes(item.id)
+                                  )
+                                }
+                                readOnly
+                              />
+                              <label className="form-check-label ms-2 fs-6">
+                                Select All
+                              </label>
+                            </div>
+                          )}
+
+                          {Array.isArray(displayList) &&
+                            displayList.map((node) => {
+                              const nodeIsLeaf =
+                                !node.child_list ||
+                                (Array.isArray(node.child_list) &&
+                                  node.child_list.length === 0) ||
+                                node.child_count === 0;
+
+                              return (
+                                <div
+                                  key={node.id}
+                                  className="py-2 d-flex align-items-center"
+                                  style={{ cursor: "pointer" }}
+                                  onClick={() =>
+                                    node.child_count > 0
+                                      ? handleNodeClick(node)
+                                      : handleAreaToggle(node)
+                                  }
+                                >
+                                  {showCheckboxes && nodeIsLeaf ? (
+                                    <>
+                                      <input
+                                        type="checkbox"
+                                        className="form-check-input checkbox-orange"
+                                        checked={selectedAreaIds.includes(
+                                          node.id
+                                        )}
+                                        onChange={() => handleAreaToggle(node)}
+                                        onClick={(e) => e.stopPropagation()}
+                                      />
+                                      <label className="form-check-label ms-2 fs-6">
+                                        {node.name}
+                                      </label>
+                                    </>
+                                  ) : (
+                                    <div className="d-flex justify-content-between w-100 fs-6">
+                                      <span>{node.name}</span>
+                                      {node.child_count > 0 && (
+                                        <span>&#x276F;</span>
+                                      )}
+                                    </div>
+                                  )}
+                                </div>
+                              );
+                            })}
+                        </>
+                      );
+                    })()}
                 </>
               )}
             </div>
@@ -1196,37 +885,22 @@ const Filters = ({
                 displayList.every(
                   (n) =>
                     !n.child_list ||
-                    (Array.isArray(n.child_list) &&
-                      n.child_list.length === 0) ||
+                    n.child_list.length === 0 ||
                     n.child_count === 0
                 );
               const showFooter = depth >= 3 || isLeafLevel;
 
               return (
                 showFooter && (
-                  <div
-                    style={{
-                      padding: "15px 20px",
-                      backgroundColor: "white",
-                      display: "flex",
-                      justifyContent: "space-between",
-                      borderRadius: "16px",
-                    }}
-                  >
+                  <div className="d-flex justify-content-between p-3 bg-white rounded-bottom flex-wrap gap-2">
                     <button
-                      className="btn btn-outline-secondary px-4"
-                      style={{ fontFamily: "Poppins" }}
+                      className="btn btn-outline-secondary fs-6"
                       onClick={handleClear}
                     >
                       Clear
                     </button>
-
                     <button
-                      className="btn text-white px-4"
-                      style={{
-                        backgroundColor: "#F4980E",
-                        fontFamily: "Poppins",
-                      }}
+                      className="btn bg-orange text-white fs-6"
                       onClick={handleApply}
                     >
                       Apply
@@ -1235,8 +909,6 @@ const Filters = ({
                 )
               );
             })()}
-
-          
           </div>
         </div>
       )}

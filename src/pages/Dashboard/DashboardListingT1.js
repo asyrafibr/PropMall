@@ -100,37 +100,22 @@ const DashboardListingT1 = ({ listings, handleViewDetails }) => {
   );
 
   return (
-    <div className="container-fluid" style={{ padding: "60px 70px",marginTop:'50px' }}>
+    <div className="container-fluid py-5 px-5 mt-3">
+      {/* Header */}
       <div
-        style={{
-          marginBottom: "40px",
-          ...(template === "template3" && {
-            backgroundImage: `url(${bg})`,
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            backgroundRepeat: "no-repeat",
-            height: "50px",
-            width: "20%",
-            paddingTop: 10,
-          }),
-        }}
+        className={`mb-4 ${template === "template3" ? "bg-cover p-2" : ""}`}
+        style={
+          template === "template3" ? { backgroundImage: `url(${bg})` } : {}
+        }
       >
-        <span
-          style={{
-            fontWeight: 600,
-            fontSize: "18px",
-            fontFamily: "Poppins",
-            paddingLeft: "20px",
-          }}
-        >
-          Featured Listing
-        </span>
+        <span className="resp-title ps-3">Featured Listing</span>
       </div>
 
-      <div className="row mx-0">
+      {/* Listings Grid */}
+      <div className="row gx-3 gy-4">
         {loading
           ? Array.from({ length: 6 }).map(renderSkeletonCard)
-          : (listings ?? []).slice(0, 12).map((card, idx) => {
+          : (listings ?? []).slice(0, 12).map((card) => {
               const modus = card.listing_modus?.toUpperCase();
               const isForSale = modus === "FOR SALE";
               const isForRental = modus === "FOR RENT";
@@ -141,60 +126,37 @@ const DashboardListingT1 = ({ listings, handleViewDetails }) => {
                 ? "For Rent"
                 : "";
               const statusColor = isForSale
-                ? "#FF7A00"
+                ? "bg-orange text-white"
                 : isForRental
-                ? "#007B83"
-                : "#ccc";
+                ? "bg-info text-white"
+                : "bg-secondary text-white";
               const belowMarket = card.below_market === "Y";
 
               return (
-                <div
-                  key={card.id_listing}
-                  className="col-12 col-md-4 mb-4 d-flex"
-                >
-                  <div
-                    className="card h-100 d-flex flex-column w-100"
-                    style={{
-                      borderRadius: "8px",
-                      boxShadow: "2px 2px 15px 0 rgba(0, 0, 0, 0.15)", // added rgba color
-                    }}
-                  >
-                    <div
-                      className="mb-1"
-                      style={{
-                        fontFamily: "Poppins",
-                        fontSize: "14px",
-                        fontWeight: 400,
-                        padding: "12px",
-                      }}
-                    >
+                <div key={card.id_listing} className="col-12 col-md-4 d-flex">
+                  <div className="card h-100 w-100 shadow-sm">
+                    {/* Posted Date */}
+                    <div className="mb-1 p-3 resp-text1">
                       Posted on {card.publish_dt}
                     </div>
 
+                    {/* Image & Badges */}
                     <div
-                      className="position-relative"
-                      style={{
-                        overflow: "hidden", // ✅ Ensures the ribbon does not overflow the image container
-                        height: "260px", // Match the image height
-                      }}
+                      className="position-relative overflow-hidden"
+                      style={{ height: "260px" }}
                     >
                       <img
                         src={
                           card.photos?.[0] ||
                           "https://via.placeholder.com/300x200"
                         }
-                        className="card-img-top"
+                        className="card-img-top h-100 w-100 object-fit-cover"
                         alt={card.ads_title}
-                        style={{
-                          height: "100%",
-                          width: "100%",
-                          objectFit: "cover",
-                          cursor: "pointer",
-                        }}
+                        style={{ cursor: "pointer" }}
                         onClick={() => openModal(card.photos || [], 0)}
                       />
 
-                      {/* Tag Badges */}
+                      {/* Badges */}
                       {(showTag || belowMarket) && (
                         <div
                           className="position-absolute top-0 start-0 m-2 d-flex flex-column gap-1"
@@ -202,44 +164,15 @@ const DashboardListingT1 = ({ listings, handleViewDetails }) => {
                         >
                           {showTag && (
                             <div
-                              style={{
-                                backgroundColor: statusColor,
-                                width: "100px",
-                                height: "32px",
-                                borderRadius: "4px",
-                                color: "white",
-                                // fontSize: "0.9rem",
-                                padding: "8px 16px",
-                                display: "flex",
-                                fontFamily: "Poppins",
-                                alignItems: "center",
-                                justifyContent: "center",
-                                fontWeight: 600,
-                                fontSize: "14px",
-                                zIndex: 1,
-                                // marginTop: "20px",
-                              }}
+                              className={`d-flex align-items-center justify-content-center rounded resp-badge px-3 py-1 ${statusColor}`}
                             >
                               {statusText}
                             </div>
                           )}
                           {belowMarket && (
                             <div
-                              style={{
-                                display: "flex",
-                                padding: "4px 12px",
-                                justifyContent: "center",
-                                alignItems: "flex-start",
-                                borderRadius: "4px",
-                                backgroundColor: "#7C9A2C",
-                                width: "150px",
-                                height: "30px",
-                                color: "#FAFAFA",
-                                fontFamily: "Poppins",
-                                fontSize: "14px",
-                                fontWeight: 600,
-                                marginTop: "5px",
-                              }}
+                              className="d-flex align-items-center justify-content-center rounded bg-success text-white resp-badge px-3 py-1 mt-1"
+                              style={{ width: "150px", height: "30px" }}
                             >
                               Below Market
                             </div>
@@ -252,178 +185,68 @@ const DashboardListingT1 = ({ listings, handleViewDetails }) => {
                         <div className="corner-ribbon">Exclusive</div>
                       )}
 
-                      {/* Photo count icon */}
+                      {/* Photo Count */}
                       <span className="position-absolute bottom-0 end-0 m-2 text-white small">
                         <i className="bi bi-camera-fill me-1"></i>
                         {card.photos_count ?? 0}
                       </span>
                     </div>
 
+                    {/* Card Body */}
                     <div className="card-body d-flex flex-column flex-grow-1">
-                      <h5
-                        style={{
-                          fontSize: "18px",
-                          fontWeight: 600,
-                          fontFamily: "Poppins",
-                        }}
-                      >
-                        RM {card.price}
-                      </h5>
-                      <p className="text-muted mb-1">
-                        <text
-                          style={{
-                            fontSize: "18px",
-                            fontWeight: 400,
-                            fontFamily: "Poppins",
-                          }}
-                        >
-                          {card.ads_title}
-                        </text>
+                      <h5 className="resp-title">RM {card.price}</h5>
+
+                      <p className="text-muted mb-1 resp-text1">
+                        {card.ads_title}
                         <br />
-                        <text
-                          style={{
-                            fontSize: "14px",
-                            fontWeight: 400,
-                            fontFamily: "Poppins",
-                          }}
-                        >
-                          {card.location_area}
-                        </text>
+                        {card.location_area}
                       </p>
-                      <p className="text-muted mb-2">
-                        <text
-                          style={{
-                            fontSize: "14px",
-                            fontWeight: 400,
-                            fontFamily: "Poppins",
-                          }}
-                        >
-                          {card.category_type_title_holding_lottype_storey}
-                        </text>
+
+                      <p className="text-muted mb-2 resp-text1">
+                        {card.category_type_title_holding_lottype_storey}
                         <br />
                         {card.built_size && (
-                          <div>
-                            <text
-                              style={{
-                                fontSize: "14px",
-                                fontWeight: 400,
-                                fontFamily: "Poppins",
-                              }}
-                            >
-                              Built-up Size: {card.built_size}
-                              {card.built_size_unit}
-                              {!card.land_size && card.built_price_per_unit && (
-                                <>
-                                  ({card.monetary_currency}
-                                  {card.built_price_per_unit} per sqft)
-                                </>
-                              )}
-                            </text>
-                          </div>
+                          <>
+                            Built-up Size: {card.built_size}
+                            {card.built_size_unit}
+                          </>
                         )}
                         {!card.built_size && card.land_size && (
-                          <div>
-                            <text
-                              style={{
-                                fontSize: "14px",
-                                fontWeight: 400,
-                                fontFamily: "Poppins",
-                              }}
-                            >
-                              Land Size: {card.land_size} {card.land_size_unit}
-                            </text>
-                            {["acre", "hectar"].includes(
-                              card.land_size_unit?.toLowerCase()
-                            ) &&
-                              card.land_price_per_unit && (
-                                <>
-                                  ({card.monetary_currency}{" "}
-                                  {card.land_price_per_unit} per{" "}
-                                  {card.land_size_unit})
-                                </>
-                              )}
-                            {["sqft", "sqm"].includes(
-                              card.land_size_unit?.toLowerCase()
-                            ) &&
-                              card.land_price_per_sqft && (
-                                <>
-                                  ({card.monetary_currency}{" "}
-                                  {card.land_price_per_sqft} per sqft)
-                                </>
-                              )}
-                          </div>
-                        )}
-                        {card.built_size && card.land_size && (
                           <>
-                            <div>
-                              <text
-                                style={{
-                                  fontSize: "14px",
-                                  fontWeight: 400,
-                                  fontFamily: "Poppins",
-                                }}
-                              >
-                                Land Size: {card.land_size}
-                                {card.land_size_unit}
-                                {["acre", "hectar"].includes(
-                                  card.land_size_unit?.toLowerCase()
-                                ) &&
-                                  card.land_price_per_unit && (
-                                    <>
-                                      ({card.monetary_currency}
-                                      {card.land_price_per_unit} per
-                                      {card.land_size_unit})
-                                    </>
-                                  )}
-                                {["sqft", "sqm"].includes(
-                                  card.land_size_unit?.toLowerCase()
-                                ) &&
-                                  card.land_price_per_sqft && (
-                                    <>
-                                      ({card.monetary_currency}
-                                      {card.land_price_per_sqft} per sqft)
-                                    </>
-                                  )}
-                              </text>
-                            </div>
+                            Land Size: {card.land_size} {card.land_size_unit}
                           </>
                         )}
                       </p>
-                      <div className="mt-auto">
-                        {card.bathroom && card.room > 0 && (
-                          <div className="d-flex flex-wrap gap-3 mb-3">
-                            <span
-                              className="d-flex align-items-center"
-                              style={{ gap: "6px" }}
-                            >
-                              <FaBed /> {card.room}
-                            </span>
-                            <span
-                              className="d-flex align-items-center"
-                              style={{ gap: "6px" }}
-                            >
-                              <FaBath /> {card.bathroom}
-                            </span>
-                          </div>
-                        )}
 
-                        <div className="d-flex flex-column flex-md-row gap-2">
-                          <button className="btn btn-outline-secondary w-100">
-                            <i className="bi bi-whatsapp me-1"></i> Whatsapp
-                          </button>
-                          <button
-                            onClick={() =>
-                              handleViewDetails(
-                                card.id_listing,
-                                card.ads_title,
-                                card.location
-                              )
-                            }
-                            className="btn btn-outline-secondary w-100"
-                          >
-                            <i className="bi bi-info-circle me-1"></i> Details
-                          </button>
+                      {/* Rooms & Bathrooms */}
+                      {card.bathroom && card.room > 0 && (
+                        <div className="d-flex flex-wrap gap-3 mb-3">
+                          <span className="d-flex align-items-center gap-2 resp-text1">
+                            <FaBed /> {card.room}
+                          </span>
+                          <span className="d-flex align-items-center gap-2 resp-text1">
+                            <FaBath /> {card.bathroom}
+                          </span>
                         </div>
+                      )}
+
+                      {/* Action Buttons */}
+                      <div className="d-flex gap-2 mt-auto">
+                        <button className="btn btn-outline-secondary w-100">
+                          <i className="bi bi-whatsapp me-1"></i> Whatsapp
+                        </button>
+                        <button
+                          onClick={() =>
+                            handleViewDetails(
+                              card.id_listing,
+                              card.ads_title,
+                              card.location
+                            )
+                          }
+                          className="btn btn-outline-secondary w-100"
+                        >
+                          <i className="bi bi-info-circle me-1"></i> Details
+                        </button>
                       </div>
                     </div>
                   </div>
@@ -435,67 +258,72 @@ const DashboardListingT1 = ({ listings, handleViewDetails }) => {
       {/* Modal */}
       {modalOpen && (
         <div
-          className="modal-overlay"
-          onClick={(e) => {
-            closeModal();
-          }}
+          className="modal fade show d-flex justify-content-center align-items-start"
+          style={{ paddingTop: "5vh" }}
+          onClick={closeModal}
         >
           <div
-            className="modal-content"
-            onClick={(e) => {
-              e.stopPropagation();
-            }}
+            className="modal-dialog modal-dialog-centered"
+            onClick={(e) => e.stopPropagation()}
           >
-            <button className="close-button" onClick={closeModal}>
-              &times;
-            </button>
+            <div className="modal-content">
+              <button
+                type="button"
+                className="btn-close position-absolute top-0 end-0 m-3"
+                onClick={closeModal}
+              ></button>
+              <div className="modal-body p-0">
+                <img
+                  src={modalImages[currentImageIndex]}
+                  alt="Full"
+                  className="img-fluid w-100"
+                />
+                <div className="position-absolute top-0 start-50 translate-middle-x mt-2 bg-dark text-white rounded px-2">
+                  {currentImageIndex + 1} / {modalImages.length}
+                </div>
 
-            <div className="modal-body">
-              {/* Main Image */}
-              <img
-                src={modalImages[currentImageIndex]}
-                alt="Full"
-                className="modal-image"
-              />
+                {/* Arrows */}
+                {modalImages.length > 1 && (
+                  <>
+                    <button
+                      className="btn btn-dark position-absolute top-50 start-0 translate-middle-y"
+                      onClick={showPrev}
+                    >
+                      &#10094;
+                    </button>
+                    <button
+                      className="btn btn-dark position-absolute top-50 end-0 translate-middle-y"
+                      onClick={showNext}
+                    >
+                      &#10095;
+                    </button>
+                  </>
+                )}
 
-              {/* Counter */}
-              <div className="image-counter">
-                {currentImageIndex + 1} / {modalImages.length}
-              </div>
-
-              {/* Arrows */}
-              {modalImages.length > 1 && (
-                <>
-                  <button className="nav-button prev" onClick={showPrev}>
-                    &#10094;
-                  </button>
-                  <button className="nav-button next" onClick={showNext}>
-                    &#10095;
-                  </button>
-                </>
-              )}
-
-              {/* Thumbnails */}
-              <div className="thumbnail-container">
-                {getThumbnailSlice().map((img, idx) => {
-                  const actualIndex =
-                    Math.max(
-                      0,
-                      Math.min(currentImageIndex - 5, modalImages.length - 10)
-                    ) + idx;
-                  return (
-                    <img
-                      key={actualIndex}
-                      ref={(el) => (thumbnailRefs.current[actualIndex] = el)}
-                      src={img}
-                      alt={`Thumbnail ${actualIndex}`}
-                      className={`thumbnail ${
-                        currentImageIndex === actualIndex ? "active" : ""
-                      }`}
-                      onClick={() => setCurrentImageIndex(actualIndex)}
-                    />
-                  );
-                })}
+                {/* Thumbnails */}
+                <div className="d-flex overflow-auto mt-2 p-2">
+                  {getThumbnailSlice().map((img, idx) => {
+                    const actualIndex =
+                      Math.max(
+                        0,
+                        Math.min(currentImageIndex - 5, modalImages.length - 10)
+                      ) + idx;
+                    return (
+                      <img
+                        key={actualIndex}
+                        src={img}
+                        alt={`Thumbnail ${actualIndex}`}
+                        className={`img-thumbnail me-2 ${
+                          currentImageIndex === actualIndex
+                            ? "border-primary"
+                            : ""
+                        }`}
+                        style={{ width: "80px", cursor: "pointer" }}
+                        onClick={() => setCurrentImageIndex(actualIndex)}
+                      />
+                    );
+                  })}
+                </div>
               </div>
             </div>
           </div>

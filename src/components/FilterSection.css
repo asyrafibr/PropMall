@@ -26,3 +26,52 @@ input[type="checkbox"]:checked::after {
   top: -2px;
   left: 2px;
 }
+/* hero-section.css */
+/* .hero-section {
+  position: relative;
+  width: 100%;
+  min-height: clamp(400px, 60vh, 541px);
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center center;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: clamp(20px, 4vw, 100px);
+} */
+
+/* .hero-title {
+  font-size: var(--bs-body-font-size);
+  font-family: "Poppins", sans-serif;
+  font-weight: 600;
+} */
+@media (min-width: 768px) {
+  .fs-md-custom {
+    font-size: 30px !important;
+  }
+}
+
+.bg-orange {
+  background-color: #F4980E !important;
+}
+
+.text-orange {
+  color: #F4980E !important;
+}
+
+.border-orange {
+  border-color: #F4980E !important;
+}
+.border-orange-bottom {
+  border-bottom: 3px solid #F4980E !important; /* your orange */
+}
+.hero-heading {
+  font-size: 16px; /* Mobile default */
+}
+
+@media (min-width: 768px) {
+  .hero-heading {
+    font-size: 30px; /* Desktop and above */
+  }
+}

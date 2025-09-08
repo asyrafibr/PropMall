@@ -1,7 +1,47 @@
+/* Property card styling */
+.property-card {
+  max-width: 21rem;
+  min-height: 32rem;
+  border-radius: 0.5rem;
+}
+
+.property-img {
+  height: 16rem;
+  object-fit: cover;
+  border-top-left-radius: 0.5rem;
+  border-top-right-radius: 0.5rem;
+  cursor: pointer;
+}
+
+/* Status badges */
+.status-badge {
+  width: 100px;
+  height: 32px;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.below-badge {
+  width: 150px;
+  height: 30px;
+  border-radius: 4px;
+  font-size: 12px;
+  background-color: #7C9A2C;
+}
+
+/* Custom colors */
+.bg-orange {
+  background-color: #FF7A00 !important;
+}
+.bg-teal {
+  background-color: #007B83 !important;
+}
+
+/* Scroll container */
 .scroll-wrapper {
   overflow: hidden;
   position: relative;
-  padding: 0 60px; /* leave space for outside buttons */
+  padding: 0 60px; /* desktop only */
 }
 
 .scroll-container {
@@ -16,6 +56,7 @@
   display: none;
 }
 
+/* Arrows */
 .scroll-button {
   position: absolute;
   top: 45%;
@@ -40,8 +81,17 @@
   right: 10px;
 }
 
-@media (max-width: 1200px) {
+/* Mobile view: vertical, no arrows, no side padding */
+@media (max-width: 767.98px) {
+  .scroll-wrapper {
+    padding: 0;
+  }
+  .scroll-container {
+    flex-direction: column;
+    overflow-x: visible;
+    gap: 1rem;
+  }
   .scroll-button {
-    display: none;
+    display: none !important;
   }
 }

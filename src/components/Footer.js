@@ -1,296 +1,236 @@
 // src/components/Footer.js
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { useTemplate } from "../context/TemplateContext";
-import { getAgent } from "../api/axiosApi";
 import agentBoxbg from "../image/Template2_Sky_Footer.png";
 import bg3 from "../image/bg3.png";
 import bg4 from "../image/footer4.png";
 
 const Footer = () => {
-  const [domain, setDomain] = useState();
-  const { agent, category, mainAgent } = useTemplate();
-
-  const { template } = useTemplate();
-  console.log("TEMPLATE", template);
+  const { mainAgent, template } = useTemplate();
 
   const renderByTemplate = () => {
     switch (template) {
       case "template1":
         return (
-          <footer
-            style={{
-              backgroundColor: "#DDC9B0",
-              padding: "15px 30px",
-              fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-              boxSizing: "border-box",
-            }}
-          >
+          <footer className="p-3" style={{ backgroundColor: "#DDC9B0" }}>
             {/* Top row */}
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                fontSize: 14,
-                fontWeight: 400,
-                marginBottom: 8,
-                flexWrap: "wrap",
-                gap: "10px",
-              }}
-            >
-              <div style={{ display: "flex", gap: "25px", flexWrap: "wrap" }}>
-                <span>Sale</span>
-                <span>Rent</span>
-                <span>Want To Buy</span>
-                <span>Want To Rent</span>
-                <span>Articles</span>
-              </div>
-              <div style={{ fontSize: 18, fontWeight: 600 }}>
+            <div className="d-flex flex-column flex-md-row align-items-start align-items-md-center mb-2 gap-2">
+              {/* Agent name first in JSX, stays on top in mobile */}
+              <div className="fw-bold fs-5 order-1 order-md-2 ms-md-auto">
                 {mainAgent.name}
+              </div>
+
+              {/* Menu second in JSX, but moves left on desktop */}
+              <div className="d-flex flex-column flex-md-row gap-2 gap-md-4 order-2 order-md-1">
+                <nav className="nav flex-column flex-md-row order-2 order-md-1 gap-2 gap-md-4">
+                  <a href="/sale" className="nav-link text-dark p-0 fs-6">
+                    Sale
+                  </a>
+                  <a href="/rent" className="nav-link text-dark p-0 fs-6">
+                    Rent
+                  </a>
+                  <a href="/want-to-buy" className="nav-link text-dark p-0 fs-6">
+                    Want To Buy
+                  </a>
+                  <a href="/want-to-rent" className="nav-link text-dark p-0 fs-6">
+                    Want To Rent
+                  </a>
+                  <a href="/articles" className="nav-link text-dark p-0 fs-6">
+                    Articles
+                  </a>
+                </nav>
               </div>
             </div>
 
-            {/* Divider line */}
-            <hr style={{ borderColor: "#3A3A3A", margin: "8px 0" }} />
+            <hr className="border-dark my-2" />
 
             {/* Bottom row */}
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                fontSize: 10,
-                fontWeight: 400,
-                flexWrap: "wrap",
-                gap: "10px",
-              }}
-            >
-              <div style={{ display: "flex", gap: "20px", flexWrap: "wrap" }}>
-                <span style={{ cursor: "pointer" }}>
+            <div className="d-flex flex-column flex-md-row justify-content-between gap-2 small">
+              <div className="d-flex flex-wrap gap-3">
+                <span className="text-decoration-none">
                   Terms and condition tab
                 </span>
-                <span style={{ cursor: "pointer" }}>Privacy policy tab</span>
+                <span className="text-decoration-none">Privacy policy tab</span>
               </div>
               <div>
-                Copyright © {mainAgent.name} All Rights Reserved. Powered by
+                Copyright © {mainAgent.name} All Rights Reserved. Powered by
                 PropMall.co
               </div>
             </div>
           </footer>
         );
+
       case "template2":
         return (
-          <>
-            <footer
-              style={{
-                padding: "15px 30px",
-
-                backgroundImage: `url(${agentBoxbg})`,
-                backgroundSize: "cover",
-                backgroundRepeat: "no-repeat",
-                backgroundPosition: "center",
-              }}
-            >
-              {/* Top row */}
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  fontSize: 14,
-                  fontWeight: 400,
-                  marginBottom: 8,
-                  flexWrap: "wrap",
-                  gap: "10px",
-                }}
-              >
-                <div style={{ display: "flex", gap: "25px", flexWrap: "wrap" }}>
-                  <span>Sale</span>
-                  <span>Rent</span>
-                  <span>Want To Buy</span>
-                  <span>Want To Rent</span>
-                  <span>Articles</span>
-                </div>
-                <div style={{ fontSize: 18, fontWeight: 600 }}>
-                  {mainAgent.name}
-                </div>
+          <footer
+            className="p-3"
+            style={{
+              backgroundImage: `url(${agentBoxbg})`,
+              backgroundSize: "cover",
+              backgroundRepeat: "no-repeat",
+              backgroundPosition: "center",
+            }}
+          >
+            {/* Top row */}
+            <div className="d-flex flex-column flex-md-row align-items-start align-items-md-center mb-2 gap-2">
+              {/* Agent name first in JSX, stays on top in mobile */}
+              <div className="fw-bold fs-5 order-1 order-md-2 ms-md-auto">
+                {mainAgent.name}
               </div>
 
-              {/* Divider line */}
-              <hr style={{ borderColor: "#3A3A3A", margin: "8px 0" }} />
-
-              {/* Bottom row */}
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  fontSize: 10,
-                  fontWeight: 400,
-                  flexWrap: "wrap",
-                  gap: "10px",
-                }}
-              >
-                <div style={{ display: "flex", gap: "20px", flexWrap: "wrap" }}>
-                  <span style={{ cursor: "pointer" }}>
-                    Terms and condition tab
-                  </span>
-                  <span style={{ cursor: "pointer" }}>Privacy policy tab</span>
-                </div>
-                <div>
-                  Copyright © {mainAgent.name} All Rights Reserved. Powered by
-                  PropMall.co
-                </div>
+              {/* Menu second in JSX, but moves left on desktop */}
+              <div className="d-flex flex-column flex-md-row gap-2 gap-md-4 order-2 order-md-1">
+                <nav className="nav flex-column flex-md-row order-2 order-md-1 gap-2 gap-md-4">
+                  <a href="/sale" className="nav-link text-dark p-0">
+                    Sale
+                  </a>
+                  <a href="/rent" className="nav-link text-dark p-0">
+                    Rent
+                  </a>
+                  <a href="/want-to-buy" className="nav-link text-dark p-0">
+                    Want To Buy
+                  </a>
+                  <a href="/want-to-rent" className="nav-link text-dark p-0">
+                    Want To Rent
+                  </a>
+                  <a href="/articles" className="nav-link text-dark p-0">
+                    Articles
+                  </a>
+                </nav>
               </div>
-            </footer>
-          </>
+            </div>
+
+            <hr className="border-dark my-2" />
+
+            <div className="d-flex flex-column flex-md-row justify-content-between gap-2 small">
+              <div className="d-flex flex-wrap gap-3">
+                <span className="text-decoration-none">
+                  Terms and condition tab
+                </span>
+                <span className="text-decoration-none">Privacy policy tab</span>
+              </div>
+              <div>
+                Copyright © {mainAgent.name} All Rights Reserved. Powered by
+                PropMall.co
+              </div>
+            </div>
+          </footer>
         );
+
       case "template3":
         return (
-          <>
-            <footer
-              style={{
-                padding: "15px 30px",
-
-                backgroundImage: `url(${bg3})`,
-                backgroundSize: "cover",
-                backgroundRepeat: "no-repeat",
-                backgroundPosition: "center",
-              }}
-            >
-              {/* Top row */}
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  fontSize: 14,
-                  fontWeight: 400,
-                  marginBottom: 8,
-                  flexWrap: "wrap",
-                  gap: "10px",
-                }}
-              >
-                <div style={{ display: "flex", gap: "25px", flexWrap: "wrap" }}>
-                  <span>Sale</span>
-                  <span>Rent</span>
-                  <span>Want To Buy</span>
-                  <span>Want To Rent</span>
-                  <span>Articles</span>
-                </div>
-                <div style={{ fontSize: 18, fontWeight: 600 }}>
-                  {mainAgent.name}
-                </div>
+          <footer
+            className="p-3"
+            style={{
+              backgroundImage: `url(${bg3})`,
+              backgroundSize: "cover",
+              backgroundRepeat: "no-repeat",
+              backgroundPosition: "center",
+            }}
+          >
+            {/* Top row */}
+            <div className="d-flex flex-column flex-md-row align-items-start align-items-md-center mb-2 gap-2">
+              {/* Agent name first in JSX, stays on top in mobile */}
+              <div className="fw-bold fs-5 order-1 order-md-2 ms-md-auto">
+                {mainAgent.name}
               </div>
 
-              {/* Divider line */}
-              <hr style={{ borderColor: "#3A3A3A", margin: "8px 0" }} />
-
-              {/* Bottom row */}
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  fontSize: 10,
-                  fontWeight: 400,
-                  flexWrap: "wrap",
-                  gap: "10px",
-                }}
-              >
-                <div style={{ display: "flex", gap: "20px", flexWrap: "wrap" }}>
-                  <span style={{ cursor: "pointer" }}>
-                    Terms and condition tab
-                  </span>
-                  <span style={{ cursor: "pointer" }}>Privacy policy tab</span>
-                </div>
-                <div>
-                  Copyright © {mainAgent.name} All Rights Reserved. Powered by
-                  PropMall.co
-                </div>
+              {/* Menu second in JSX, but moves left on desktop */}
+              <div className="d-flex flex-column flex-md-row gap-2 gap-md-4 order-2 order-md-1">
+                <nav className="nav flex-column flex-md-row order-2 order-md-1 gap-2 gap-md-4">
+                  <a href="/sale" className="nav-link text-dark p-0">
+                    Sale
+                  </a>
+                  <a href="/rent" className="nav-link text-dark p-0">
+                    Rent
+                  </a>
+                  <a href="/want-to-buy" className="nav-link text-dark p-0">
+                    Want To Buy
+                  </a>
+                  <a href="/want-to-rent" className="nav-link text-dark p-0">
+                    Want To Rent
+                  </a>
+                  <a href="/articles" className="nav-link text-dark p-0">
+                    Articles
+                  </a>
+                </nav>
               </div>
-            </footer>
-          </>
+            </div>
+
+            <hr className="border-dark my-2" />
+
+            <div className="d-flex flex-column flex-md-row justify-content-between gap-2 small">
+              <div className="d-flex flex-wrap gap-3">
+                <span className="text-decoration-none">
+                  Terms and condition tab
+                </span>
+                <span className="text-decoration-none">Privacy policy tab</span>
+              </div>
+              <div>
+                Copyright © {mainAgent.name} All Rights Reserved. Powered by
+                PropMall.co
+              </div>
+            </div>
+          </footer>
         );
+
       case "template4":
         return (
-          <>
-            <footer
-              style={{
-                padding: "15px 30px",
-
-                background: `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url(${bg4})`,
-                backgroundSize: "100%", // zoom out (try 110%, 120%, etc.)
-                backgroundRepeat: "no-repeat",
-                backgroundPosition: "10% 10%", // shifted right
-              }}
-            >
-              {/* Top row */}
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  fontSize: 14,
-                  fontWeight: 400,
-                  marginBottom: 8,
-                  flexWrap: "wrap",
-                  gap: "10px",
-                }}
-              >
-                <div
-                  style={{
-                    display: "flex",
-                    gap: "25px",
-                    flexWrap: "wrap",
-                    color: "#FAFAFA",
-                  }}
-                >
-                  <span>Sale</span>
-                  <span>Rent</span>
-                  <span>Want To Buy</span>
-                  <span>Want To Rent</span>
-                  <span>Articles</span>
-                </div>
-                <div
-                  style={{ fontSize: 18, fontWeight: 600, color: "#FAFAFA" }}
-                >
-                  {mainAgent.name}
-                </div>
+          <footer
+            className="p-3 text-white"
+            style={{
+              background: `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url(${bg4})`,
+              backgroundSize: "100%",
+              backgroundRepeat: "no-repeat",
+              backgroundPosition: "10% 10%",
+            }}
+          >
+            {/* Top row */}
+            <div className="d-flex flex-column flex-md-row align-items-start align-items-md-center mb-2 gap-2">
+              {/* Agent name first in JSX, stays on top in mobile */}
+              <div className="fw-bold fs-5 order-1 order-md-2 ms-md-auto">
+                {mainAgent.name}
               </div>
 
-              {/* Divider line */}
-              <hr style={{ borderColor: "#FAFAFA", margin: "8px 0" }} />
-
-              {/* Bottom row */}
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  fontSize: 10,
-                  fontWeight: 400,
-                  flexWrap: "wrap",
-                  gap: "10px",
-                }}
-              >
-                <div
-                  style={{
-                    display: "flex",
-                    gap: "20px",
-                    flexWrap: "wrap",
-                    color: "#FAFAFA",
-                  }}
-                >
-                  <span style={{ cursor: "pointer" }}>
-                    Terms and condition tab
-                  </span>
-                  <span style={{ cursor: "pointer" }}>Privacy policy tab</span>
-                </div>
-                <div style={{ color: "#FAFAFA" }}>
-                  Copyright © {mainAgent.name} All Rights Reserved. Powered by
-                  PropMall.co
-                </div>
+              {/* Menu second in JSX, but moves left on desktop */}
+              <div className="d-flex flex-column flex-md-row gap-2 gap-md-4 order-2 order-md-1">
+                <nav className="nav flex-column flex-md-row order-2 order-md-1 gap-2 gap-md-4">
+                  <a href="/sale" className="nav-link text-dark p-0">
+                    Sale
+                  </a>
+                  <a href="/rent" className="nav-link text-dark p-0">
+                    Rent
+                  </a>
+                  <a href="/want-to-buy" className="nav-link text-dark p-0">
+                    Want To Buy
+                  </a>
+                  <a href="/want-to-rent" className="nav-link text-dark p-0">
+                    Want To Rent
+                  </a>
+                  <a href="/articles" className="nav-link text-dark p-0">
+                    Articles
+                  </a>
+                </nav>
               </div>
-            </footer>
-          </>
+            </div>
+
+            <hr className="border-light my-2" />
+
+            <div className="d-flex flex-column flex-md-row justify-content-between gap-2 small">
+              <div className="d-flex flex-wrap gap-3">
+                <span className="text-decoration-none">
+                  Terms and condition tab
+                </span>
+                <span className="text-decoration-none">Privacy policy tab</span>
+              </div>
+              <div>
+                Copyright © {mainAgent.name} All Rights Reserved. Powered by
+                PropMall.co
+              </div>
+            </div>
+          </footer>
         );
+
       default:
         return <p>No template selected</p>;
     }

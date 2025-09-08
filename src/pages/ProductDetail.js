@@ -36,7 +36,7 @@ const ProductDetail = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const thumbnailRefs = useRef([]);
   useEffect(() => {
-    console.log('template',template)
+    console.log("template", template);
     const fetchProductDetails = async () => {
       try {
         const hostname = window.location.hostname;
@@ -134,81 +134,64 @@ const ProductDetail = () => {
 
   return (
     <div>
-      <div style={{ paddingTop: "20px", backgroundColor: "#FAFAFA" }}>
+      <div className="pt-3 bg-light">
         <div
           className="container"
           style={{ maxWidth: "1200px", padding: "0 50px" }}
         >
-          {/* Agent Box */}
-
-          {/* Title */}
-          <div
-            className="pb-4"
-            style={{
-              maxWidth: "1300px",
-              paddingLeft: 50,
-            }}
-          >
-            <nav aria-label="breadcrumb">
-              <ol
-                className="breadcrumb"
-                style={{ "--bs-breadcrumb-divider": "'›'" }}
-              >
-                <li className="breadcrumb-item">
-                  <a
-                    href="/"
-                    style={{ textDecoration: "none", color: "inherit" }}
-                  >
-                    Home
-                  </a>
-                </li>
-                <li className="breadcrumb-item">
-                  <a
-                    href="/properties"
-                    style={{ textDecoration: "none", color: "inherit" }}
-                  >
-                    Properties
-                  </a>
-                </li>
-                <li className="breadcrumb-item">
-                  <a
-                    href="/properties/kuala-lumpur"
-                    style={{ textDecoration: "none", color: "inherit" }}
-                  >
-                    Kuala Lumpur
-                  </a>
-                </li>
-                <li
-                  className="breadcrumb-item active"
-                  aria-current="page"
-                  style={{ color: "inherit" }} // optional bold for active item
+          {/* Breadcrumb */}
+          <div className="pb-4" style={{ maxWidth: "1300px" }}>
+            {/* Breadcrumb with left padding */}
+            <div className="ps-0 ps-md-5">
+              <nav aria-label="breadcrumb">
+                <ol
+                  className="breadcrumb"
+                  style={{ "--bs-breadcrumb-divider": "'›'" }}
                 >
-                  {product.ads_title}
-                </li>
-              </ol>
-            </nav>
+                  <li className="breadcrumb-item">
+                    <a href="/" className="text-decoration-none text-dark">
+                      Home
+                    </a>
+                  </li>
+                  <li className="breadcrumb-item">
+                    <a
+                      href="/properties"
+                      className="text-decoration-none text-dark"
+                    >
+                      Properties
+                    </a>
+                  </li>
+                  <li className="breadcrumb-item">
+                    <a
+                      href="/properties/kuala-lumpur"
+                      className="text-decoration-none text-dark"
+                    >
+                      Kuala Lumpur
+                    </a>
+                  </li>
+                  <li
+                    className="breadcrumb-item active text-dark"
+                    aria-current="page"
+                  >
+                    {product.ads_title}
+                  </li>
+                </ol>
+              </nav>
+            </div>
 
+            {/* Ads title (no padding-left) */}
             {template === "template1" && (
-              <text
-                style={{
-                  fontSize: "18px",
-                  fontFamily: "Poppins",
-                  fontWeight: 600,
-                }}
-              >
+              <p className="fs-5 fw-semibold font-poppins">
                 {product.ads_title}
-              </text>
+              </p>
             )}
           </div>
 
           {/* Photos */}
           {product?.photos?.length > 0 && (
-            <div
-              className="d-flex flex-lg-row flex-column gap-3 align-items-start"
-              style={{ flexWrap: "wrap" }}
-            >
+            <div className="d-flex flex-lg-row flex-column gap-3 align-items-start flex-wrap">
               {/* Main Image */}
-              <div style={{ position: "relative", flex: "1 1 auto" }}>
+              <div className="position-relative flex-grow-1">
                 <img
                   src={product.photos[0]}
                   alt="Main Property"
@@ -217,47 +200,28 @@ const ProductDetail = () => {
                     setCurrentImageIndex(0);
                     setModalOpen(true);
                   }}
-                  className="img-fluid rounded"
-                  style={{
-                    width: "100%",
-                    height: "450px",
-                    objectFit: "cover",
-                    cursor: "pointer",
-                  }}
+                  className="img-fluid rounded object-fit-cover w-100"
+                  style={{ height: "450px", cursor: "pointer" }}
                 />
 
                 {/* Mobile Show All Button */}
-                <div
-                  className="d-lg-none position-absolute"
-                  style={{ bottom: "8px", right: "8px" }}
-                >
+                <div className="d-lg-none position-absolute bottom-0 end-0 m-2">
                   <div
-                    className="d-flex align-items-center"
-                    style={{
-                      padding: "12px",
-                      gap: "6px",
-                      borderRadius: "8px",
-                      border: "1px solid #999",
-                      background: "#FAFAFA",
-                      fontFamily: "Poppins",
-                      fontSize: "14px",
-                      fontWeight: 400,
-                      color: "var(--Grey-4, #737373)",
-                      cursor: "pointer",
-                    }}
+                    className="d-flex align-items-center px-3 py-2 border rounded bg-light text-secondary small font-poppins"
+                    style={{ cursor: "pointer" }}
                     onClick={() => {
                       setModalImages(product.photos);
                       setCurrentImageIndex(0);
                       setModalOpen(true);
                     }}
                   >
-                    <FiCamera size={16} color="#737373" />
+                    <FiCamera size={16} className="me-1" />
                     <span>Show All</span>
                   </div>
                 </div>
               </div>
 
-              {/* Thumbnail Grid (hidden on mobile) */}
+              {/* Thumbnail Grid (Desktop only) */}
               <div
                 className="d-none d-lg-grid gap-3"
                 style={{
@@ -273,12 +237,10 @@ const ProductDetail = () => {
                     return (
                       <div
                         key="show-all"
-                        className="position-relative rounded overflow-hidden"
+                        className="position-relative rounded overflow-hidden bg-cover bg-center"
                         style={{
-                          height: "calc(480px / 2 - 23px)",
                           backgroundImage: `url(${photo})`,
-                          backgroundSize: "cover",
-                          backgroundPosition: "center",
+                          height: "calc(480px / 2 - 23px)",
                           cursor: "pointer",
                         }}
                         onClick={() => {
@@ -287,29 +249,9 @@ const ProductDetail = () => {
                           setModalOpen(true);
                         }}
                       >
-                        {/* Show All button for desktop */}
-                        <div
-                          className="position-absolute"
-                          style={{ bottom: "8px", right: "8px" }}
-                        >
-                          <div
-                            className="d-flex align-items-center"
-                            style={{
-                              padding: "12px",
-                              gap: "6px",
-                              borderRadius: "8px",
-                              border: "1px solid #999",
-                              background: "#FAFAFA",
-                              width: "122px",
-                              height: "48px",
-                              fontFamily: "Poppins",
-                              fontSize: "14px",
-                              fontWeight: 400,
-                              color: "var(--Grey-4, #737373)",
-                              cursor: "pointer",
-                            }}
-                          >
-                            <FiCamera size={16} color="#737373" />
+                        <div className="position-absolute bottom-0 end-0 m-2">
+                          <div className="d-flex align-items-center px-3 py-2 border rounded bg-light small font-poppins text-secondary">
+                            <FiCamera size={16} className="me-1" />
                             <span>Show All</span>
                           </div>
                         </div>
@@ -317,16 +259,13 @@ const ProductDetail = () => {
                     );
                   }
 
-                  // Regular thumbnails
                   return (
                     <div
                       key={photo}
-                      className="rounded overflow-hidden"
+                      className="rounded overflow-hidden bg-cover bg-center"
                       style={{
-                        height: "calc(460px / 2 - 12px)",
                         backgroundImage: `url(${photo})`,
-                        backgroundSize: "cover",
-                        backgroundPosition: "center",
+                        height: "calc(460px / 2 - 12px)",
                         cursor: "pointer",
                       }}
                       onClick={() => {
@@ -404,94 +343,57 @@ const ProductDetail = () => {
           {/* Pricing + Agent Info */}
           <div className="card shadow-sm mt-4">
             <div className="row g-4 p-4">
+              {/* Pricing + Details */}
               <div className="col-lg-8">
-                <div className="d-flex justify-content-between align-items-start">
-                  <div className="d-flex gap-3">
-                    <h5
-                      className="fw-bold text-dark"
-                      style={{
-                        fontFamily: "Poppins",
-                        fontSize: 14,
-                        fontWeight: 600,
-                      }}
-                    >
+                {/* Price + Share/Save */}
+                <div className="d-flex flex-column flex-md-row justify-content-between align-items-start gap-3">
+                  {/* Left (Price + per sqft) */}
+                  <div className="d-flex flex-column flex-md-row gap-2">
+                    <h5 className="fw-bold text-dark font-poppins mb-0">
                       RM {product.price}
                     </h5>
-                    <h6
-                      className="text-muted"
-                      style={{
-                        fontFamily: "Poppins",
-                        fontSize: "1rem", // 16px
-                        fontWeight: 600,
-                        // marginTop: "0.125rem", // 2px
-                      }}
-                    >
+                    <h6 className="text-muted fw-semibold font-poppins mb-0">
                       (RM {product.built_price_per_sqft} per sq ft)
                     </h6>
                   </div>
-                  <div className="d-flex gap-2">
-                    <button
-                      className="btn btn-sm d-flex align-items-center"
-                      style={{ background: "none", color: "#333" }}
-                    >
+
+                  {/* Right (Share + Save buttons, desktop only) */}
+                  <div className="d-none d-md-flex flex-row gap-2">
+                    <button className="btn btn-sm d-flex align-items-center text-dark">
                       <img
                         src={sharImage}
                         alt="Share"
-                        style={{ width: "1rem", height: "1rem" }} // 16px
+                        className="me-1"
+                        style={{ width: "16px", height: "16px" }}
                       />
                       Share
                     </button>
-                    <button
-                      className="btn btn-sm d-flex align-items-center"
-                      style={{ background: "none", color: "#f4b400" }}
-                    >
+                    <button className="btn btn-sm d-flex align-items-center text-warning">
                       <img
                         src={saveImage}
                         alt="Save"
-                        style={{ width: "1rem", height: "1rem" }} // 16px
+                        className="me-1"
+                        style={{ width: "16px", height: "16px" }}
                       />
                       Save
                     </button>
                   </div>
                 </div>
 
-                <p
-                  className="mb-1"
-                  style={{
-                    fontFamily: "Poppins",
-                    fontSize: "1.25rem", // 20px
-                    fontWeight: 400,
-                  }}
-                >
+                {/* Property Title */}
+                <p className="mb-1 fs-5 fw-normal font-poppins">
                   {product.property_title}
                 </p>
-                <small
-                  className="text-muted d-block mb-3"
-                  style={{
-                    fontFamily: "Poppins",
-                    fontSize: "1rem", // 16px
-                    fontWeight: 400,
-                  }}
-                >
+                <small className="text-muted d-block mb-3 fs-6">
                   {product.location_area}
                 </small>
-                <small
-                  className="text-muted d-flex align-items-center gap-2 mb-3"
-                  style={{
-                    fontFamily: "Poppins",
-                    fontSize: "1rem", // 16px
-                    fontWeight: 400,
-                  }}
-                >
+
+                {/* Extra Info */}
+                <small className="text-muted d-flex flex-wrap align-items-center gap-2 mb-3 fs-6 font-poppins">
                   {product.category_type_title_holding_lottype_storey}
                   <span
-                    style={{
-                      width: "0.5rem", // 8px
-                      height: "0.5rem", // 8px
-                      borderRadius: "50%",
-                      backgroundColor: "#666",
-                      display: "inline-block",
-                    }}
+                    className="rounded-circle bg-secondary d-inline-block"
+                    style={{ width: "8px", height: "8px" }}
                   ></span>
                   {product?.built_size && (
                     <span>
@@ -500,13 +402,15 @@ const ProductDetail = () => {
                   )}
                   {product?.land_size && (
                     <span>
-                      Land-Size:{product.land_price_per_sqft}{" "}
+                      Land-Size: {product.land_price_per_sqft}{" "}
                       {product.land_size_unit}
                     </span>
                   )}
                 </small>
+
+                {/* Bed + Bath */}
                 {product.room && product.bathroom > 0 && (
-                  <div className="d-flex gap-3 mb-2">
+                  <div className="d-flex flex-wrap gap-3 mb-2">
                     <span className="d-flex align-items-center gap-1">
                       <FaBed /> {product.room} beds
                     </span>
@@ -517,12 +421,9 @@ const ProductDetail = () => {
                 )}
               </div>
 
-              {/* Agent Sidebar */}
-              <div className="col-lg-4">
-                <div
-                  className="card p-3"
-                  style={{ border: "1px solid #DBDBDB", borderRadius: "8px" }}
-                >
+              {/* Agent Sidebar (Desktop / Tablet only) */}
+              <div className="col-lg-4 d-none d-lg-block">
+                <div className="card p-3 border rounded">
                   <div className="d-flex align-items-center mb-3">
                     <img
                       src={agentInfo.photo}
@@ -531,12 +432,9 @@ const ProductDetail = () => {
                       style={{ width: 60, height: 60 }}
                     />
                     <div>
-                      <strong> {agentInfo.name || ""}</strong>
-                      <p
-                        className="text-muted mb-0"
-                        style={{ fontSize: "0.9rem" }}
-                      >
-                        {agentInfo.reg_no || ""}{" "}
+                      <strong>{agentInfo.name || ""}</strong>
+                      <p className="text-muted mb-0 small">
+                        {agentInfo.reg_no || ""}
                       </p>
                     </div>
                   </div>
@@ -556,203 +454,79 @@ const ProductDetail = () => {
             </div>
           </div>
 
-          {/* Preview Modal */}
-          {previewImage && (
-            <div
-              className="modal show d-block"
-              tabIndex={-1}
-              onClick={() => setPreviewImage(null)}
-              style={{ backgroundColor: "rgba(0,0,0,0.8)" }}
-            >
-              <div
-                className="modal-dialog modal-dialog-centered modal-lg"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <div className="modal-content bg-transparent border-0">
-                  <div className="modal-body p-0">
-                    <img
-                      src={previewImage}
-                      alt="Preview"
-                      className="img-fluid rounded"
-                    />
-                  </div>
-                  <button
-                    type="button"
-                    className="btn-close btn-close-white position-absolute top-0 end-0 m-3"
-                    onClick={() => setPreviewImage(null)}
-                  />
-                </div>
+          {/* Agent card for Mobile only */}
+          <div className="card p-3 border rounded mt-3 d-block d-lg-none">
+            <div className="d-flex align-items-center mb-3">
+              <img
+                src={agentInfo.photo}
+                alt="Agent"
+                className="rounded-circle me-3"
+                style={{ width: 60, height: 60 }}
+              />
+              <div>
+                <strong>{agentInfo.name || ""}</strong>
+                <p className="text-muted mb-0 small">
+                  {agentInfo.reg_no || ""}
+                </p>
               </div>
             </div>
-          )}
+            <a
+              href={`https://wa.me/${
+                agentInfo.whatsapp
+              }?text=${encodeURIComponent(whatsappMessage)}`}
+              className="btn btn-warning text-white w-100"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ backgroundColor: "#F4980E" }}
+            >
+              <i className="bi bi-whatsapp me-2"></i> WhatsApp Agent
+            </a>
+          </div>
 
           {/* Property Details */}
           <div className="row mt-4">
             <div className="col-12">
               <div className="card p-3 shadow-sm mb-3">
-                <text
-                  style={{
-                    fontSize: "16px",
-                    fontFamily: "Poppins",
-                    fontWeight: 600,
-                  }}
-                >
+                <p className="fw-semibold fs-6 font-poppins">
                   Property Details
-                </text>
-                <div
-                  style={{
-                    width: "100%",
-                    height: "0.0625rem", // 1px
-                    backgroundColor: "var(--Grey-2, #DBDBDB)",
-                    marginTop: "1.25rem", // 20px
-                    marginBottom: "1.25rem", // 20px
-                  }}
-                />
+                </p>
+                <hr />
                 <div className="row">
                   <div className="col-6">
-                    <text
-                      style={{
-                        fontSize: "14px",
-                        fontFamily: "Poppins",
-                        fontWeight: 400,
-                      }}
-                    >
-                      Type:
-                    </text>
-                    <br />
-                    <text
-                      style={{
-                        color: "#737373",
-                        fontSize: "1rem", // 16px
-                        fontFamily: "Poppins",
-                        fontWeight: 400,
-                      }}
-                    >
+                    <p className="mb-0 fw-normal fs-6">Type:</p>
+                    <p className="text-muted">
                       {product.property_type_description}
-                    </text>
+                    </p>
                   </div>
                   <div className="col-6">
-                    <text
-                      style={{
-                        fontSize: "16px",
-                        fontFamily: "Poppins",
-                        fontWeight: 400,
-                      }}
-                    >
-                      Land Title:
-                    </text>
-                    <br />
-                    <text
-                      style={{
-                        color: "#737373",
-                        fontSize: "1rem", // 16px
-                        fontFamily: "Poppins",
-                        fontWeight: 400,
-                      }}
-                    >
+                    <p className="mb-0 fw-normal fs-6">Land Title:</p>
+                    <p className="text-muted">
                       {product.property_lot_type_description}
-                    </text>
+                    </p>
                   </div>
                   <div className="col-6">
-                    <text
-                      style={{
-                        fontSize: "16px",
-                        fontFamily: "Poppins",
-                        fontWeight: 400,
-                      }}
-                    >
-                      Title Type:
-                    </text>
-                    <br />
-                    <text
-                      style={{
-                        color: "#737373",
-                        fontSize: "1rem", // 16px
-                        fontFamily: "Poppins",
-                        fontWeight: 400,
-                      }}
-                    >
-                      {product.property_title}
-                    </text>
+                    <p className="mb-0 fw-normal fs-6">Title Type:</p>
+                    <p className="text-muted">{product.property_title}</p>
                   </div>
                   <div className="col-6">
-                    <text
-                      style={{
-                        fontSize: "16px",
-                        fontFamily: "Poppins",
-                        fontWeight: 400,
-                      }}
-                    >
-                      Lot:
-                    </text>
-                    <br />
-                    <text
-                      style={{
-                        color: "#737373",
-                        fontSize: "1rem", // 16px
-                        fontFamily: "Poppins",
-                        fontWeight: 400,
-                      }}
-                    >
-                      {product.property_title}
-                    </text>
+                    <p className="mb-0 fw-normal fs-6">Lot:</p>
+                    <p className="text-muted">{product.property_title}</p>
                   </div>
                   <div className="col-6">
-                    <text
-                      style={{
-                        fontSize: "16px",
-                        fontFamily: "Poppins",
-                        fontWeight: 400,
-                      }}
-                    >
-                      Tenure:
-                    </text>
-                    <br />
-                    <text
-                      style={{
-                        color: "#737373",
-                        fontSize: "1rem", // 16px
-                        fontFamily: "Poppins",
-                        fontWeight: 400,
-                      }}
-                    >
-                      {product.property_holding}
-                    </text>
+                    <p className="mb-0 fw-normal fs-6">Tenure:</p>
+                    <p className="text-muted">{product.property_holding}</p>
                   </div>
                   <div className="col-6">
-                    <text
-                      style={{
-                        fontSize: "16px",
-                        fontFamily: "Poppins",
-                        fontWeight: 400,
-                      }}
-                    >
-                      Size:
-                    </text>
-                    <br />
+                    <p className="mb-0 fw-normal fs-6">Size:</p>
                     {hasValue(product?.built_size) ? (
-                      <text
-                        style={{
-                          color: "#737373",
-                          fontSize: "1rem", // 16px
-                          fontFamily: "Poppins",
-                          fontWeight: 400,
-                        }}
-                      >
+                      <p className="text-muted">
                         {product.built_size} {product.built_size_unit || "sqft"}
-                      </text>
+                      </p>
                     ) : hasValue(product?.land_price_per_sqft) ? (
-                      <text
-                        style={{
-                          color: "#737373",
-                          fontSize: "1rem", // 16px
-                          fontFamily: "Poppins",
-                          fontWeight: 400,
-                        }}
-                      >
+                      <p className="text-muted">
                         {product.land_price_per_sqft}{" "}
                         {product.land_size_unit || "sqft"}
-                      </text>
+                      </p>
                     ) : null}
                   </div>
                 </div>
@@ -792,24 +566,23 @@ const ProductDetail = () => {
               </p>
             </div>
           )}
+
+          {/* Mortgage Calculators */}
           {template === "template1" && (
             <div className="card p-3 shadow-sm mt-3">
               <MortgageCalculator product={product} />
             </div>
           )}
-
           {template === "template2" && (
             <div className="card p-3 shadow-sm mt-3">
               <MortgageCalculator2 product={product} />
             </div>
           )}
-
           {template === "template3" && (
             <div className="card p-3 shadow-sm mt-3">
               <MortgageCalculator3 product={product} />
             </div>
           )}
-
           {template === "template4" && (
             <div className="card p-3 shadow-sm mt-3">
               <MortgageCalculator4 product={product} />

@@ -1,4 +1,8 @@
 .navbar,
 .header {
-  z-index: 10000; /* keep it above the page content */
+  z-index: 10000; /* keep it above page content */
+}
+
+.font-poppins {
+  font-family: "Poppins", sans-serif;
 }

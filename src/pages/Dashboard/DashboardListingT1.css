@@ -151,3 +151,51 @@
   right: -34px;
   border-left: 34px solid transparent;
 }
+.bg-orange{
+  background: #FF7A00;
+
+}
+/* responsive-fonts.css */
+
+/* Titles */
+.resp-title {
+  font-weight: 600;
+  font-size: 1rem; /* 16px mobile default */
+}
+
+@media (min-width: 768px) { /* tablet and desktop */
+  .resp-title {
+    font-size: 1.25rem; /* 20px */
+  }
+}
+
+/* Normal text */
+.resp-text {
+  font-size: 1rem; /* 16px mobile */
+}
+
+@media (min-width: 768px) {
+  .resp-text {
+    font-size: 1.25rem; /* 20px tablet/desktop */
+  }
+}
+.resp-text1 {
+  font-size: 0.875rem; /* 16px mobile */
+}
+
+@media (min-width: 768px) {
+  .resp-text1 {
+    font-size: 1rem; /* 20px tablet/desktop */
+  }
+}
+/* Badges */
+.resp-badge {
+  font-weight: 600;
+  font-size: 1rem; /* 16px mobile */
+}
+
+@media (min-width: 768px) {
+  .resp-badge {
+    font-size: 1.25rem; /* 20px tablet/desktop */
+  }
+}

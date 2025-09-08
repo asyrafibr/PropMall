@@ -73,219 +73,165 @@ const SimilarListing = ({ listings }) => {
   };
 
   return (
-    <div
-      className="container-fluid px-4"
-      style={{ paddingTop: "60px", position: "relative" }}
+   <div className="container-fluid px-3 px-md-4 pt-5 position-relative">
+  <div className="d-flex justify-content-between align-items-center mb-3">
+    <h5 className="fw-bold">Similar Properties</h5>
+    <a href="#" className="text-decoration-none">
+      View all
+    </a>
+  </div>
+
+  {/* Scroll buttons (hidden on mobile) */}
+  {showLeft && (
+    <button
+      className="scroll-button left d-none d-md-flex"
+      onClick={scrollLeft}
     >
-      <div className="d-flex justify-content-between align-items-center mb-3">
-        <h5 className="fw-bold">Similar Properties</h5>
-        <a href="#" className="text-decoration-none">
-          View all
-        </a>
-      </div>
+      &#8249;
+    </button>
+  )}
+  {showRight && (
+    <button
+      className="scroll-button right d-none d-md-flex"
+      onClick={scrollRight}
+    >
+      &#8250;
+    </button>
+  )}
 
-      {/* Scroll buttons outside the scroll wrapper */}
-      {showLeft && (
-        <button className="scroll-button left" onClick={scrollLeft}>
-          &#8249;
-        </button>
-      )}
-      {showRight && (
-        <button className="scroll-button right" onClick={scrollRight}>
-          &#8250;
-        </button>
-      )}
+  {/* Scrollable wrapper */}
+  <div className="scroll-wrapper" onScroll={handleScroll}>
+    <div
+      ref={scrollRef}
+      id="scroll-container"
+      className="scroll-container flex-md-row flex-column"
+    >
+      {(listings ?? []).slice(0, 12).map((card) => {
+        const modus = card.listing_modus?.toUpperCase();
+        const isForSale = modus === "FOR SALE";
+        const isForRental = modus === "FOR RENT";
+        const statusText = isForSale
+          ? "For Sale"
+          : isForRental
+          ? "For Rent"
+          : "";
+        const statusColor = isForSale ? "bg-orange" : isForRental ? "bg-teal" : "bg-secondary";
+        const belowMarket = card.below_market === "Y";
 
-      <div className="scroll-wrapper" onScroll={handleScroll}>
-        <div
-          ref={scrollRef}
-          id="scroll-container"
-          className="scroll-container"
-          onScroll={handleScroll}
-        >
-          {(listings ?? []).slice(0, 12).map((card, idx) => {
-            const modus = card.listing_modus?.toUpperCase();
-            const isForSale = modus === "FOR SALE";
-            const isForRental = modus === "FOR RENT";
-            const statusText = isForSale
-              ? "For Sale"
-              : isForRental
-              ? "For Rent"
-              : "";
-            const statusColor = isForSale
-              ? "#FF7A00"
-              : isForRental
-              ? "#007B83"
-              : "#ccc";
-            const belowMarket = card.below_market === "Y";
-
-            return (
-              <div
-                key={card.id_listing}
-                className="card shadow-sm border-0"
-                style={{
-                  flex: "0 0 auto",
-                  width: "100%",
-                  maxWidth: "21rem", // instead of 335px
-                  minHeight: "32rem", // instead of 582px
-                  borderRadius: "0.5rem",
-                }}
-              >
-                <div className="position-relative">
-                  <img
-                    src={
-                      card.photos?.[0] || "https://via.placeholder.com/300x200"
-                    }
-                    className="card-img-top"
-                    alt={card.ads_title}
-                    style={{
-                      height: "16rem", // instead of 260px
-                      objectFit: "cover",
-                      borderTopLeftRadius: "0.5rem",
-                      borderTopRightRadius: "0.5rem",
-                      cursor: "pointer",
-                    }}
-                    onClick={() => openModal(card.photos || [], 0)}
-                  />
-                  {(statusText || belowMarket) && (
+        return (
+          <div
+            key={card.id_listing}
+            className="card property-card shadow-sm border-0 flex-shrink-0"
+          >
+            <div className="position-relative">
+              <img
+                src={card.photos?.[0] || "https://via.placeholder.com/300x200"}
+                className="card-img-top property-img"
+                alt={card.ads_title}
+                onClick={() => openModal(card.photos || [], 0)}
+              />
+              {(statusText || belowMarket) && (
+                <div className="position-absolute top-0 start-0 m-2 d-flex flex-column gap-1 z-2">
+                  {statusText && (
                     <div
-                      className="position-absolute top-0 start-0 m-2 d-flex flex-column gap-1"
-                      style={{ zIndex: 2 }}
+                      className={`d-flex align-items-center justify-content-center text-white fw-semibold status-badge ${statusColor}`}
                     >
-                      {statusText && (
-                        <div
-                          style={{
-                            backgroundColor: statusColor,
-                            width: "100px",
-                            height: "32px",
-                            borderRadius: "4px",
-                            color: "white",
-                            fontSize: "14px",
-                            display: "flex",
-                            fontFamily: "Poppins",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            fontWeight: 600,
-                          }}
-                        >
-                          {statusText}
-                        </div>
-                      )}
-                      {belowMarket && (
-                        <div
-                          style={{
-                            display: "flex",
-                            padding: "4px 12px",
-                            justifyContent: "center",
-                            alignItems: "center",
-                            borderRadius: "4px",
-                            backgroundColor: "#7C9A2C",
-                            width: "150px",
-                            height: "30px",
-                            color: "#FAFAFA",
-                            fontFamily: "Poppins",
-                            fontSize: "12px",
-                            fontWeight: 600,
-                          }}
-                        >
-                          Below Market
-                        </div>
-                      )}
+                      {statusText}
+                    </div>
+                  )}
+                  {belowMarket && (
+                    <div className="d-flex align-items-center justify-content-center text-white fw-semibold below-badge">
+                      Below Market
                     </div>
                   )}
                 </div>
-                <div className="card-body d-flex flex-column">
-                  <h5 className="card-title fw-bold text-dark" style={{ fontSize: "1.25rem" }}>
-                    RM {card.price}
-                  </h5>
-                  <p className="text-muted small mb-1" style={{ fontSize: "0.9rem" }}>
-                    <strong>{card.ads_title}</strong>
-                    <br />
-                    {card.location_area}
-                  </p>
-                  <p className="text-muted small mb-2" style={{ fontSize: "0.85rem" }}>
-                    {card.property_type_description} |{" "}
-                    {card.category_type_title_holding_lottype_storey}
-                    {card.built_size && (
-                      <div>
-                        Built-up Size: {card.built_size} {card.built_size_unit}
-                      </div>
-                    )}
-                    {!card.built_size && card.land_size && (
-                      <div>
-                        Land Size: {card.land_size} {card.land_size_unit}
-                      </div>
-                    )}
-                    {card.built_size && card.land_size && (
-                      <div>
-                        Land Size: {card.land_size} {card.land_size_unit}
-                      </div>
-                    )}
-                  </p>
-                  <div className="d-flex flex-wrap gap-3 mb-3">
-                    <span
-                      className="d-flex align-items-center"
-                      style={{ gap: "0.4rem" ,}}
-                    >
-                      <FaBed /> {card.room}
-                    </span>
-                    <span
-                      className="d-flex align-items-center"
-                      style={{ gap: "0.4rem" }}
-                    >
-                      <FaBath /> {card.bathroom}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Modal */}
-      {modalOpen && (
-        <div className="modal-overlay" onClick={closeModal}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <button className="close-button" onClick={closeModal}>
-              &times;
-            </button>
-            <img
-              src={modalImages[currentImageIndex]}
-              alt="Full"
-              className="modal-image"
-            />
-            <div className="image-counter">
-              {currentImageIndex + 1} / {modalImages.length}
+              )}
             </div>
-            {modalImages.length > 1 && (
-              <>
-                <button className="nav-button prev" onClick={showPrev}>
-                  &#10094;
-                </button>
-                <button className="nav-button next" onClick={showNext}>
-                  &#10095;
-                </button>
-              </>
-            )}
-            <div className="thumbnail-container">
-              {modalImages.map((img, idx) => (
-                <img
-                  key={idx}
-                  ref={(el) => (thumbnailRefs.current[idx] = el)}
-                  src={img}
-                  alt={`Thumbnail ${idx}`}
-                  className={`thumbnail ${
-                    currentImageIndex === idx ? "active" : ""
-                  }`}
-                  onClick={() => setCurrentImageIndex(idx)}
-                />
-              ))}
+            <div className="card-body d-flex flex-column">
+              <h5 className="card-title fw-bold text-dark fs-5">
+                RM {card.price}
+              </h5>
+              <p className="text-muted small mb-1">
+                <strong>{card.ads_title}</strong>
+                <br />
+                {card.location_area}
+              </p>
+              <p className="text-muted small mb-2">
+                {card.property_type_description} |{" "}
+                {card.category_type_title_holding_lottype_storey}
+                {card.built_size && (
+                  <div>
+                    Built-up Size: {card.built_size} {card.built_size_unit}
+                  </div>
+                )}
+                {!card.built_size && card.land_size && (
+                  <div>
+                    Land Size: {card.land_size} {card.land_size_unit}
+                  </div>
+                )}
+                {card.built_size && card.land_size && (
+                  <div>
+                    Land Size: {card.land_size} {card.land_size_unit}
+                  </div>
+                )}
+              </p>
+              <div className="d-flex flex-wrap gap-3 mb-3">
+                <span className="d-flex align-items-center gap-2">
+                  <FaBed /> {card.room}
+                </span>
+                <span className="d-flex align-items-center gap-2">
+                  <FaBath /> {card.bathroom}
+                </span>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        );
+      })}
     </div>
+  </div>
+
+  {/* Modal unchanged */}
+  {modalOpen && (
+    <div className="modal-overlay" onClick={closeModal}>
+      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+        <button className="close-button" onClick={closeModal}>
+          &times;
+        </button>
+        <img
+          src={modalImages[currentImageIndex]}
+          alt="Full"
+          className="modal-image"
+        />
+        <div className="image-counter">
+          {currentImageIndex + 1} / {modalImages.length}
+        </div>
+        {modalImages.length > 1 && (
+          <>
+            <button className="nav-button prev" onClick={showPrev}>
+              &#10094;
+            </button>
+            <button className="nav-button next" onClick={showNext}>
+              &#10095;
+            </button>
+          </>
+        )}
+        <div className="thumbnail-container">
+          {modalImages.map((img, idx) => (
+            <img
+              key={idx}
+              ref={(el) => (thumbnailRefs.current[idx] = el)}
+              src={img}
+              alt={`Thumbnail ${idx}`}
+              className={`thumbnail ${currentImageIndex === idx ? "active" : ""}`}
+              onClick={() => setCurrentImageIndex(idx)}
+            />
+          ))}
+        </div>
+      </div>
+    </div>
+  )}
+</div>
+
   );
 };
 

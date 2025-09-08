@@ -11,10 +11,7 @@ const AgentBox = () => {
     const fetchAgentData = async () => {
       try {
         const agentRes = await getAgent();
-
-        setAgent(agentRes.data.agent); // ✅ schedules agent update
-
-        // ❌ agent is NOT updated here yet
+        setAgent(agentRes.data.agent);
       } catch (error) {
         console.error("Error fetching agent:", error);
       }
@@ -22,53 +19,35 @@ const AgentBox = () => {
 
     fetchAgentData();
   }, []);
-  useEffect(() => {
-    if (agent) {
-    }
-  }, [agent]);
+
+  const backgroundStyle =
+    template === "template1"
+      ? {
+          backgroundImage: `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url(${agentBoxbg})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }
+      : {
+          backgroundColor: "rgba(0,0,0,0.5)",
+        };
 
   return (
     <div
-      style={{
-        position: "relative",
-        inset: 0,
-        zIndex: 1,
-        height: "146px",
-        width: "100%",
-        backgroundImage:
-          template === "template1"
-            ? `linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.8)), url(${agentBoxbg})`
-            : "none",
-        backgroundColor:
-          template !== "template1" ? "rgba(0,0,0,0.5)" : "transparent",
-        backgroundSize: "cover",
-        backgroundRepeat: "no-repeat",
-        backgroundPosition: "center center",
-        padding: "20px 100px",
-        display: "flex",
-        alignItems: "center",
-        color: "#fff",
-      }}
+      className="w-100 d-flex align-items-center text-white p-3 ps-5 ps-md-5"
+      style={backgroundStyle}
     >
-      {/* Agent Circle Photo */}
-      <img
-        src={agent.photo || null}
-        alt="Agent"
-        style={{
-          width: "80px",
-          height: "80px",
-          borderRadius: "50%",
-          objectFit: "cover",
-          marginRight: "20px",
-          border: "2px solid white",
-        }}
-      />
-
-      {/* Agent Info */}
+      {agent.photo && (
+        <img
+          src={agent.photo}
+          alt="Agent"
+          className="rounded-circle border border-2 me-3 object-fit-cover"
+          style={{ width: "80px", height: "80px" }}
+        />
+      )}
       <div>
-        <div style={{ fontSize: "16px", fontWeight: "bold" }}>{agent.name}</div>
-        <div style={{ fontSize: "12px" }}>{agent.agency_name}</div>
-        <div style={{ fontSize: "12px" }}>{agent.phone}</div>
+        <div className="fs-5">{agent.name}</div>
+        <div className="fs-6">{agent.agency_name}</div>
+        <div className="fs-6">{agent.phone}</div>
       </div>
     </div>
   );

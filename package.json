@@ -10,7 +10,7 @@
     "ajv": "^8.17.1",
     "ajv-keywords": "^5.1.0",
     "axios": "^1.8.4",
-    "bootstrap": "^5.3.5",
+    "bootstrap": "^5.3.8",
     "bootstrap-icons": "^1.11.3",
     "dayjs": "^1.11.13",
     "lodash": "^4.17.21",
@@ -22,6 +22,7 @@
     "react-icons": "^5.5.0",
     "react-router-dom": "^7.5.1",
     "react-scripts": "5.0.1",
+    "sass": "^1.92.1",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
