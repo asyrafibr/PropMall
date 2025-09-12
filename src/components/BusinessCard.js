@@ -12,6 +12,7 @@ import {
   FaFilePdf,
   FaShareAlt,
 } from "react-icons/fa";
+import "./BusinessCard.css";
 import profileImage from "../image/Profile.jpg";
 import BackgroundImage from "../image/Landing_Hero.jpg";
 import BackgroundImage2 from "../image/template2bg.png";
@@ -26,34 +27,9 @@ import BusinessHeader from "./BusinessHeader";
 import { useTemplate } from "../context/TemplateContext";
 import { getAgent } from "../api/axiosApi";
 
-const buttonStyle = {
-  width: "660px",
-  height: "52px",
-  borderRadius: "8px",
-  padding: "12px 16px",
-  backgroundColor: "#FFFFFF",
-  boxShadow: "4px 4px 10px rgba(0, 0, 0, 0.5)",
-  border: "none",
-  color: "#3A3A3A",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  position: "relative", // <-- make Button relative for icon absolute positioning
-  fontWeight: "500",
-  fontSize: "14px",
-};
-const iconContainerStyle = {
-  position: "absolute",
-  left: "16px",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  width: "24px",
-  height: "24px",
-};
 function BusinessCard() {
-    const { template, switchTemplate } = useTemplate(); // ✅ Use Template Context
-  
+  const { template, switchTemplate } = useTemplate(); // ✅ Use Template Context
+
   // const { template } = useTemplate();
   const [agent, setAgent] = useState({});
   useEffect(() => {
@@ -75,7 +51,7 @@ function BusinessCard() {
     if (agent) {
     }
   }, [agent]);
-    const backgroundMap = {
+  const backgroundMap = {
     template1: BackgroundImage,
     template2: BackgroundImage2,
     template3: BackgroundImage3,
@@ -85,66 +61,35 @@ function BusinessCard() {
   // pick the right one (fallback to template1 if not found)
   const bgImage = backgroundMap[template] || BackgroundImage;
   return (
-    <div
-      style={{
-        overflowX: "hidden", // Prevent horizontal scroll globally
-      }}
-    >
+    <div className="overflow-hidden">
       <div
-        style={{
-          backgroundImage: `url(${bgImage})`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          backgroundRepeat: "no-repeat",
-          minHeight: "100vh",
-          position: "relative",
-          paddingTop: "150px",
-          paddingBottom: "50px",
-        }}
+        className="bg-cover bg-agent position-relative"
+        style={{ backgroundImage: `url(${bgImage})` }}
       >
-        <div
-          style={{ position: "absolute", top: 0, width: "100%", zIndex: 10 }}
-        >
+        <div className="position-absolute top-0 start-0 w-100 z-3">
           <BusinessHeader domain={agent.domain} />
         </div>
         <Container>
           {/* Header Card with Floating Image */}
-          <Card
-            className="mb-4 shadow-sm position-relative overflow-visible"
-            style={{ backgroundColor: "rgba(250, 250, 250, 0.8)" }}
-          >
-            <Card.Body
-              style={{
-                boxShadow: "4px 4px 10px rgba(0,0,0,0.5)",
-                paddingTop: "60px",
-              }}
-            >
+          <Card className="mb-4 shadow-sm position-relative overflow-visible agent-card">
+            <Card.Body className="agent-card-body pt-3">
               <Row className="align-items-start">
-                <Col md={4}>
+                {/* LEFT SIDE - Agent Info */}
+                <Col md={4} className="position-relative">
                   {/* Floating Image */}
-                  <div
-                    style={{
-                      position: "absolute",
-                      top: "-36px",
-                      left: "20px",
-                    }}
-                  >
+                  <div className="agent-photo-wrapper">
                     <img
-                      style={{
-                        width: "120px",
-                        height: "120px",
-                        border: "4px solid white",
-                      }}
                       src={agent.photo}
                       alt="Agent"
-                      className="rounded-circle shadow"
+                      className="agent-photo rounded-circle shadow"
                     />
                   </div>
+
                   {/* Text Below Image */}
-                  <div style={{ marginTop: "100px", marginLeft: "20px" }}>
+                  <div className="agent-info mt-6 ms-3">
                     <h5 className="mb-0">{agent.name}</h5>
                     <p className="text-muted mb-1">
-                      {agent.title} {agent.reg_no}{" "}
+                      {agent.title} {agent.reg_no}
                     </p>
                     <p className="text-muted">
                       {agent.agency_name} {agent.agency_reg_no}
@@ -152,93 +97,33 @@ function BusinessCard() {
                   </div>
                 </Col>
 
+                {/* RIGHT SIDE - Icons, Stats, Dropdown */}
                 <Col md={8} className="text-end">
                   {/* Icons */}
-                  <div
-                    className="mb-2 d-flex justify-content-end"
-                    style={{ gap: "20px" }} // 20px gap between icons
-                  >
-                    <div
-                      style={{
-                        width: "53px",
-                        height: "53px",
-                        borderRadius: "99px",
-                        backgroundColor: "#DC3545",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                      }}
-                    >
+                  <div className="d-flex justify-content-end mb-2 agent-icons">
+                    <div className="icon-circle bg-danger">
                       <FaEnvelope color="white" size={24} />
                     </div>
-                    <div
-                      style={{
-                        width: "53px",
-                        height: "53px",
-                        borderRadius: "99px",
-                        backgroundColor: "#FFC107",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                      }}
-                    >
+                    <div className="icon-circle bg-warning">
                       <FaFilePdf color="white" size={24} />
                     </div>
-                    <div
-                      style={{
-                        width: "53px",
-                        height: "53px",
-                        borderRadius: "99px",
-                        backgroundColor: "#0DCAF0",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                      }}
-                    >
+                    <div className="icon-circle bg-info">
                       <FaShareAlt color="white" size={24} />
                     </div>
-                    <div
-                      style={{
-                        width: "53px",
-                        height: "53px",
-                        borderRadius: "99px",
-                        backgroundColor: "#25D366",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                      }}
-                    >
+                    <div className="icon-circle whatsapp">
                       <FaWhatsapp color="white" size={24} />
                     </div>
                   </div>
 
-                  {/* Stats Cards aligned right */}
+                  {/* Stats */}
                   <div className="d-flex flex-column align-items-end mt-3">
-                    <div className="d-flex gap-2 mb-2">
+                    <div className="d-flex gap-2 mb-2 flex-wrap justify-content-end">
                       {/* Sale */}
-                      <Card
-                        className="shadow-sm"
-                        style={{ width: "146px", height: "62px" }}
-                      >
+                      <Card className="shadow-sm stat-card">
                         <Card.Body className="p-2 text-start d-flex align-items-center">
-                          <div
-                            style={{
-                              width: "32px",
-                              height: "32px",
-                              borderRadius: "50%",
-                              backgroundColor: "#F4980E",
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "center",
-                            }}
-                          >
-                            <img
-                              src={icon1}
-                              alt="Sale"
-                              style={{ width: "24px", height: "24px" }}
-                            />
+                          <div className="stat-icon">
+                            <img src={icon1} alt="Sale" />
                           </div>
-
                           <div className="ms-2">
                             <small>Sale</small>
                             <p className="mb-0 fw-bold">31,803</p>
@@ -247,29 +132,11 @@ function BusinessCard() {
                       </Card>
 
                       {/* Rent */}
-                      <Card
-                        className="shadow-sm"
-                        style={{ width: "146px", height: "62px" }}
-                      >
+                      <Card className="shadow-sm stat-card">
                         <Card.Body className="p-2 text-start d-flex align-items-center">
-                          <div
-                            style={{
-                              width: "32px",
-                              height: "32px",
-                              borderRadius: "50%",
-                              backgroundColor: "#F4980E",
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "center",
-                            }}
-                          >
-                            <img
-                              src={icon2}
-                              alt="Rent"
-                              style={{ width: "24px", height: "24px" }}
-                            />
+                          <div className="stat-icon">
+                            <img src={icon2} alt="Rent" />
                           </div>
-
                           <div className="ms-2">
                             <small>Rent</small>
                             <p className="mb-0 fw-bold">31,803</p>
@@ -278,33 +145,13 @@ function BusinessCard() {
                       </Card>
 
                       {/* New Project */}
-                      <Card
-                        className="shadow-sm"
-                        style={{ width: "146px", height: "62px" }}
-                      >
+                      <Card className="shadow-sm stat-card">
                         <Card.Body className="p-2 text-start d-flex align-items-center">
-                          <div
-                            style={{
-                              width: "32px",
-                              height: "32px",
-                              borderRadius: "50%",
-                              backgroundColor: "#F4980E",
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "center",
-                            }}
-                          >
-                            <img
-                              src={icon3}
-                              alt="New Project"
-                              style={{ width: "24px", height: "24px" }}
-                            />
+                          <div className="stat-icon">
+                            <img src={icon3} alt="New Project" />
                           </div>
-
                           <div className="ms-2">
-                            <small
-                              style={{ fontSize: "12px", fontWeight: "400" }}
-                            >
+                            <small className="fw-normal small">
                               New Project
                             </small>
                             <p className="mb-0 fw-bold">803</p>
@@ -314,29 +161,11 @@ function BusinessCard() {
                     </div>
 
                     {/* Total Listings */}
-                    <Card
-                      className="shadow-sm"
-                      style={{ width: "455px", height: "62px" }}
-                    >
+                    <Card className="shadow-sm stat-card total-card">
                       <Card.Body className="p-2 text-start d-flex align-items-center">
-                        <div
-                          style={{
-                            width: "32px",
-                            height: "32px",
-                            borderRadius: "50%",
-                            backgroundColor: "#F4980E",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                          }}
-                        >
-                          <img
-                            src={icon4}
-                            alt="Total Listings"
-                            style={{ width: "24px", height: "24px" }}
-                          />
+                        <div className="stat-icon">
+                          <img src={icon4} alt="Total Listings" />
                         </div>
-
                         <div className="ms-2">
                           <small>Total Listings</small>
                           <p className="mb-0 fw-bold">95,409</p>
@@ -345,20 +174,16 @@ function BusinessCard() {
                     </Card>
                   </div>
 
-                  {/* Dropdown aligned right */}
-                  {/* Dropdown with Text */}
-                  <div
-                    className="d-flex justify-content-end align-items-center mt-2"
-                    style={{ gap: "10px" }}
-                  >
-                    <div className="text-end" style={{ flexGrow: 1 }}>
+                  {/* Dropdown */}
+                  <div className="d-flex justify-content-end align-items-center mt-2 gap-2 flex-wrap">
+                    <div className="text-end flex-grow-1">
                       Let us assist you with your property needs.
                     </div>
                     <Dropdown>
                       <Dropdown.Toggle
                         variant="outline-secondary"
                         size="sm"
-                        style={{ boxShadow: "4px 4px 10px rgba(0,0,0,0.5)" }}
+                        className="shadow-sm"
                       >
                         I Want To
                       </Dropdown.Toggle>
@@ -375,18 +200,10 @@ function BusinessCard() {
           </Card>
 
           {/* Video Section */}
-          <Card
-            className="mb-4 shadow-sm position-relative overflow-visible"
-            style={{ backgroundColor: "rgba(250, 250, 250, 0.8)" }}
-          >
-            <Card.Body style={{ boxShadow: "4px 4px 10px rgba(0,0,0,0.5)" }}>
-              <div className="mb-3 text-center" style={{ paddingTop: "20px" }}>
-                <video
-                  width="640px"
-                  height="280px"
-                  controls
-                  style={{ borderRadius: "12px" }}
-                >
+          <Card className="mb-4 shadow-sm position-relative overflow-visible custom-card">
+            <Card.Body className="custom-card-body">
+              <div className="mb-3 text-center pt-4">
+                <video className="custom-video" controls>
                   <source
                     src="https://www.w3schools.com/html/mov_bbb.mp4"
                     type="video/mp4"
@@ -394,18 +211,8 @@ function BusinessCard() {
                   Your browser does not support the video tag.
                 </video>
               </div>
-              <p
-                className="text-center"
-                style={{
-                  width: "640px",
-                  margin: "0 auto",
-                  textAlign: "center",
-                  fontSize: "14px",
-                  fontWeight: 400,
-                  fontFamily: "Poppins",
-                  paddingTop: "20px",
-                }}
-              >
+
+              <p className="custom-intro-text text-center">
                 Welcome to {agent.domain}! I’m {agent.name}, your trusted
                 partner in finding the perfect home. Whether you're buying,
                 selling, or investing, I’m here to guide you through the process
@@ -417,49 +224,40 @@ function BusinessCard() {
           </Card>
 
           {/* Social Section */}
-          <Card
-            className="mb-4 shadow-sm position-relative overflow-visible"
-            style={{ backgroundColor: "rgba(250, 250, 250, 0.8)" }}
-          >
-            <Card.Body style={{ boxShadow: "4px 4px 10px rgba(0,0,0,0.5)" }}>
+          <Card className="mb-4 shadow-sm position-relative overflow-visible bg-light bg-opacity-75">
+            <Card.Body className="custom-card-body">
               <div className="d-flex flex-column align-items-center gap-2">
-                <Button style={buttonStyle}>
-                  <span style={iconContainerStyle}>
-                    <FaInstagram
-                      style={{ color: "#E4405F", fontSize: "18px" }}
-                    />
+                <Button className="social-btn">
+                  <span className="icon-container text-instagram">
+                    <FaInstagram />
                   </span>
                   Follow @{agent.domain}
                 </Button>
 
-                <Button style={buttonStyle}>
-                  <span style={iconContainerStyle}>
-                    <FaFacebook
-                      style={{ color: "#1877F2", fontSize: "18px" }}
-                    />
+                <Button className="social-btn">
+                  <span className="icon-container text-facebook">
+                    <FaFacebook />
                   </span>
                   Follow @{agent.domain}
                 </Button>
 
-                <Button style={buttonStyle}>
-                  <span style={iconContainerStyle}>
-                    <FaYoutube style={{ color: "#FF0000", fontSize: "18px" }} />
+                <Button className="social-btn">
+                  <span className="icon-container text-youtube">
+                    <FaYoutube />
                   </span>
                   Subscribe @{agent.domain}
                 </Button>
 
-                <Button style={buttonStyle}>
-                  <span style={iconContainerStyle}>
-                    <FaTiktok style={{ color: "#000000", fontSize: "18px" }} />
+                <Button className="social-btn">
+                  <span className="icon-container text-tiktok">
+                    <FaTiktok />
                   </span>
                   Follow @{agent.domain}
                 </Button>
 
-                <Button style={buttonStyle}>
-                  <span style={iconContainerStyle}>
-                    <FaLinkedin
-                      style={{ color: "#0A66C2", fontSize: "18px" }}
-                    />
+                <Button className="social-btn">
+                  <span className="icon-container text-linkedin">
+                    <FaLinkedin />
                   </span>
                   Follow @{agent.domain}
                 </Button>

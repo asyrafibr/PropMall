@@ -12,7 +12,7 @@ import loan from "../image/loan.svg";
 import legal from "../image/legal.svg";
 import mortgage from "../image/mortgage.svg";
 import gtax from "../image/gtax.svg";
-
+import './LegalFeeCalculator.css'
 // Currency formatter
 const formatCurrency = (value) =>
   value.toLocaleString("en-MY", {
@@ -21,13 +21,7 @@ const formatCurrency = (value) =>
     minimumFractionDigits: 2,
   });
 
-const inputStyle = {
-  width: "100%",
-  padding: "8px 10px",
-  border: "1px solid #ddd",
-  borderRadius: "6px",
-  fontSize: "12px",
-};
+
 
 /* ----- CALCULATORS ----- */
 
@@ -89,88 +83,71 @@ const calculateBuySell = (price, discount = 0) => {
     setBuySellResult(calculateBuySell(priceValue, discountValue));
   };
 
-  const handleCalculate = () => {
-    const p = parseFloat(price);
-    if (!isNaN(p)) {
-      setResult({
-        legalFee: p * 0.01,
-        stampDuty: p * 0.03,
-      });
-    }
-  };
-
+ 
   return (
-   <div style={styles.card}>
-          <h4>Buy / Sell</h4>
-          <div style={styles.flexRow}>
-            <div style={{ ...styles.leftCol, marginBottom: "5%" }}>
-              <label style={styles.textTitle}>Purchase Price</label>
-              <input
-                style={styles.input}
-                value={price}
-                onChange={(e) => setPrice(e.target.value)}
-              />
+ <div className="legal-card">
+  <h4 className="legal-title">Buy / Sell</h4>
+  <div className="legal-flex">
+    {/* Left Column */}
+    <div className="d-flex flex-column gap-2 mb-4 flex-fill">
+      <label className="legal-title">Purchase Price</label>
+      <input
+        className="legal-input"
+        value={price}
+        onChange={(e) => setPrice(e.target.value)}
+      />
 
-              <div style={{ flex: 1 }}>
-                <label style={styles.textTitle}>Discount</label>
-                <div style={{ position: "relative", width: "100%" }}>
-                  <input
-                    style={{
-                      ...styles.input,
-                      width: "100%",
-                      paddingRight: "30px", // space for %
-                    }}
-                    value={discount}
-                    onChange={(e) => setDiscount(e.target.value)}
-                    placeholder="0"
-                  />
-                  <span
-                    style={{
-                      position: "absolute",
-                      right: "10px",
-                      top: "50%",
-                      transform: "translateY(-50%)",
-                      color: "#555",
-                      pointerEvents: "none",
-                    }}
-                  >
-                    %
-                  </span>
-                </div>
-              </div>
-              <button style={styles.button} onClick={handleCalculateBuySell}>
-                Calculate
-              </button>
-              {error && (
-                <p style={{ color: "red", marginTop: "10px" }}>{error}</p>
-              )}
-            </div>
+      <div className="flex-fill">
+        <label className="legal-title">Discount</label>
+        <div className="position-relative w-100">
+          <input
+            className="legal-input pe-4"
+            value={discount}
+            onChange={(e) => setDiscount(e.target.value)}
+            placeholder="0"
+          />
+          <span className="position-absolute top-50 end-0 translate-middle-y me-2 text-secondary">
+            %
+          </span>
+        </div>
+      </div>
 
-            <div style={styles.rightCol}>
-              <text style={styles.textTitle}>Legal Fees :</text>{" "}
-              <text style={{ ...styles.textTitle, fontWeight: 600 }}>
-                {buySellResult ? formatCurrency(buySellResult.legalFees) : "-"}
-              </text>
-              <text style={styles.textTitle}>Discount (%) :</text>
-              <text style={{ ...styles.textTitle, fontWeight: 600 }}>
-                {buySellResult ? discount : "-"}
-              </text>
-              <text style={styles.textTitle}>Stamp Duty : </text>
-              <text style={{ ...styles.textTitle, fontWeight: 600 }}>
-                {buySellResult ? formatCurrency(buySellResult.stampDuty) : "-"}
-              </text>
-              <text style={styles.textTitle}>SST (%) : </text>
-              <text style={{ ...styles.textTitle, fontWeight: 600 }}>
-                {buySellResult ? formatCurrency(buySellResult.sst) : "-"}
-              </text>
-              <p style={styles.totalAmount}>Total Amount:</p>
-              <p style={styles.totalAmount}>
-                {buySellResult ? formatCurrency(buySellResult.total) : "-"}
-              </p>
-            </div>
-          </div>
+      <button className="legal-btn" onClick={handleCalculateBuySell}>
+        Calculate
+      </button>
 
+      {error && <p className="text-danger mt-2">{error}</p>}
     </div>
+
+    {/* Right Column */}
+    <div className="d-flex flex-column gap-2 flex-fill">
+      <span className="legal-title">Legal Fees :</span>
+      <span className="legal-title fw-semibold">
+        {buySellResult ? formatCurrency(buySellResult.legalFees) : "-"}
+      </span>
+
+      <span className="legal-title">Discount (%) :</span>
+      <span className="legal-title fw-semibold">
+        {buySellResult ? discount : "-"}
+      </span>
+
+      <span className="legal-title">Stamp Duty :</span>
+      <span className="legal-title fw-semibold">
+        {buySellResult ? formatCurrency(buySellResult.stampDuty) : "-"}
+      </span>
+
+      <span className="legal-title">SST (%) :</span>
+      <span className="legal-title fw-semibold">
+        {buySellResult ? formatCurrency(buySellResult.sst) : "-"}
+      </span>
+
+      <p className="legal-total-amount">Total Amount:</p>
+      <p className="legal-total-amount">
+        {buySellResult ? formatCurrency(buySellResult.total) : "-"}
+      </p>
+    </div>
+  </div>
+</div>
   );
 };
 
@@ -211,59 +188,51 @@ const calculateLoan = (loanAmount) => {
     if (isNaN(loanValue) || loanValue <= 0) return;
     setLoanResult(calculateLoan(loanValue));
   };
-  const handleCalculate = () => {
-    const loan = parseFloat(amount);
-    const interest = parseFloat(rate) / 100 / 12;
-    const payments = parseFloat(years) * 12;
-    if (loan && interest && payments) {
-      const m =
-        (loan * interest) / (1 - Math.pow(1 + interest, -payments));
-      setMonthly(m);
-    }
-  };
+
 
   return (
-       <div style={styles.card}>
-          
-          {/* Loan */}
-          <h4>Loan</h4>
-          <div style={styles.flexRow}>
-            <div style={styles.leftCol}>
-              <label style={styles.textTitle}>Loan Amount</label>
-              <input
-                style={styles.input}
-                value={loanAmount}
-                onChange={(e) => setLoanAmount(e.target.value)}
-              />
-              <button style={styles.button} onClick={handleCalculateLoan}>
-                Calculate
-              </button>
-            </div>
+      <div className="legal-card">
+  {/* Loan */}
+  <h4 className="legal-title">Loan</h4>
+  <div className="d-flex justify-content-between gap-3">
+    {/* Left Column */}
+    <div className="d-flex flex-column gap-2 flex-fill">
+      <label className="legal-title">Loan Amount</label>
+      <input
+        className="legal-input"
+        value={loanAmount}
+        onChange={(e) => setLoanAmount(e.target.value)}
+      />
 
-            <div style={styles.rightCol}>
-              <text style={styles.textTitle}>Legal Fees </text>
-              <text style={{ ...styles.textTitle, fontWeight: 600 }}>
-                {loanResult ? formatCurrency(loanResult.legalFees) : "-"}
-              </text>
-              <text style={styles.textTitle}>Stamp Duty </text>
-              <text>
-                {loanResult ? formatCurrency(loanResult.stampDuty) : "-"}
-              </text>
-              <text style={{ ...styles.textTitle, fontWeight: 600 }}>
-                {loanResult ? formatCurrency(loanResult.stampDuty) : "-"}
-              </text>
-              <text style={styles.textTitle}>SST (%) </text>
-              <text style={{ ...styles.textTitle, fontWeight: 600 }}>
-                {loanResult ? formatCurrency(loanResult.sst) : "-"}
-              </text>
-
-              <p style={styles.totalAmount}>Total Amount:</p>
-              <p style={styles.totalAmount}>
-                {loanResult ? formatCurrency(loanResult.total) : "-"}
-              </p>
-            </div>
-          </div>
+      <button className="legal-btn" onClick={handleCalculateLoan}>
+        Calculate
+      </button>
     </div>
+
+    {/* Right Column */}
+    <div className="d-flex flex-column gap-2 flex-fill">
+      <span className="legal-title">Legal Fees</span>
+      <span className="legal-title fw-semibold">
+        {loanResult ? formatCurrency(loanResult.legalFees) : "-"}
+      </span>
+
+      <span className="legal-title">Stamp Duty</span>
+      <span className="legal-title fw-semibold">
+        {loanResult ? formatCurrency(loanResult.stampDuty) : "-"}
+      </span>
+
+      <span className="legal-title">SST (%)</span>
+      <span className="legal-title fw-semibold">
+        {loanResult ? formatCurrency(loanResult.sst) : "-"}
+      </span>
+
+      <p className="legal-total-amount">Total Amount:</p>
+      <p className="legal-total-amount">
+        {loanResult ? formatCurrency(loanResult.total) : "-"}
+      </p>
+    </div>
+  </div>
+</div>
   );
 };
 
@@ -290,71 +259,59 @@ const calculateTenancy = (monthlyRent, durationMonths) => {
     stampDuty,
   };
 };
-  const handleCalculate = () => {
-    const r = parseFloat(rent);
-    const m = parseFloat(months);
-    if (!isNaN(r) && !isNaN(m)) {
-      setTotal(r * m);
-    }
-  };
+
 
   return (
-      <div style={styles.card}>
-          
-       
+      <div className="legal-card">
+  {/* Tenancy */}
+  <h4 className="legal-title">Tenancy</h4>
+  <div className="d-flex justify-content-between gap-3">
+    {/* Left Column */}
+    <div className="d-flex flex-column gap-2 flex-fill">
+      <label className="legal-title">Enter Monthly Rent</label>
+      <input
+        className="legal-input"
+        value={monthlyRent}
+        onChange={(e) => setMonthlyRent(e.target.value)}
+      />
 
-          {/* Tenancy */}
-          <h4>Tenancy</h4>
-          <div style={styles.flexRow}>
-            <div style={styles.leftCol}>
-              <label style={styles.textTitle}>Enter Monthly Rent</label>
-              <input
-                style={styles.input}
-                value={monthlyRent}
-                onChange={(e) => setMonthlyRent(e.target.value)}
-              />
-              <label style={styles.textTitle}>
-                Enter Tenancy Duration (Years)
-              </label>
-              <input
-                type="number"
-                style={styles.input}
-                value={rentalDuration}
-                onChange={(e) => setRentalDuration(e.target.value)}
-              />
-              <button style={styles.button} onClick={handleCalculateTenancy}>
-                Calculate
-              </button>
-            </div>
+      <label className="legal-title">Enter Tenancy Duration (Years)</label>
+      <input
+        type="number"
+        className="legal-input"
+        value={rentalDuration}
+        onChange={(e) => setRentalDuration(e.target.value)}
+      />
 
-            <div style={styles.rightCol}>
-              <text style={styles.textTitle}>Legal Fees</text>
-              <text style={{ ...styles.textTitle, fontWeight: 600 }}>
-                RM 2,400.00
-              </text>
-              <text style={styles.textTitle}>Stamp Duty </text>
-              <text style={{ ...styles.textTitle, fontWeight: 600 }}>
-                {tenancyResult ? formatCurrency(tenancyResult.stampDuty) : "-"}
-              </text>
-              <p style={styles.totalAmount}>Total Amount:</p>
-              <p style={styles.totalAmount}>
-                {tenancyResult
-                  ? formatCurrency(2400 + tenancyResult.stampDuty)
-                  : "-"}
-              </p>
-              <small
-                style={{
-                  fontSize: "10px",
-                  marginTop: "10px",
-                  display: "block",
-                }}
-              >
-                The stamp duty above is inclusive of one additional copy of
-                stamping at RM10
-              </small>
-            </div>
-          </div>
-        </div>
+      <button className="legal-btn" onClick={handleCalculateTenancy}>
+        Calculate
+      </button>
+    </div>
+
+    {/* Right Column */}
+    <div className="d-flex flex-column gap-2 flex-fill">
+      <span className="legal-title">Legal Fees</span>
+      <span className="legal-title fw-semibold">RM 2,400.00</span>
+
+      <span className="legal-title">Stamp Duty</span>
+      <span className="legal-title fw-semibold">
+        {tenancyResult ? formatCurrency(tenancyResult.stampDuty) : "-"}
+      </span>
+
+      <p className="legal-total-amount">Total Amount:</p>
+      <p className="legal-total-amount">
+        {tenancyResult
+          ? formatCurrency(2400 + tenancyResult.stampDuty)
+          : "-"}
+      </p>
+
+      <small className="legal-note">
+        The stamp duty above is inclusive of one additional copy of stamping at RM10
+      </small>
+    </div>
+  </div>
+</div>
+
   );
 };
 
@@ -414,213 +371,173 @@ const MortgageCalculator = () => {
   };
 
   return (
-    <div style={styles.card}>
-          <h4 style={styles.title}>Mortgage Calculator</h4>
-          <div style={styles.flexRow}>
-            {/* LEFT COLUMN */}
-            <div style={styles.leftCol}>
-              {/* Mortgage Breakdown */}
-              <div style={styles.section}>
-                <p style={styles.sectionTitle}>Mortgage Breakdown</p>
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                  }}
-                >
-                  <p style={styles.smallText}>Est. monthly repayment</p>
-                  <h3 style={styles.monthlyText}>
-                    {mortgageResult
-                      ? formatCurrency(mortgageResult.monthly) + "/ month"
-                      : "-"}
-                  </h3>
-                </div>
-
-                {/* Progress bar */}
-                <div style={styles.progressContainer}>
-                  <div style={{ ...styles.progressBlue, width: "33%" }}></div>
-                  <div style={{ ...styles.progressTeal, width: "67%" }}></div>
-                </div>
-
-                {/* Principal & Interest */}
-                <div style={styles.legend}>
-                  <span style={styles.legendItem}>
-                    <span
-                      style={{ ...styles.dot, background: "#1E90FF" }}
-                    ></span>
-                    RM{" "}
-                    {mortgageResult
-                      ? formatCurrency(
-                          mortgageResult.principal /
-                            (parseInt(mortgage.loanTenure) * 12)
-                        )
-                      : "-"}{" "}
-                    Principal
-                  </span>
-                  <span style={styles.legendItem}>
-                    <span
-                      style={{ ...styles.dot, background: "#20B2AA" }}
-                    ></span>
-                    RM{" "}
-                    {mortgageResult
-                      ? formatCurrency(
-                          mortgageResult.interest /
-                            (parseInt(mortgage.loanTenure) * 12)
-                        )
-                      : "-"}{" "}
-                    Interest
-                  </span>
-                </div>
-              </div>
-
-              {/* Upfront Costs */}
-              <div style={styles.section}>
-                <p style={styles.sectionTitle}>Upfront Costs</p>
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                  }}
-                >
-                  {" "}
-                  <p style={styles.smallText}>Total Downpayment</p>
-                  <h3 style={styles.monthlyText}>
-                    {mortgageResult
-                      ? formatCurrency(mortgageResult.downpayment)
-                      : "-"}
-                  </h3>
-                </div>
-
-                {/* Downpayment progress bar */}
-                <div style={styles.progressContainer}>
-                  <div style={{ ...styles.progressBlue, width: "11%" }}></div>
-                  <div style={{ ...styles.progressTeal, width: "89%" }}></div>
-                </div>
-
-                <div style={styles.legend}>
-                  <span style={styles.legendItem}>
-                    <span
-                      style={{ ...styles.dot, background: "#1E90FF" }}
-                    ></span>
-                    Downpayment
-                  </span>
-                  <span style={styles.legendItem}>
-                    <span
-                      style={{ ...styles.dot, background: "#20B2AA" }}
-                    ></span>
-                    RM{" "}
-                    {mortgage.loanAmount
-                      ? parseFloat(
-                          mortgage.loanAmount.replace(/,/g, "")
-                        ).toLocaleString()
-                      : "-"}{" "}
-                    loan amount at{" "}
-                    {Math.round(
-                      (parseFloat(mortgage.loanAmount.replace(/,/g, "")) /
-                        parseFloat(mortgage.propertyPrice.replace(/,/g, ""))) *
-                        100
-                    )}
-                    % Loan-to-value
-                  </span>
-                </div>
-              </div>
-              <button
-                style={styles.calculateBtn}
-                onClick={handleCalculateMortgage}
-              >
-                Calculate
-              </button>
-            </div>
-
-            {/* RIGHT COLUMN */}
-            <div style={styles.rightCol}>
-              <label style={styles.textTitle}>Property Price</label>
-              <input
-                style={styles.input}
-                value={`RM ${mortgage.propertyPrice}`}
-                onChange={(e) =>
-                  setMortgage({ ...mortgage, propertyPrice: e.target.value })
-                }
-              />
-
-              <label style={styles.textTitle}>Loan Amount</label>
-              <input
-                style={styles.input}
-                value={`RM ${mortgage.loanAmount}`}
-                onChange={(e) =>
-                  setMortgage({ ...mortgage, loanAmount: e.target.value })
-                }
-              />
-
-              <div
-                style={{ display: "flex", gap: "20px", alignItems: "center" }}
-              >
-                <div style={{ flex: 1 }}>
-                  <label style={styles.textTitle}>Interest Rate</label>
-                  <div style={{ position: "relative", width: "100%" }}>
-                    <input
-                      style={{
-                        ...styles.input,
-                        width: "100%",
-                        paddingRight: "30px", // space for %
-                      }}
-                      value={mortgage.interestRate}
-                      onChange={(e) =>
-                        setMortgage({
-                          ...mortgage,
-                          interestRate: e.target.value,
-                        })
-                      }
-                      placeholder="3.5"
-                    />
-                    <span
-                      style={{
-                        position: "absolute",
-                        right: "10px",
-                        top: "50%",
-                        transform: "translateY(-50%)",
-                        color: "#555",
-                        pointerEvents: "none",
-                      }}
-                    >
-                      %
-                    </span>
-                  </div>
-                </div>
-
-                <div style={{ position: "relative", flex: 1 }}>
-                  <label style={styles.textTitle}>Loan Tenure</label>
-                  <input
-                    style={{
-                      ...styles.input,
-                      width: "100%",
-                      paddingRight: "50px", // space for 'Years'
-                    }}
-                    value={mortgage.loanTenure}
-                    onChange={(e) =>
-                      setMortgage({ ...mortgage, loanTenure: e.target.value })
-                    }
-                    placeholder="30"
-                  />
-                  <span
-                    style={{
-                      position: "absolute",
-                      right: "10px",
-                      top: "70%", // adjust for label spacing
-                      transform: "translateY(-50%)",
-                      color: "#999",
-                      pointerEvents: "none",
-                    }}
-                  >
-                    Years
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
+   <div className="legal-card">
+  <h4 className="mb-3">Mortgage Calculator</h4>
+  <div className="d-flex justify-content-between gap-3">
+    {/* LEFT COLUMN */}
+    <div className="d-flex flex-column gap-3 flex-fill">
+      {/* Mortgage Breakdown */}
+      <div className="legal-section">
+        <p className="legal-section-title">Mortgage Breakdown</p>
+        <div className="d-flex justify-content-between align-items-center">
+          <p className="legal-small">Est. monthly repayment</p>
+          <h3 className="legal-monthly">
+            {mortgageResult
+              ? formatCurrency(mortgageResult.monthly) + "/ month"
+              : "-"}
+          </h3>
         </div>
+
+        {/* Progress bar */}
+        <div className="progress-container">
+          <div
+            className="progress-blue"
+            style={{ width: "33%" }}
+          ></div>
+          <div
+            className="progress-teal"
+            style={{ width: "67%" }}
+          ></div>
+        </div>
+
+        {/* Principal & Interest */}
+        <div className="legend">
+          <span className="legend-item">
+            <span className="legend-dot" style={{ background: "#1E90FF" }}></span>
+            RM{" "}
+            {mortgageResult
+              ? formatCurrency(
+                  mortgageResult.principal /
+                    (parseInt(mortgage.loanTenure) * 12)
+                )
+              : "-"}{" "}
+            Principal
+          </span>
+          <span className="legend-item">
+            <span className="legend-dot" style={{ background: "#20B2AA" }}></span>
+            RM{" "}
+            {mortgageResult
+              ? formatCurrency(
+                  mortgageResult.interest /
+                    (parseInt(mortgage.loanTenure) * 12)
+                )
+              : "-"}{" "}
+            Interest
+          </span>
+        </div>
+      </div>
+
+      {/* Upfront Costs */}
+      <div className="legal-section">
+        <p className="legal-section-title">Upfront Costs</p>
+        <div className="d-flex justify-content-between align-items-center">
+          <p className="legal-small">Total Downpayment</p>
+          <h3 className="legal-monthly">
+            {mortgageResult
+              ? formatCurrency(mortgageResult.downpayment)
+              : "-"}
+          </h3>
+        </div>
+
+        {/* Downpayment progress bar */}
+        <div className="progress-container">
+          <div
+            className="progress-blue"
+            style={{ width: "11%" }}
+          ></div>
+          <div
+            className="progress-teal"
+            style={{ width: "89%" }}
+          ></div>
+        </div>
+
+        <div className="legend">
+          <span className="legend-item">
+            <span className="legend-dot" style={{ background: "#1E90FF" }}></span>
+            Downpayment
+          </span>
+          <span className="legend-item">
+            <span className="legend-dot" style={{ background: "#20B2AA" }}></span>
+            RM{" "}
+            {mortgage.loanAmount
+              ? parseFloat(
+                  mortgage.loanAmount.replace(/,/g, "")
+                ).toLocaleString()
+              : "-"}{" "}
+            loan amount at{" "}
+            {Math.round(
+              (parseFloat(mortgage.loanAmount.replace(/,/g, "")) /
+                parseFloat(mortgage.propertyPrice.replace(/,/g, ""))) *
+                100
+            )}
+            % Loan-to-value
+          </span>
+        </div>
+      </div>
+
+      <button
+        className="legal-btn"
+        onClick={handleCalculateMortgage}
+      >
+        Calculate
+      </button>
+    </div>
+
+    {/* RIGHT COLUMN */}
+    <div className="d-flex flex-column gap-2 flex-fill">
+      <label className="legal-title">Property Price</label>
+      <input
+        className="legal-input"
+        value={`RM ${mortgage.propertyPrice}`}
+        onChange={(e) =>
+          setMortgage({ ...mortgage, propertyPrice: e.target.value })
+        }
+      />
+
+      <label className="legal-title">Loan Amount</label>
+      <input
+        className="legal-input"
+        value={`RM ${mortgage.loanAmount}`}
+        onChange={(e) =>
+          setMortgage({ ...mortgage, loanAmount: e.target.value })
+        }
+      />
+
+      <div className="d-flex gap-3 align-items-center">
+        <div className="flex-fill position-relative">
+          <label className="legal-title">Interest Rate</label>
+          <input
+            className="legal-input pe-5"
+            value={mortgage.interestRate}
+            onChange={(e) =>
+              setMortgage({ ...mortgage, interestRate: e.target.value })
+            }
+            placeholder="3.5"
+          />
+          <span className="position-absolute end-0 top-50 translate-middle-y me-2 text-muted">
+            %
+          </span>
+        </div>
+
+        <div className="flex-fill position-relative">
+          <label className="legal-title">Loan Tenure</label>
+          <input
+            className="legal-input pe-5"
+            value={mortgage.loanTenure}
+            onChange={(e) =>
+              setMortgage({ ...mortgage, loanTenure: e.target.value })
+            }
+            placeholder="30"
+          />
+          <span className="position-absolute end-0 top-50 translate-middle-y me-2 text-muted">
+            Years
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
   );
 };
 
@@ -671,264 +588,147 @@ const RPGTCalculator = () => {
   };
 
   return (
-    <div style={styles.card}>
-          <h4 style={{ marginBottom: "15px", fontWeight: "600" }}>
-            Real Property Gain Tax
-          </h4>
+   <div className="card p-4 mb-4 shadow-sm">
+  <h4 className="mb-3 fw-semibold">Real Property Gain Tax</h4>
 
-          <div style={{ display: "flex", gap: "20px" }}>
-            {/* Left Column */}
-            <div style={{ flex: 1 }}>
-              <label
-                style={{
-                  ...styles.textTitle,
-                  display: "block",
-                  marginBottom: "5px",
-                }}
-              >
-                Accuisition Date/ Initial Purchase Date
-              </label>
-              <input
-                style={inputStyle}
-                value={`RM ${rpgt.purchasePrice}`}
-                onChange={(e) =>
-                  setRpgt({ ...rpgt, purchasePrice: e.target.value })
-                }
-                placeholder="RM 388,000"
-              />
+  <div className="row g-4">
+    {/* LEFT COLUMN */}
+    <div className="col-md-6">
+      {/* Acquisition Date */}
+      <div className="mb-3">
+        <label className="form-label">Acquisition Date / Initial Purchase Date</label>
+        <input
+          type="date"
+          className="form-control"
+          value={rpgt.acquisitionDate || ""}
+          onChange={(e) => setRpgt({ ...rpgt, acquisitionDate: e.target.value })}
+        />
+      </div>
 
-              <label
-                style={{
-                  ...styles.textTitle,
-                  display: "block",
-                  margin: "15px 0 5px",
-                }}
-              >
-                Disposal Date/ Selling Date
-              </label>
-              <div
-                style={{ display: "flex", alignItems: "center", gap: "5px" }}
-              >
-                <div style={{ position: "relative", flex: 1 }}>
-                  <input
-                    style={{
-                      ...inputStyle,
-                      width: "100%",
-                      paddingRight: "50px", // space for the "Years" text
-                      boxSizing: "border-box",
-                    }}
-                    value={rpgt.disposalPrice}
-                    onChange={(e) =>
-                      setRpgt({ ...rpgt, disposalPrice: e.target.value })
-                    }
-                    placeholder="30"
-                  />
-                  <span
-                    style={{
-                      position: "absolute",
-                      right: "10px",
-                      top: "50%",
-                      transform: "translateY(-50%)",
-                      color: "#999",
-                      pointerEvents: "none",
-                    }}
-                  >
-                    Years
-                  </span>
-                </div>
-              </div>
+      {/* Disposal Date */}
+      <div className="mb-3">
+        <label className="form-label">Disposal Date / Selling Date</label>
+        <input
+          type="date"
+          className="form-control"
+          value={rpgt.disposalDate || ""}
+          onChange={(e) => setRpgt({ ...rpgt, disposalDate: e.target.value })}
+        />
+      </div>
 
-              <label
-                style={{
-                  ...styles.textTitle,
-                  display: "block",
-                  margin: "15px 0 5px",
-                }}
-              >
-                Seller’s Nationality
-              </label>
-              <select
-                style={{ ...inputStyle, appearance: "none" }}
-                value={rpgt.nationality || ""}
-                onChange={(e) =>
-                  setRpgt({ ...rpgt, nationality: e.target.value })
-                }
-              >
-                <option value="">Select</option>
-                <option value="local">Local</option>
-                <option value="foreigner">Foreigner</option>
-              </select>
+      {/* Seller Nationality */}
+      <div className="mb-3">
+        <label className="form-label">Seller’s Nationality</label>
+        <select
+          className="form-select"
+          value={rpgt.nationality || ""}
+          onChange={(e) => setRpgt({ ...rpgt, nationality: e.target.value })}
+        >
+          <option value="">Select</option>
+          <option value="local">Local</option>
+          <option value="foreigner">Foreigner</option>
+        </select>
+      </div>
 
-              <label
-                style={{
-                  ...styles.textTitle,
-                  display: "block",
-                  margin: "15px 0 5px",
-                }}
-              >
-                Property Type
-              </label>
-              <div style={{ display: "flex", gap: "15px" }}>
-                <label>
-                  <input
-                    type="radio"
-                    checked={rpgt.propertyType === "residential"}
-                    onChange={() =>
-                      setRpgt({ ...rpgt, propertyType: "residential" })
-                    }
-                  />{" "}
-                  Residential
-                </label>
-                <label>
-                  <input
-                    type="radio"
-                    checked={rpgt.propertyType === "nonResidential"}
-                    onChange={() =>
-                      setRpgt({ ...rpgt, propertyType: "nonResidential" })
-                    }
-                  />{" "}
-                  Non Residential
-                </label>
-              </div>
-
-              <label
-                style={{
-                  ...styles.textTitle,
-                  display: "block",
-                  margin: "15px 0 5px",
-                }}
-              >
-                Property Would the Seller like to be exempted from Gains Tax
-              </label>
-              <div style={{ display: "flex", gap: "15px" }}>
-                <label>
-                  <input
-                    type="radio"
-                    checked={rpgt.exempt === true}
-                    onChange={() => setRpgt({ ...rpgt, exempt: true })}
-                  />{" "}
-                  Yes
-                </label>
-                <label>
-                  <input
-                    type="radio"
-                    checked={rpgt.exempt === false}
-                    onChange={() => setRpgt({ ...rpgt, exempt: false })}
-                  />{" "}
-                  No
-                </label>
-              </div>
-
-              <button
-                style={{
-                  marginTop: "20px",
-                  padding: "8px 16px",
-                  border: "1px solid orange",
-                  background: "transparent",
-                  color: "orange",
-                  borderRadius: "6px",
-                  cursor: "pointer",
-                }}
-                onClick={handleCalculateRPGT}
-              >
-                Calculate
-              </button>
-            </div>
-
-            {/* Right Column */}
-            <div style={{ flex: 1 }}>
-              <label
-                style={{
-                  ...styles.textTitle,
-                  display: "block",
-                  marginBottom: "5px",
-                }}
-              >
-                PURCHASE PRICE Acquisition/ Purchase Price
-              </label>
-              <input
-                style={inputStyle}
-                value={`RM ${rpgt.purchasePrice}`}
-                onChange={(e) =>
-                  setRpgt({ ...rpgt, purchasePrice: e.target.value })
-                }
-                placeholder="RM 388,000"
-              />
-
-              <label
-                style={{
-                  ...styles.textTitle,
-                  display: "block",
-                  margin: "15px 0 5px",
-                }}
-              >
-                Disposal/ Selling Price
-              </label>
-              <div style={{ position: "relative", flex: 1 }}>
-                <input
-                  style={{
-                    ...inputStyle,
-                    width: "100%",
-                    paddingRight: "40px", // space for the text
-                  }}
-                  value={rpgt.disposalPrice}
-                  onChange={(e) =>
-                    setRpgt({ ...rpgt, disposalPrice: e.target.value })
-                  }
-                  placeholder="30"
-                />
-                <span
-                  style={{
-                    position: "absolute",
-                    right: "10px",
-                    top: "50%",
-                    transform: "translateY(-50%)",
-                    color: "#999",
-                    pointerEvents: "none",
-                  }}
-                >
-                  Years
-                </span>
-              </div>
-
-              <label
-                style={{
-                  ...styles.textTitle,
-                  display: "block",
-                  margin: "15px 0 5px",
-                }}
-              >
-                PERMITTED EXPENSES Others Permitted Expenses
-              </label>
-              <div style={{ position: "relative", flex: 1 }}>
-                <input
-                  style={{
-                    ...inputStyle,
-                    width: "100%",
-                    paddingRight: "40px", // space for 'Years'
-                  }}
-                  value={rpgt.permittedExpenses}
-                  onChange={(e) =>
-                    setRpgt({ ...rpgt, permittedExpenses: e.target.value })
-                  }
-                  placeholder="30"
-                />
-                <span
-                  style={{
-                    position: "absolute",
-                    right: "10px",
-                    top: "50%",
-                    transform: "translateY(-50%)",
-                    color: "#999",
-                    pointerEvents: "none",
-                  }}
-                >
-                  Years
-                </span>
-              </div>
-            </div>
+      {/* Property Type */}
+      <div className="mb-3">
+        <label className="form-label">Property Type</label>
+        <div>
+          <div className="form-check form-check-inline">
+            <input
+              type="radio"
+              className="form-check-input"
+              checked={rpgt.propertyType === "residential"}
+              onChange={() => setRpgt({ ...rpgt, propertyType: "residential" })}
+            />
+            <label className="form-check-label">Residential</label>
+          </div>
+          <div className="form-check form-check-inline">
+            <input
+              type="radio"
+              className="form-check-input"
+              checked={rpgt.propertyType === "nonResidential"}
+              onChange={() => setRpgt({ ...rpgt, propertyType: "nonResidential" })}
+            />
+            <label className="form-check-label">Non Residential</label>
           </div>
         </div>
+      </div>
+
+      {/* Exemption */}
+      <div className="mb-3">
+        <label className="form-label">Exempt from Gains Tax?</label>
+        <div>
+          <div className="form-check form-check-inline">
+            <input
+              type="radio"
+              className="form-check-input"
+              checked={rpgt.exempt === true}
+              onChange={() => setRpgt({ ...rpgt, exempt: true })}
+            />
+            <label className="form-check-label">Yes</label>
+          </div>
+          <div className="form-check form-check-inline">
+            <input
+              type="radio"
+              className="form-check-input"
+              checked={rpgt.exempt === false}
+              onChange={() => setRpgt({ ...rpgt, exempt: false })}
+            />
+            <label className="form-check-label">No</label>
+          </div>
+        </div>
+      </div>
+
+      <button
+        className="btn btn-outline-warning mt-2"
+        onClick={handleCalculateRPGT}
+      >
+        Calculate
+      </button>
+    </div>
+
+    {/* RIGHT COLUMN */}
+    <div className="col-md-6">
+      {/* Purchase Price */}
+      <div className="mb-3">
+        <label className="form-label">Purchase Price (RM)</label>
+        <input
+          type="number"
+          className="form-control"
+          value={rpgt.purchasePrice || ""}
+          onChange={(e) => setRpgt({ ...rpgt, purchasePrice: e.target.value })}
+          placeholder="388000"
+        />
+      </div>
+
+      {/* Disposal Price */}
+      <div className="mb-3">
+        <label className="form-label">Disposal / Selling Price (RM)</label>
+        <input
+          type="number"
+          className="form-control"
+          value={rpgt.disposalPrice || ""}
+          onChange={(e) => setRpgt({ ...rpgt, disposalPrice: e.target.value })}
+          placeholder="500000"
+        />
+      </div>
+
+      {/* Permitted Expenses */}
+      <div className="mb-3">
+        <label className="form-label">Permitted Expenses (RM)</label>
+        <input
+          type="number"
+          className="form-control"
+          value={rpgt.permittedExpenses || ""}
+          onChange={(e) => setRpgt({ ...rpgt, permittedExpenses: e.target.value })}
+          placeholder="20000"
+        />
+      </div>
+    </div>
+  </div>
+</div>
+
   );
 };
 
@@ -937,182 +737,65 @@ const CalculatorMenuPage = () => {
   const [selectedCalculator, setSelectedCalculator] = useState(null);
 
   const calculators = [
-    { id: "buySell", name: "Buy & Sell Legal Fee & Stamp Duty", icon: <img src={buy} alt="Buy & Sell" style={{ width: 40, height: 40 }} />, component: <BuySellCalculator /> },
-    { id: "loan", name: "Loan Legal Fee & Stamp Duty", icon: <img src={loan} alt="Loan Legal" style={{ width: 40, height: 40 }} />, component: <LoanCalculator /> },
-    { id: "tenancy", name: "Tenancy Legal Fee & Stamp Duty", icon: <img src={legal} alt="Tenancy Legal" style={{ width: 40, height: 40 }} />, component: <TenancyCalculator /> },
-    { id: "mortgage", name: "Mortgage Loan", icon: <img src={mortgage} alt="Mortgage Loan" style={{ width: 40, height: 40 }} />, component: <MortgageCalculator /> },
-    { id: "rpgt", name: "Real Property Gain Tax (RPGT", icon: <img src={gtax} alt="Real Property Gain Tax" style={{ width: 40, height: 40 }} />, component: <RPGTCalculator /> },
+    { id: "buySell", name: "Buy & Sell Legal Fee & Stamp Duty", icon: <img src={buy} alt="Buy & Sell" className="img-fluid icon-40" />, component: <BuySellCalculator /> },
+    { id: "loan", name: "Loan Legal Fee & Stamp Duty", icon: <img src={loan} alt="Loan Legal" className="img-fluid icon-40" />, component: <LoanCalculator /> },
+    { id: "tenancy", name: "Tenancy Legal Fee & Stamp Duty", icon: <img src={legal} alt="Tenancy Legal" className="img-fluid icon-40" />, component: <TenancyCalculator /> },
+    { id: "mortgage", name: "Mortgage Loan", icon: <img src={mortgage} alt="Mortgage Loan" className="img-fluid icon-40" />, component: <MortgageCalculator /> },
+    { id: "rpgt", name: "Real Property Gain Tax (RPGT", icon: <img src={gtax} alt="Real Property Gain Tax" className="img-fluid icon-40" />, component: <RPGTCalculator /> },
   ];
 
   if (selectedCalculator) {
     const calc = calculators.find((c) => c.id === selectedCalculator);
     return (
-      <div style={{ padding: 20 }}>
-        <button
-          onClick={() => setSelectedCalculator(null)}
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 8,
-            marginBottom: 20,
-            padding: "6px 12px",
-            background: "#fafafa",
-            border: "none",
-            borderRadius: 6,
-            cursor: "pointer"
-          }}
-        >
-          <FaArrowLeft /> Back
-        </button>
-        {calc?.component}
-      </div>
+      <div className="p-3">
+  <button
+    onClick={() => setSelectedCalculator(null)}
+    className="btn btn-light d-flex align-items-center gap-2 mb-3"
+  >
+    <FaArrowLeft /> Back
+  </button>
+
+  {calc?.component}
+</div>
     );
   }
 
   return (
-    <div style={{ padding: 20 }}>
-      {/* Top row (3 icons) */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 20 }}>
-        {calculators.slice(0, 3).map((calc) => (
-          <div
-            key={calc.id}
-            onClick={() => setSelectedCalculator(calc.id)}
-            style={{
-              cursor: "pointer",
-              background: "#f8f8f8",
-              borderRadius: 12,
-              padding: 20,
-              textAlign: "center",
-              boxShadow: "0 2px 5px rgba(0,0,0,0.1)",
-            }}
-          >
-            {calc.icon}
-            <p style={{ marginTop: 10 }}>{calc.name}</p>
-          </div>
-        ))}
+<div className="p-3">
+  {/* Top row (1 per row on mobile, 3 per row on md and up) */}
+  <div className="row g-3">
+    {calculators.slice(0, 3).map((calc) => (
+      <div className="col-12 col-md-4" key={calc.id}>
+        <div
+          onClick={() => setSelectedCalculator(calc.id)}
+          className="text-center bg-light rounded-3 p-3 shadow-sm h-100 d-flex flex-column align-items-center justify-content-center"
+          role="button"
+        >
+          {calc.icon}
+          <p className="mt-2 mb-0">{calc.name}</p>
+        </div>
       </div>
+    ))}
+  </div>
 
-      {/* Bottom row (2 icons) */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 20, marginTop: 20 }}>
-        {calculators.slice(3).map((calc) => (
-          <div
-            key={calc.id}
-            onClick={() => setSelectedCalculator(calc.id)}
-            style={{
-              cursor: "pointer",
-              background: "#f8f8f8",
-              borderRadius: 12,
-              padding: 20,
-              textAlign: "center",
-              boxShadow: "0 2px 5px rgba(0,0,0,0.1)",
-            }}
-          >
-            {calc.icon}
-            <p style={{ marginTop: 10 }}>{calc.name}</p>
-          </div>
-        ))}
+  {/* Bottom row (1 per row on mobile, 2 per row on md and up) */}
+  <div className="row g-3 mt-3">
+    {calculators.slice(3).map((calc) => (
+      <div className="col-12 col-md-6" key={calc.id}>
+        <div
+          onClick={() => setSelectedCalculator(calc.id)}
+          className="text-center bg-light rounded-3 p-3 shadow-sm h-100 d-flex flex-column align-items-center justify-content-center"
+          role="button"
+        >
+          {calc.icon}
+          <p className="mt-2 mb-0">{calc.name}</p>
+        </div>
       </div>
-    </div>
+    ))}
+  </div>
+</div>
+
   );
 };
-const styles = {
-  card: {
-    border: "1px solid #ccc",
-    borderRadius: "10px",
-    padding: "20px",
-    marginBottom: "30px",
-    boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
-    backgroundColor:'#FAFAFA'
-  },
-  textTitle: {
-    fontFamily: "Poppins",
-    fontSize: "18px",
-    fontStyle: "normal",
-    fontWeight: 400,
-    lineHeight: "normal",
-  },
-  flexRow: {
-    display: "flex",
-    justifyContent: "space-between",
-    gap: "20px",
-  },
-  leftCol: {
-    flex: 1,
-    display: "flex",
-    flexDirection: "column",
-    gap: "10px",
-  },
-  rightCol: {
-    flex: 1,
-    display: "flex",
-    flexDirection: "column",
-    gap: "10px",
-  },
-  input: {
-    padding: "8px 12px",
-    border: "1px solid #ccc",
-    borderRadius: "5px",
-    fontSize: "12px",
-  },
-  button: {
-    marginTop: "10px",
-    padding: "8px 16px",
-    backgroundColor: "white",
-    border: "1px solid orange",
-    color: "orange",
-    borderRadius: "5px",
-    cursor: "pointer",
-    width: "120px",
-  },
-  totalLabel: {
-    fontWeight: "bold",
-    marginTop: "10px",
-  },
-  totalAmount: {
-    color: "red",
-    fontWeight: "bold",
-    fontSize: "18px",
-  },
-  title: { marginBottom: "20px" },
-  // flexRow: { display: "flex", gap: "20px" },
-  // leftCol: { flex: 1 },
-  // rightCol: { flex: 1, display: "flex", flexDirection: "column", gap: "10px" },
-  section: { marginBottom: "30px" },
-  sectionTitle: { fontWeight: "bold", fontSize: "18px", fontFamily: "Poppins" },
-  smallText: { fontSize: "10px", color: "#666" },
-  monthlyText: { fontSize: "14px", fontWeight: "bold" },
-  progressContainer: {
-    display: "flex",
-    height: "8px",
-    background: "#eee",
-    borderRadius: "5px",
-    overflow: "hidden",
-    margin: "10px 0",
-  },
-  progressBlue: { background: "#1E90FF" },
-  progressTeal: { background: "#20B2AA" },
-  legend: {
-    display: "flex",
-    justifyContent: "space-between",
-    fontSize: "10px",
-    marginTop: "8px",
-  },
-  legendItem: { display: "flex", alignItems: "center", gap: "5px" },
-  dot: { width: "8px", height: "8px", borderRadius: "50%" },
-  // input: {
-  //   border: "1px solid #ccc",
-  //   borderRadius: "5px",
-  //   padding: "8px"
-  // },
-  calculateBtn: {
-    marginTop: "15px",
-    border: "1px solid #ff9900",
-    background: "transparent",
-    color: "#ff9900",
-    padding: "8px",
-    borderRadius: "5px",
-    cursor: "pointer",
-    width: "120px",
-  },
-};
+
 export default CalculatorMenuPage;

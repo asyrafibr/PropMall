@@ -211,31 +211,20 @@ const DoneDeal = () => {
   const renderSkeletonCard = (_, index) => (
     <div key={index} className="col-12 col-md-4 mb-4 d-flex">
       <div className="card h-100 w-100 border-0 shadow-sm">
-        <div
-          className="skeleton-image"
-          style={{ height: "260px", background: "#e0e0e0" }}
-        ></div>
+        {/* Skeleton Image */}
+        <div className="skeleton skeleton-img"></div>
+
         <div className="card-body">
-          <div
-            className="skeleton-line mb-2"
-            style={{ height: "20px", background: "#ddd", width: "60%" }}
-          ></div>
-          <div
-            className="skeleton-line mb-1"
-            style={{ height: "15px", background: "#eee", width: "80%" }}
-          ></div>
-          <div
-            className="skeleton-line mb-1"
-            style={{ height: "15px", background: "#eee", width: "50%" }}
-          ></div>
-          <div
-            className="skeleton-line mb-1"
-            style={{ height: "15px", background: "#eee", width: "70%" }}
-          ></div>
-          <div
-            className="skeleton-line mt-3"
-            style={{ height: "35px", background: "#ddd", width: "100%" }}
-          ></div>
+          {/* Title line */}
+          <div className="skeleton skeleton-title mb-2"></div>
+
+          {/* Content lines */}
+          <div className="skeleton skeleton-line w-80 mb-1"></div>
+          <div className="skeleton skeleton-line w-50 mb-1"></div>
+          <div className="skeleton skeleton-line w-70 mb-1"></div>
+
+          {/* Button line */}
+          <div className="skeleton skeleton-btn mt-3"></div>
         </div>
       </div>
     </div>
@@ -244,41 +233,27 @@ const DoneDeal = () => {
   return (
     <>
       <div
-        style={{
-          // default padding
-          padding: "30px 60px 5px 60px",
-          // override when template3
-          ...(template === "template3" && {
-            backgroundImage: `url(${bg})`,
-
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            backgroundRepeat: "no-repeat",
-            height: "50px",
-            width: "20%",
-            marginTop: "3%",
-            marginBottom: "3%",
-            display: "flex", // ✅ enable flex
-            alignItems: "center", // ✅ vertical center
-            justifyContent: "center",
-            paddingTop: 10,
-          }),
-        }}
+        className={`
+px-4 px-lg-5 py-4 pb-1    ${
+      template === "template3"
+        ? `
+      d-flex align-items-center justify-content-center
+      bg-cover bg-center bg-no-repeat
+      mt-3 mb-3
+      h-50px w-20p pt-10px
+    `
+        : ""
+    }
+    my-template-div ${template === "template3" ? "template3-bg" : ""}
+  `}
+       
       >
-        <p
-          style={{
-            color: "#212529",
-            fontSize: "16px",
-            fontFamily: "Poppins",
-            fontWeight: 600,
-            // marginBottom: 40,
-          }}
-        >
-          Done Deals
-        </p>
+        <p className="text-dark px-0 px-lg-3 fw-semibold font-poppins mb-0 done-deals-text">
+  Done Deals
+</p>
       </div>
 
-      <div className="container-fluid" style={{ padding: "0 50px" }}>
+      <div className="container-fluid px-2 px-md-5">
         <div className="row mx-0">
           {loading
             ? Array.from({ length: 6 }).map(renderSkeletonCard)
@@ -308,22 +283,16 @@ const DoneDeal = () => {
                     className="col-12 col-md-4 mb-4 d-flex"
                   >
                     <div className="card h-100 d-flex flex-column border-0 shadow-sm w-100">
-                      <div
-                        className="mb-1"
-                        style={{
-                          fontFamily: "Poppins",
-                          fontSize: "14px",
-                          fontWeight: 400,
-                          padding: "12px",
-                        }}
-                      >
+                      {/* Posted Date */}
+                      <div className="mb-1 px-3 py-2 fs-6 fw-normal font-poppins">
                         {postedOn(card.deal_dt, {
                           timeZone: "Asia/Kuala_Lumpur",
                         })}
                       </div>
+
+                      {/* Image Carousel */}
                       <div
-                        className="position-relative image-carousel"
-                        style={{ overflow: "hidden", height: "260px" }}
+                        className="position-relative image-carousel overflow-hidden h-260px"
                         onClick={() =>
                           handleOpenModal(
                             card.photos,
@@ -335,148 +304,91 @@ const DoneDeal = () => {
                         <img
                           src={card.photos[currentIndex]}
                           alt={card.ads_title}
-                          className="card-img-top"
-                          style={{
-                            height: "260px",
-                            width: "100%",
-                            objectFit: "cover",
-                            userSelect: "none",
-                            cursor: "pointer",
-                          }}
+                          className="card-img-top h-100 w-100 object-fit-cover user-select-none"
+                          role="button"
                         />
 
-                        <div
-                          className="done-deal-banner"
-                          style={{
-                            paddingLeft: "20px",
-                            fontSize: "14px",
-                            fontFamily: "Poppins",
-                            fontWeight: 600,
-                          }}
-                        >
+                        {/* Done Deals Banner */}
+                        <div className="done-deal-banner ps-3 fs-6 fw-semibold font-poppins">
                           Done Deals
                         </div>
 
+                        {/* Status Tag */}
                         {showTag && (
                           <div
-                            className="position-absolute top-0 start-0 m-2"
-                            style={{
-                              backgroundColor: statusColor,
-                              width: "96px",
-                              height: "40px",
-                              borderRadius: "4px",
-                              color: "white",
-                                fontSize: "14px",
-                              padding: "8px 16px",
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "center",
-                            }}
+                            className={`
+      position-absolute top-0 start-0 m-2
+      d-flex align-items-center justify-content-center
+      text-white rounded
+      status-badge
+      ${isForSale ? "bg-sale" : isForRental ? "bg-rental" : "bg-default"}
+    `}
                           >
-                            <text
-                              style={{
-                                fontSize: "14px",
-                                fontFamily: "Poppins",
-                                fontWeight: 600,
-                              }}
-                            >
+                            <span className="fs-6 fw-semibold font-poppins">
                               {statusText}
-                            </text>
+                            </span>
                           </div>
                         )}
 
+                        {/* Below Market */}
                         {belowMarket && (
                           <span className="badge bg-primary position-absolute bottom-0 start-0 m-2">
                             Below Market
                           </span>
                         )}
 
+                        {/* Photos Count */}
                         <span className="position-absolute bottom-0 end-0 m-2 text-white small">
                           <i className="bi bi-camera-fill me-1"></i>{" "}
                           {card.photos_count ?? 0}
                         </span>
                       </div>
 
+                      {/* Card Body */}
                       <div className="card-body d-flex flex-column flex-grow-1">
-                        <h5
-                          style={{
-                            fontSize: "18px",
-                            fontWeight: 600,
-                            fontFamily: "Poppins",
-                          }}
-                        >
+                        <h5 className="fs-5 fw-semibold font-poppins">
                           RM {card.price}
                         </h5>
+
                         <p className="text-muted mb-1">
-                          <text
-                            style={{
-                              fontSize: "18px",
-                              fontWeight: 400,
-                              fontFamily: "Poppins",
-                            }}
-                          >
+                          <span className="fs-5 fw-normal font-poppins">
                             {card.ads_title}
-                          </text>
+                          </span>
                           <br />
-                          <text
-                            style={{
-                              fontSize: "14px",
-                              fontWeight: 400,
-                              fontFamily: "Poppins",
-                            }}
-                          >
+                          <span className="fs-6 fw-normal font-poppins">
                             {card.location_area}
-                          </text>
+                          </span>
                         </p>
-                        <p className="text-muted mb-2">
-                          <text
-                            style={{
-                              fontSize: "14px",
-                              fontWeight: 400,
-                              fontFamily: "Poppins",
-                            }}
-                          >
-                            {card.category_type_title_holding_lottype_storey}
-                          </text>
+
+                        <p className="text-muted mb-2 fs-6 fw-normal font-poppins">
+                          {card.category_type_title_holding_lottype_storey}
                           <br />
+
+                          {/* Built-up Size */}
                           {card.built_size && (
                             <div>
-                              <text
-                                style={{
-                                  fontSize: "14px",
-                                  fontWeight: 400,
-                                  fontFamily: "Poppins",
-                                }}
-                              >
-                                Built-up Size: {card.built_size}
-                                {card.built_size_unit}
-                                {!card.land_size &&
-                                  card.built_price_per_unit && (
-                                    <>
-                                      ({card.monetary_currency}
-                                      {card.built_price_per_unit} per sqft)
-                                    </>
-                                  )}
-                              </text>
+                              Built-up Size: {card.built_size}
+                              {card.built_size_unit}
+                              {!card.land_size && card.built_price_per_unit && (
+                                <>
+                                  {" "}
+                                  ({card.monetary_currency}
+                                  {card.built_price_per_unit} per sqft)
+                                </>
+                              )}
                             </div>
                           )}
+
+                          {/* Land Size only */}
                           {!card.built_size && card.land_size && (
                             <div>
-                              <text
-                                style={{
-                                  fontSize: "14px",
-                                  fontWeight: 400,
-                                  fontFamily: "Poppins",
-                                }}
-                              >
-                                Land Size: {card.land_size}{" "}
-                                {card.land_size_unit}
-                              </text>
+                              Land Size: {card.land_size} {card.land_size_unit}
                               {["acre", "hectar"].includes(
                                 card.land_size_unit?.toLowerCase()
                               ) &&
                                 card.land_price_per_unit && (
                                   <>
+                                    {" "}
                                     ({card.monetary_currency}{" "}
                                     {card.land_price_per_unit} per{" "}
                                     {card.land_size_unit})
@@ -487,61 +399,51 @@ const DoneDeal = () => {
                               ) &&
                                 card.land_price_per_sqft && (
                                   <>
+                                    {" "}
                                     ({card.monetary_currency}{" "}
                                     {card.land_price_per_sqft} per sqft)
                                   </>
                                 )}
                             </div>
                           )}
+
+                          {/* Both Built & Land */}
                           {card.built_size && card.land_size && (
-                            <>
-                              <div>
-                                <text
-                                  style={{
-                                    fontSize: "14px",
-                                    fontWeight: 400,
-                                    fontFamily: "Poppins",
-                                  }}
-                                >
-                                  Land Size: {card.land_size}
-                                  {card.land_size_unit}
-                                  {["acre", "hectar"].includes(
-                                    card.land_size_unit?.toLowerCase()
-                                  ) &&
-                                    card.land_price_per_unit && (
-                                      <>
-                                        ({card.monetary_currency}
-                                        {card.land_price_per_unit} per
-                                        {card.land_size_unit})
-                                      </>
-                                    )}
-                                  {["sqft", "sqm"].includes(
-                                    card.land_size_unit?.toLowerCase()
-                                  ) &&
-                                    card.land_price_per_sqft && (
-                                      <>
-                                        ({card.monetary_currency}
-                                        {card.land_price_per_sqft} per sqft)
-                                      </>
-                                    )}
-                                </text>
-                              </div>
-                            </>
+                            <div>
+                              Land Size: {card.land_size} {card.land_size_unit}
+                              {["acre", "hectar"].includes(
+                                card.land_size_unit?.toLowerCase()
+                              ) &&
+                                card.land_price_per_unit && (
+                                  <>
+                                    {" "}
+                                    ({card.monetary_currency}{" "}
+                                    {card.land_price_per_unit} per{" "}
+                                    {card.land_size_unit})
+                                  </>
+                                )}
+                              {["sqft", "sqm"].includes(
+                                card.land_size_unit?.toLowerCase()
+                              ) &&
+                                card.land_price_per_sqft && (
+                                  <>
+                                    {" "}
+                                    ({card.monetary_currency}{" "}
+                                    {card.land_price_per_sqft} per sqft)
+                                  </>
+                                )}
+                            </div>
                           )}
                         </p>
+
+                        {/* Footer Actions */}
                         <div className="mt-auto">
                           {card.bathroom && card.room > 0 && (
                             <div className="d-flex flex-wrap gap-3 mb-3">
-                              <span
-                                className="d-flex align-items-center"
-                                style={{ gap: "6px" }}
-                              >
+                              <span className="d-flex align-items-center gap-2">
                                 <FaBed /> {card.room}
                               </span>
-                              <span
-                                className="d-flex align-items-center"
-                                style={{ gap: "6px" }}
-                              >
+                              <span className="d-flex align-items-center gap-2">
                                 <FaBath /> {card.bathroom}
                               </span>
                             </div>

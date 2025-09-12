@@ -201,3 +201,107 @@
     background-color: #e0e0e0;
   }
 }
+/* ✅ Custom Bootstrap-like utilities */
+
+/* Height */
+.h-50px {
+  height: 50px !important;
+}
+
+/* Width */
+.w-20p {
+  width: 20% !important;
+}
+
+/* Padding top */
+.pt-10px {
+  padding-top: 10px !important;
+}
+
+/* Background helpers */
+.bg-cover {
+  background-size: cover !important;
+}
+.bg-center {
+  background-position: center !important;
+}
+.bg-no-repeat {
+  background-repeat: no-repeat !important;
+}
+.h-260px {
+  height: 260px !important;
+}
+.font-poppins {
+  font-family: 'Poppins', sans-serif !important;
+}
+/* ✅ Consistent badge size */
+.status-badge {
+  width: 96px !important;
+  height: 40px !important;
+}
+
+/* ✅ Background colors */
+.bg-sale {
+  background-color: #FF7A00 !important;
+}
+
+.bg-rental {
+  background-color: #007B83 !important;
+}
+
+.bg-default {
+  background-color: #ccc !important;
+}
+/* Base skeleton style */
+.skeleton {
+  background-color: rgba(108, 117, 125, 0.25); /* like bg-secondary bg-opacity-25 */
+  border-radius: 4px;
+}
+
+/* Image placeholder */
+.skeleton-img {
+  width: 100%;
+  height: 260px;
+}
+
+/* Title placeholder */
+.skeleton-title {
+  width: 60%;
+  height: 20px;
+}
+
+/* Text lines */
+.skeleton-line {
+  height: 15px;
+  background-color: #f8f9fa; /* like bg-light */
+}
+
+/* Button placeholder */
+.skeleton-btn {
+  width: 100%;
+  height: 35px;
+}
+.done-deals-text {
+  font-size: 16px; /* mobile default */
+    padding-bottom: 36px; /* mobile default */
+
+}
+
+@media (min-width: 992px) { /* desktop (lg) */
+  .done-deals-text {
+    font-size: 20px;
+        padding-bottom: 40px;
+
+  }
+}
+/* Common styles */
+.my-template-div {
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+/* Conditional background */
+.template3-bg {
+  background-image: url('../image/titlebg3.png'); /* replace dynamically */
+}

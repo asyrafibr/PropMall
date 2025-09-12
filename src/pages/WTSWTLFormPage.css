@@ -1,0 +1,35 @@
+/* custom.css */
+.label-text {
+  width: 200px;       /* fixed width */
+  font-family: Poppins, sans-serif;
+  font-weight: 500;
+  font-size: 12px;
+  flex-shrink: 0;
+}
+
+.label-colon {
+  width: 12px;
+  padding: 0 12px;
+  text-align: center;
+  font-family: Poppins, sans-serif;
+}
+.loading-container {
+  min-height: 100vh;             /* full screen */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: #fafafa;     /* light background */
+}
+
+.custom-spinner {
+  width: 3rem;
+  height: 3rem;
+}
+
+.loading-text {
+  margin-top: 16px;
+  font-size: 14px;
+  font-family: 'Poppins', sans-serif;
+  color: #555;
+}

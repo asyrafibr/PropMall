@@ -75,3 +75,52 @@ input[type="checkbox"]:checked::after {
     font-size: 30px; /* Desktop and above */
   }
 }
+.responsive-padding {
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+@media (min-width: 768px) {
+  .responsive-padding {
+    padding-left: 80px;
+    padding-right: 80px;
+  }
+}
+.modal-size {
+  width: auto;          /* default: can be overridden dynamically */
+  height: auto;
+  max-width: 95vw;      /* replaces inline maxWidth */
+  max-height: 85vh;     /* replaces inline maxHeight */
+}
+.header-section {
+  background-image: url('../image/Landing_Hero.jpg'); /* dynamically replace */
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center center;
+}/* Custom height utility */
+/* Custom input/button height */
+.h-60px {
+  height: 60px !important;
+}
+
+/* Font family */
+.font-poppins {
+  font-family: "Poppins", sans-serif !important;
+}
+
+/* Search button styling */
+.btn-search {
+  background-color: #f4980e !important;
+  width: 120px !important;
+  border-radius: 8px !important;
+}
+.cursor-pointer{
+  cursor: "pointer" 
+}
+.custom-box {
+  width: 1000px;
+  height: 400px;
+}
+.modal-location{
+   max-width: 750px;max-height :80vh 
+}

@@ -10,6 +10,7 @@ const DashboardListingT1 = ({ listings, handleViewDetails }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const { template } = useTemplate();
   const thumbnailRefs = useRef([]);
+  const [modalImageIndex, setModalImageIndex] = useState(0);
 
   const openModal = (images, index) => {
     setModalImages(images);
@@ -30,6 +31,11 @@ const DashboardListingT1 = ({ listings, handleViewDetails }) => {
       }
     }, 300);
   };
+  const showPrevImage = () => {
+    setModalImageIndex((prev) =>
+      prev === 0 ? modalImages.length - 1 : prev - 1
+    );
+  };
 
   const closeModal = () => {
     setModalOpen(false);
@@ -41,6 +47,10 @@ const DashboardListingT1 = ({ listings, handleViewDetails }) => {
     return () => clearTimeout(timer);
   }, []);
 
+  const handleCloseModal = () => {
+    setModalOpen(false);
+    document.body.classList.remove("no-scroll");
+  };
   useEffect(() => {
     const thumbnailNode = thumbnailRefs.current[currentImageIndex];
     if (thumbnailNode) {
@@ -51,7 +61,11 @@ const DashboardListingT1 = ({ listings, handleViewDetails }) => {
       });
     }
   }, [currentImageIndex]);
-
+ const showNextImage = () => {
+    setModalImageIndex((prev) =>
+      prev === modalImages.length - 1 ? 0 : prev + 1
+    );
+  };
   const showPrev = () =>
     setCurrentImageIndex((prev) =>
       prev === 0 ? modalImages.length - 1 : prev - 1
@@ -76,37 +90,27 @@ const DashboardListingT1 = ({ listings, handleViewDetails }) => {
   const renderSkeletonCard = () => (
     <div className="col-12 col-md-4 mb-4 d-flex" key={Math.random()}>
       <div className="card h-100 w-100 border-0 shadow-sm">
-        <div style={{ height: "260px", backgroundColor: "#ddd" }} />
+        {/* Image skeleton */}
+        <div className="bg-secondary bg-opacity-25 w-100 skeleton-img" />
+
         <div className="card-body">
-          <div
-            style={{
-              height: "20px",
-              width: "60%",
-              backgroundColor: "#e0e0e0",
-              marginBottom: "10px",
-            }}
-          />
-          <div
-            style={{
-              height: "14px",
-              width: "80%",
-              backgroundColor: "#e0e0e0",
-              marginBottom: "8px",
-            }}
-          />
+          {/* Title skeleton */}
+          <div className="bg-light mb-2 skeleton-title" />
+
+          {/* Subtitle skeleton */}
+          <div className="bg-light skeleton-subtitle" />
         </div>
       </div>
     </div>
   );
 
   return (
-    <div className="container-fluid py-5 px-5 mt-3">
+    <div className="container-fluid py-5 px-3 px-md-5 mt-3">
       {/* Header */}
       <div
-        className={`mb-4 ${template === "template3" ? "bg-cover p-2" : ""}`}
-        style={
-          template === "template3" ? { backgroundImage: `url(${bg})` } : {}
-        }
+        className={`mb-4 ${
+          template === "template3" ? "template3-header bg-cover p-2" : ""
+        }`}
       >
         <span className="resp-title ps-3">Featured Listing</span>
       </div>
@@ -141,39 +145,28 @@ const DashboardListingT1 = ({ listings, handleViewDetails }) => {
                     </div>
 
                     {/* Image & Badges */}
-                    <div
-                      className="position-relative overflow-hidden"
-                      style={{ height: "260px" }}
-                    >
+                    <div className="position-relative overflow-hidden card-img-wrapper">
                       <img
                         src={
                           card.photos?.[0] ||
                           "https://via.placeholder.com/300x200"
                         }
-                        className="card-img-top h-100 w-100 object-fit-cover"
+                        className="card-img-top h-100 w-100 object-fit-cover cursor-pointer"
                         alt={card.ads_title}
-                        style={{ cursor: "pointer" }}
                         onClick={() => openModal(card.photos || [], 0)}
                       />
-
                       {/* Badges */}
                       {(showTag || belowMarket) && (
-                        <div
-                          className="position-absolute top-0 start-0 m-2 d-flex flex-column gap-1"
-                          style={{ zIndex: 1 }}
-                        >
+                        <div className="position-absolute top-0 start-0 m-2 d-flex flex-column gap-1 badge-container">
                           {showTag && (
                             <div
-                              className={`d-flex align-items-center justify-content-center rounded resp-badge px-3 py-1 ${statusColor}`}
+                              className={`d-flex align-items-center justify-content-start  rounded resp-badge px-3 py-1 ${statusColor}`}
                             >
                               {statusText}
                             </div>
                           )}
                           {belowMarket && (
-                            <div
-                              className="d-flex align-items-center justify-content-center rounded bg-success text-white resp-badge px-3 py-1 mt-1"
-                              style={{ width: "150px", height: "30px" }}
-                            >
+                            <div className="d-flex align-items-center justify-content-center rounded bg-success text-white resp-badge px-3 py-1 mt-1 below-market-badge">
                               Below Market
                             </div>
                           )}
@@ -182,7 +175,9 @@ const DashboardListingT1 = ({ listings, handleViewDetails }) => {
 
                       {/* Exclusive Ribbon */}
                       {card.exclusive === "Y" && (
-                        <div className="corner-ribbon">Exclusive</div>
+                        <div className="corner-ribbon resp-badge">
+                          Exclusive
+                        </div>
                       )}
 
                       {/* Photo Count */}
@@ -196,13 +191,11 @@ const DashboardListingT1 = ({ listings, handleViewDetails }) => {
                     <div className="card-body d-flex flex-column flex-grow-1">
                       <h5 className="resp-title">RM {card.price}</h5>
 
-                      <p className="text-muted mb-1 resp-text1">
-                        {card.ads_title}
-                        <br />
-                        {card.location_area}
-                      </p>
+                      <p className=" mb-1 resp-textTitle">{card.ads_title}</p>
 
                       <p className="text-muted mb-2 resp-text1">
+                        {card.location_description}
+                        <br />
                         {card.category_type_title_holding_lottype_storey}
                         <br />
                         {card.built_size && (
@@ -255,34 +248,35 @@ const DashboardListingT1 = ({ listings, handleViewDetails }) => {
             })}
       </div>
 
-      {/* Modal */}
-      {modalOpen && (
+      {/* {modalOpen && (
         <div
-          className="modal fade show d-flex justify-content-center align-items-start"
-          style={{ paddingTop: "5vh" }}
+          className="modal fade show d-flex justify-content-center align-items-center custom-black-modal"
           onClick={closeModal}
         >
           <div
-            className="modal-dialog modal-dialog-centered"
+            className="modal-dialog modal-dialog-centered modal-lg"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="modal-content">
+            <div className="modal-content text-white border-0">
               <button
                 type="button"
-                className="btn-close position-absolute top-0 end-0 m-3"
+                className="btn-close btn-close-white position-absolute top-0 end-0 m-3"
                 onClick={closeModal}
               ></button>
-              <div className="modal-body p-0">
-                <img
-                  src={modalImages[currentImageIndex]}
-                  alt="Full"
-                  className="img-fluid w-100"
-                />
-                <div className="position-absolute top-0 start-50 translate-middle-x mt-2 bg-dark text-white rounded px-2">
+
+              <div className="modal-body p-3 d-flex flex-column align-items-center py-5">
+                <div className="d-flex justify-content-center align-items-center w-100">
+                  <img
+                    src={modalImages[currentImageIndex]}
+                    alt="Full"
+                    className="main-modal-img"
+                  />
+                </div>
+
+                <div className="mt-2 bg-dark text-white rounded px-2 py-1 small">
                   {currentImageIndex + 1} / {modalImages.length}
                 </div>
 
-                {/* Arrows */}
                 {modalImages.length > 1 && (
                   <>
                     <button
@@ -300,35 +294,62 @@ const DashboardListingT1 = ({ listings, handleViewDetails }) => {
                   </>
                 )}
 
-                {/* Thumbnails */}
-                <div className="d-flex overflow-auto mt-2 p-2">
-                  {getThumbnailSlice().map((img, idx) => {
-                    const actualIndex =
-                      Math.max(
-                        0,
-                        Math.min(currentImageIndex - 5, modalImages.length - 10)
-                      ) + idx;
-                    return (
-                      <img
-                        key={actualIndex}
-                        src={img}
-                        alt={`Thumbnail ${actualIndex}`}
-                        className={`img-thumbnail me-2 ${
-                          currentImageIndex === actualIndex
-                            ? "border-primary"
-                            : ""
-                        }`}
-                        style={{ width: "80px", cursor: "pointer" }}
-                        onClick={() => setCurrentImageIndex(actualIndex)}
-                      />
-                    );
-                  })}
+                <div className="d-flex justify-content-center mt-3 thumbnail-bar">
+                  {modalImages.map((img, idx) => (
+                    <img
+                      key={idx}
+                      src={img}
+                      alt={`Thumbnail ${idx}`}
+                      className={`thumbnail-img me-2 ${
+                        currentImageIndex === idx ? "border-primary" : ""
+                      } cursor-pointer`}
+                      onClick={() => setCurrentImageIndex(idx)}
+                    />
+                  ))}
                 </div>
               </div>
             </div>
           </div>
         </div>
-      )}
+      )} */}
+      {modalOpen && (
+          <div className="modal-overlay" onClick={handleCloseModal}>
+            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+              <button className="close-button" onClick={handleCloseModal}>
+                &times;
+              </button>
+              <div className="modal-body">
+                <img
+                  src={modalImages[modalImageIndex]}
+                  alt="Main View"
+                  className="modal-image"
+                />
+                <div className="image-counter">
+                  {modalImageIndex + 1} / {modalImages.length}
+                </div>
+                <button className="nav-button prev" onClick={showPrevImage}>
+                  &#10094;
+                </button>
+                <button className="nav-button next" onClick={showNextImage}>
+                  &#10095;
+                </button>
+                <div className="thumbnail-container">
+                  {modalImages.map((img, idx) => (
+                    <img
+                      key={idx}
+                      src={img}
+                      className={`thumbnail ${
+                        modalImageIndex === idx ? "active" : ""
+                      }`}
+                      onClick={() => setModalImageIndex(idx)}
+                      alt={`Thumb ${idx}`}
+                    />
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
     </div>
   );
 };

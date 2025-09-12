@@ -211,25 +211,11 @@ const Filters = ({
         }}
       >
         <div
-          className="modal-box"
-          style={{
-            width,
-            maxWidth: "95vw",
-            height,
-            maxHeight: "85vh",
-            borderRadius: 8,
-            backgroundColor: "white",
-            padding: 20,
-          }}
-          // ✅ Prevent events inside the box from bubbling to the overlay
+          className="modal-box bg-white p-4 rounded modal-size"
           onMouseDown={(e) => e.stopPropagation()}
           onClick={(e) => e.stopPropagation()}
         >
-          {title ? (
-            <h5 className="mb-3" style={{ fontFamily: "Poppins" }}>
-              {title}
-            </h5>
-          ) : null}
+          {title ? <h5 className="mb-3 font-poppins">{title}</h5> : null}
           {children}
         </div>
       </div>
@@ -467,15 +453,23 @@ const Filters = ({
       </div>
 
       <div
-        className="d-flex flex-column flex-md-row align-items-start justify-content-center flex-wrap position-relative w-100 min-vh-50 text-white p-3 p-md-5"
-        style={{
-          backgroundImage: `url(${headerImage})`,
-          backgroundSize: "cover",
-          backgroundRepeat: "no-repeat",
-          backgroundPosition: "center center",
-        }}
+        className="
+    d-flex 
+    flex-column flex-md-row
+    align-items-start 
+    justify-content-center 
+    flex-wrap 
+    position-relative 
+    w-100 
+    min-vh-50 
+    text-white 
+     px-md-5   <!-- ✅ smaller left/right padding on mobile -->
+    py-3 py-md-5   <!-- ✅ keep top/bottom responsive -->
+        header-section
+
+  "
       >
-        <div className="container-fluid order-2 order-md-1 position-relative z-2 flex-fill pt-5 px-5">
+        <div className="container-fluid order-2 order-md-1 position-relative z-2 flex-fill pt-5 responsive-padding">
           <div className="hero-heading text-white fw-bold text-end mb-4">
             Discover Your Dream Properties at {mainAgent.name}
           </div>
@@ -504,10 +498,10 @@ const Filters = ({
               {/* All States Dropdown */}
               <div className="col-12 col-md-3">
                 <div
-                  className="form-control d-flex align-items-center justify-content-between cursor-pointer bg-white text-truncate"
+                  className="form-control d-flex align-items-center justify-content-between cursor-pointer bg-white text-truncate     h-60px
+"
                   role="button"
                   onClick={() => setShowModal(true)}
-                  style={{ height: "60px" }}
                 >
                   <span className="flex-grow-1 text-truncate fs-5 fw-normal">
                     {selectedLocation || "All States"}
@@ -521,20 +515,13 @@ const Filters = ({
                 <input
                   id="search"
                   type="text"
-                  className="form-control flex-grow-1 h-100"
+                  className="form-control flex-grow-1 h-60px font-poppins"
                   placeholder="Search"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  style={{ height: "60px", fontFamily: "Poppins" }}
                 />
                 <button
-                  className="btn text-white w-md-auto"
-                  style={{
-                    backgroundColor: "#F4980E",
-                    width: "120px",
-                    height: "60px",
-                    borderRadius: "8px",
-                  }}
+                  className="btn btn-search text-white w-md-auto h-60px"
                   onClick={handleSearch}
                 >
                   Search
@@ -581,8 +568,7 @@ const Filters = ({
                               options.map((item, i) => (
                                 <li
                                   key={i}
-                                  className="py-1"
-                                  style={{ cursor: "pointer" }}
+                                  className="py-1 cursor-pointer"
                                   onClick={() => {
                                     if (label === "All Categories") {
                                       setSelectedCategory({
@@ -638,8 +624,7 @@ const Filters = ({
                           onClick={() => setPriceModalOpen(false)}
                         >
                           <div
-                            className="bg-white rounded-3 p-4 shadow-lg"
-                            style={{ width: "1000px", height: "400px" }}
+                            className="bg-white rounded-3 p-4 shadow-lg custom-box"
                             onClick={(e) => e.stopPropagation()}
                           >
                             <h5 className="text-dark mb-3">
@@ -697,13 +682,11 @@ const Filters = ({
 
       {showModal && (
         <div
-          className="position-fixed top-0 start-0 vw-100 vh-100 d-flex justify-content-center align-items-start bg-dark bg-opacity-50"
-          style={{ zIndex: 9999, paddingTop: "6rem" }} // push down overlay
+          className="position-fixed top-0 start-0 vw-100 vh-100 d-flex justify-content-center align-items-start bg-dark bg-opacity-50 z-3 pt-5"
           onClick={() => setShowModal(false)}
         >
           <div
-            className="bg-white rounded-4 d-flex flex-column position-relative shadow w-100"
-            style={{ maxWidth: "750px", maxHeight: "80vh" }}
+            className="bg-white rounded-4 d-flex flex-column position-relative shadow w-100 pt-5 modal-location"
             onClick={(e) => e.stopPropagation()}
           >
             {/* ===== Header ===== */}
@@ -712,8 +695,7 @@ const Filters = ({
                 {navigationStack.length > 1 && (
                   <button
                     onClick={handleBack}
-                    className="btn p-0 d-flex justify-content-center align-items-center me-2 fs-6"
-                    style={{ width: "16px", height: "16px" }}
+                    className="btn p-0 d-flex justify-content-center align-items-center me-2 fs-6 w-25 h-25"
                   >
                     &lt;
                   </button>
@@ -784,7 +766,7 @@ const Filters = ({
                         <>
                           {showCheckboxes && displayList.length > 0 && (
                             <div
-                              className="form-check d-flex align-items-center mb-2"
+                              className="form-check d-flex align-items-center mb-2 cursor-pointer"
                               onClick={() => {
                                 const allIds = displayList.map(
                                   (item) => item.id
@@ -805,7 +787,6 @@ const Filters = ({
                                   setSelectedAreaObjects(allObjects);
                                 }
                               }}
-                              style={{ cursor: "pointer" }}
                             >
                               <input
                                 type="checkbox"
@@ -835,8 +816,7 @@ const Filters = ({
                               return (
                                 <div
                                   key={node.id}
-                                  className="py-2 d-flex align-items-center"
-                                  style={{ cursor: "pointer" }}
+                                  className="py-2 d-flex align-items-center cursor-pointer"
                                   onClick={() =>
                                     node.child_count > 0
                                       ? handleNodeClick(node)

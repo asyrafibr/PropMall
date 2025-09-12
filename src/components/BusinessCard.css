@@ -1,0 +1,306 @@
+/* Background helpers */
+.bg-cover {
+  background-size: cover;
+}
+.bg-center {
+  background-position: center;
+}
+
+/* Icon circle size */
+.icon-circle {
+  width: 53px;
+  height: 53px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Stat cards fixed sizes */
+.stat-card {
+  width: 146px;
+  height: 62px;
+}
+.stat-card-lg {
+  width: 455px;
+  height: 62px;
+}
+
+/* Stat icon circle */
+.stat-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Restrict max width for text under video */
+.maxw-640 {
+  max-width: 640px;
+}
+/* Card body shadow */
+.custom-card-body {
+  box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.5);
+}
+
+/* Social button styling */
+.social-btn {
+  width: 100%;                 /* full width on mobile */
+  max-width: 660px;            /* desktop max width */
+  height: 52px;
+  border-radius: 8px;
+  padding: 12px 16px;
+  background-color: #ffffff;
+  box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.5);
+  border: none;
+  color: #3a3a3a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  font-weight: 500;
+  font-size: 14px;
+  transition: all 0.2s ease-in-out;
+}
+
+.social-btn:hover {
+  background-color: #f8f9fa;
+  transform: translateY(-2px);
+}
+
+/* Icon inside button */
+.icon-container {
+  position: absolute;
+  left: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  font-size: 18px;
+}
+
+/* Social brand colors */
+.text-instagram {
+  color: #e4405f;
+}
+
+.text-facebook {
+  color: #1877f2;
+}
+
+.text-youtube {
+  color: #ff0000;
+}
+
+.text-tiktok {
+  color: #000000;
+}
+
+.text-linkedin {
+  color: #0a66c2;
+}
+/* Card styling */
+.custom-card {
+  background-color: rgba(250, 250, 250, 0.8);
+}
+
+.custom-card-body {
+  box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.5);
+}
+
+/* Responsive video */
+.custom-video {
+  width: 100%;
+  max-width: 640px;
+  height: auto;
+  border-radius: 12px;
+}
+
+/* Intro text */
+.custom-intro-text {
+  max-width: 640px;
+  margin: 0 auto;
+  font-size: 14px;
+  font-weight: 400;
+  font-family: "Poppins", sans-serif;
+  padding-top: 20px;
+}
+/* Card Styling */
+.agent-card {
+  background-color: rgba(250, 250, 250, 0.8);
+}
+.agent-card-body {
+  box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.5);
+  padding-top: 60px;
+}
+
+/* Agent Photo */
+.agent-photo-wrapper {
+  position: absolute;
+  top: -36px;
+  left: 20px;
+  margin-bottom: 50px;
+}
+.agent-photo {
+  width: 120px;
+  height: 120px;
+  border: 4px solid white;
+  object-fit: cover;
+}
+
+/* Icon Circles */
+.agent-icons {
+  gap: 20px;
+}
+.icon-circle {
+  width: 53px;
+  height: 53px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.icon-circle.whatsapp {
+  background-color: #25D366;
+}
+
+/* Stat Cards */
+.stat-card {
+  width: 146px;
+  height: 62px;
+}
+.stat-card .stat-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: #F4980E;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.stat-card .stat-icon img {
+  width: 24px;
+  height: 24px;
+}
+
+/* Total Listings Card */
+.total-card {
+  width: 100%;
+  max-width: 455px;
+  height: 62px;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .agent-photo-wrapper {
+    position: relative;
+    top: 0;
+    left: 0;
+    display: flex;
+    justify-content: center;
+    margin-bottom: 10px;
+  }
+
+  .agent-info {
+    text-align: center;
+    margin-top: 10px !important;
+    margin-left: 0 !important;
+  }
+
+  .agent-icons {
+    justify-content: center !important;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .stat-card {
+    width: 100%;
+    max-width: 200px;
+    margin-bottom: 10px;
+  }
+
+  .total-card {
+    max-width: 100%;
+  }
+
+  .d-flex.justify-content-end.align-items-center {
+    flex-direction: column;
+    text-align: center;
+    gap: 10px !important;
+  }
+}
+.mt-6 {
+  margin-top: 6rem !important; /* ~80px */
+}
+
+.mt-7 {
+  margin-top: 6rem !important; /* ~96px */
+}
+@media (max-width: 768px) {
+  .mt-6,
+  .mt-7 {
+    margin-top: 2rem !important; /* override for mobile */
+  }
+}.bg-cover {
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.bg-agent {
+  min-height: 100vh;
+  padding-top: 150px;
+  padding-bottom: 50px;
+}
+
+@media (max-width: 768px) {
+  .bg-agent {
+    padding-top: 100px;   /* adjust for smaller screens */
+    padding-bottom: 30px;
+  }
+}
+.stat-card {
+  width: 146px;       /* desktop width */
+  height: 62px;
+}
+
+.total-card {
+  width: 455px;       /* desktop width */
+  height: 62px;
+}
+
+.stat-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: #F4980E;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.stat-icon img {
+  width: 24px;
+  height: 24px;
+}
+
+/* Responsive for tablets and mobile */
+@media (max-width: 768px) {
+  .d-flex.flex-column.align-items-end {
+    align-items: center !important;
+  }
+
+  .d-flex.flex-wrap.justify-content-end {
+    justify-content: center !important;
+  }
+
+  .stat-card,
+  .total-card {
+    width: 100% !important;
+    max-width: 400px; /* optional max width */
+    margin-bottom: 0.5rem;
+  }
+}

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { getLocationTree, getSubmitSell, getSubmitLet } from "../api/axiosApi";
 import { useTemplate } from "../context/TemplateContext";
-
+import './WTSWTLFormPage.css'
 const PropertyRequestForm = () => {
   const [purpose, setPurpose] = useState("buy");
   const [name, setName] = useState("");
@@ -37,44 +37,14 @@ const [status, setStatus] = useState(null);
   const [isLoading2, setIsLoading2] = useState(false);
 const [isSuccess, setIsSuccess] = useState(null); // null | true | false
 
-  const inputStyle = {
-    padding: "10px",
-    border: "1px solid #ccc",
-    borderRadius: "4px",
-    fontSize: "12px",
-    width: "100%",
-    fontFamily: "Poppins",
-  };
 
-  const rowStyle = {
-    display: "flex",
-    alignItems: "center",
-    width: "100%",
-    gap: "12px",
-    fontFamily: "Poppins",
-  };
 
-  const labelTextStyle = {
-    width: "200px",
-    fontFamily: "Poppins",
-    fontWeight: "500",
-    fontSize: "12px",
-    flexShrink: 0,
-  };
-
-  const colonStyle = {
-    padding: "0 12px",
-    width: "12px",
-    textAlign: "center",
-    fontFamily: "Poppins",
-  };
-
-  const labelWrapper = (text) => (
-    <>
-      <span style={labelTextStyle}>{text}</span>
-      <span style={colonStyle}>:</span>
-    </>
-  );
+const labelWrapper = (text) => (
+  <>
+    <span className="label-text">{text}</span>
+    <span className="label-colon">:</span>
+  </>
+);
 
   useEffect(() => {
     const fetchFilterData = async () => {
@@ -174,58 +144,33 @@ const handleViewDetails = useCallback(async () => {
       setAreas([]);
     }
   };
-  if (isLoading) {
-    return (
-      <>
-        {/* ✅ Spinner keyframes in a <style> tag */}
-        <style>
-          {`
-            @keyframes spin {
-              0% { transform: rotate(0deg); }
-              100% { transform: rotate(360deg); }
-            }
-          `}
-        </style>
-
-        <div style={styles.loadingContainer}>
-          <div style={styles.spinner}></div>
-          <p style={styles.loadingText}>Loading property form...</p>
-        </div>
-      </>
-    );
-  }
-  if (isLoading2) {
+if (isLoading) {
   return (
-    <>
-      <style>
-        {`
-          @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-          }
-        `}
-      </style>
-      <div style={styles.loadingContainer}>
-        <div style={styles.spinner}></div>
-        <p style={styles.loadingText}>Submitting form...</p>
+    <div className="loading-container">
+      <div className="spinner-border custom-spinner text-warning" role="status">
+        <span className="visually-hidden">Loading...</span>
       </div>
-    </>
+      <p className="loading-text">Loading property form...</p>
+    </div>
   );
 }
+
+if (isLoading2) {
+  return (
+    <div className="loading-container">
+      <div className="spinner-border custom-spinner text-warning" role="status">
+        <span className="visually-hidden">Submitting...</span>
+      </div>
+      <p className="loading-text">Submitting form...</p>
+    </div>
+  );
+}
+
 if (isSuccess === true) {
   return (
-    <div
-      style={{
-        minHeight: "100vh",      // take full height
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        flexDirection: "column",
-        gap: "16px",
-      }}
-    >
-      <span style={{ fontSize: "60px", color: "green" }}>✔</span>
-      <p style={{ color: "green", fontWeight: "600", fontSize: "20px" }}>
+    <div className="min-vh-100 d-flex flex-column justify-content-center align-items-center gap-3">
+      <span className="fs-1 text-success">✔</span>
+      <p className="text-success fw-semibold fs-5 mb-0">
         Form successfully submitted!
       </p>
     </div>
@@ -234,554 +179,217 @@ if (isSuccess === true) {
 
 if (isSuccess === false) {
   return (
-    <div
-      style={{
-        minHeight: "90vh",      // take full height
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        flexDirection: "column",
-        gap: "16px",
-      }}
-    >
-      <span style={{ fontSize: "60px", color: "red" }}>✘</span>
-      <p style={{ color: "red", fontWeight: "600", fontSize: "20px" }}>
+    <div className="min-vh-100 d-flex flex-column justify-content-center align-items-center gap-3">
+      <span className="fs-1 text-danger">✘</span>
+      <p className="text-danger fw-semibold fs-5 mb-0">
         Form submission failed. Please try again.
       </p>
     </div>
   );
 }
 
-  return (
-    <div
-      style={{
-        minHeight: "100vh",
-        fontFamily: "Poppins",
-        background: "#F7F4F0",
-        paddingTop: "40px",
-      }}
-    >
-      <div
-        style={{
-          width: "1200px",
-          margin: "0 auto",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "flex-start",
-          gap: "24px",
-          padding: "16px 24px 24px 24px",
-          fontFamily: "Poppins",
-        }}
-      >
-        <div style={{ fontWeight: "600", fontSize: "18px" }}>
-          Property Request Form
-        </div>
 
-        <div
-          style={{
-            padding: "24px",
-            background: "#FAFAFA",
-            border: "1px solid #DBDBDB",
-            borderRadius: "8px",
-            display: "flex",
-            flexDirection: "column",
-            gap: "24px",
-            width: "100%",
-            fontFamily: "Poppins",
-          }}
-        >
-          {/* Purpose */}
-          <div style={rowStyle}>
+  return (
+   <div className="min-vh-100 bg-light">
+  <div className="container py-2">
+    <div className="d-flex flex-column align-items-start gap-4">
+      {/* Heading */}
+      <div className="fw-semibold fs-5">Property Request Form</div>
+
+      {/* Form Wrapper */}
+      <div className="p-4 bg-white border rounded d-flex flex-column gap-4 w-100">
+        {/* Purpose */}
+        <div className="row g-3 w-100">
+          <div className="col-12">
             {labelWrapper("*Purpose/ Objective")}
-            <div style={{ display: "flex", gap: "12px", width: "100%" }}>
+            <div className="d-flex gap-2 w-100">
               <button
                 onClick={() => setPurpose("buy")}
-                style={{
-                  ...inputStyle,
-                  width: "50%",
-                  backgroundColor: purpose === "buy" ? "#F4980E" : "#fff",
-                  color: purpose === "buy" ? "#FFF" : "#737373",
-                }}
+                className={`btn w-50 ${
+                  purpose === "buy"
+                    ? "btn-warning text-white"
+                    : "btn-outline-secondary"
+                }`}
               >
                 For Sale (WTS)
               </button>
               <button
                 onClick={() => setPurpose("rent")}
-                style={{
-                  ...inputStyle,
-                  width: "50%",
-                  backgroundColor: purpose === "rent" ? "#F4980E" : "#fff",
-                  color: purpose === "rent" ? "#FFF" : "#737373",
-                }}
+                className={`btn w-50 ${
+                  purpose === "rent"
+                    ? "btn-warning text-white"
+                    : "btn-outline-secondary"
+                }`}
               >
                 For Rent (WTL)
               </button>
             </div>
           </div>
+        </div>
 
-          {/* Name */}
-          <div style={rowStyle}>
+        {/* Name */}
+        <div className="row g-3 w-100">
+          <div className="col-12">
             {labelWrapper("*Name")}
             <input
-              style={inputStyle}
+              className="form-control"
               value={name}
               onChange={(e) => setName(e.target.value)}
             />
           </div>
+        </div>
 
-          {/* Phone + Email */}
-          <div style={rowStyle}>
+        {/* Phone + Email */}
+        <div className="row g-3 w-100">
+          <div className="col-md-6">
             {labelWrapper("*Phone Number")}
             <input
-              style={{ ...inputStyle, width: "50%" }}
+              className="form-control"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
             />
+          </div>
+          <div className="col-md-6">
             {labelWrapper("*Email")}
-
             <input
-              style={{ ...inputStyle, width: "50%" }}
+              className="form-control"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
           </div>
+        </div>
 
-          {/* Location State */}
-
-          <div style={{ display: "flex", gap: "20px", width: "100%" }}>
-            <div style={rowStyle}>
-              {labelWrapper("*Location State")}
-              <select
-                value={selectedStateId}
-                onChange={handleStateChange}
-                style={inputStyle}
-              >
-                <option value="">[Please select a State]</option>
-                {locationTree?.child_list?.map((state) => (
-                  <option key={state.id} value={state.id}>
-                    {state.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {/* Area Select */}
-            <div style={rowStyle}>
-              {labelWrapper("*Location Area")}
-              <select
-                value={selectedAreaId}
-                onChange={(e) => setSelectedAreaId(e.target.value)}
-                disabled={!areas.length}
-                style={inputStyle}
-              >
-                <option value="">
-                  {selectedStateId
-                    ? "[Please select an Area]"
-                    : "[Please select a State first]"}
-                </option>
-                {areas.map((area) => (
-                  <option key={area.id} value={area.id}>
-                    {area.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-          {/* Address */}
-          <div style={rowStyle}>
-            {labelWrapper("*Address")}
-            <textarea
-              style={{ ...inputStyle, height: "60px" }}
-              value={address}
-              onChange={(e) => setAddress(e.target.value)}
-            />
-          </div>
-
-          {/* Google/Waze */}
-          <div style={rowStyle}>
-            {labelWrapper("Google/ Waze Location")}
-            <div style={{ width: "100%" }}>
-              <input
-                style={inputStyle}
-                value={wazeLocation}
-                onChange={(e) => setWazeLocation(e.target.value)}
-              />
-              <p style={{ fontSize: "8px", color: "#777", marginTop: "4px" }}>
-                *Key in Google/ Waze Pin Location (if any)
-              </p>
-            </div>
-          </div>
-
-          {/* Property Category */}
-          <div style={rowStyle}>
-            {labelWrapper("*Property Category")}
+        {/* Location */}
+        <div className="row g-3 w-100">
+          <div className="col-md-6">
+            {labelWrapper("*Location State")}
             <select
-              style={inputStyle}
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
+              value={selectedStateId}
+              onChange={handleStateChange}
+              className="form-select"
             >
-              <option value="">[Please select a property category]</option>
-              <option value="Landed">Landed</option>
-              <option value="Highrise">Highrise</option>
-              <option value="Commercial">Commercial</option>
-              <option value="Land">Land</option>
+              <option value="">[Please select a State]</option>
+              {locationTree?.child_list?.map((state) => (
+                <option key={state.id} value={state.id}>
+                  {state.name}
+                </option>
+              ))}
             </select>
           </div>
-
-          {/* Own property */}
-          <div style={rowStyle}>
-            {labelWrapper("*Do you own this property?")}
-            <div style={{ display: "flex", gap: "12px" }}>
-              <button
-                onClick={() => setOwnProperty("yes")}
-                style={{
-                  ...inputStyle,
-                  width: "400px",
-                  backgroundColor: ownProperty === "yes" ? "#F4980E" : "#fff",
-                  color: ownProperty === "yes" ? "#fff" : "#737373",
-                }}
-              >
-                Yes
-              </button>
-              <button
-                onClick={() => setOwnProperty("no")}
-                style={{
-                  ...inputStyle,
-                  width: "400px",
-                  backgroundColor: ownProperty === "no" ? "#F4980E" : "#fff",
-                  color: ownProperty === "no" ? "#fff" : "#737373",
-                }}
-              >
-                No
-              </button>
-            </div>
+          <div className="col-md-6">
+            {labelWrapper("*Location Area")}
+            <select
+              value={selectedAreaId}
+              onChange={(e) => setSelectedAreaId(e.target.value)}
+              disabled={!areas.length}
+              className="form-select"
+            >
+              <option value="">
+                {selectedStateId
+                  ? "[Please select an Area]"
+                  : "[Please select a State first]"}
+              </option>
+              {areas.map((area) => (
+                <option key={area.id} value={area.id}>
+                  {area.name}
+                </option>
+              ))}
+            </select>
           </div>
-          {category === "Landed" && (
-            <>
-              <div style={rowStyle}>
-                {labelWrapper("Please choose type of land")}
-                <select
-                  value={landType}
-                  onChange={(e) => setLandType(e.target.value)}
-                  style={inputStyle}
-                >
-                  <option value="">[Select land type]</option>
-                  <option value="Terrace">Terrace</option>
-                  <option value="Townhouse">Townhouse</option>
-                  <option value="Semi Detached">Semi Detached</option>
-                  <option value="Bungalow">Bungalow</option>
-                </select>
-              </div>
+        </div>
 
-              <div style={rowStyle}>
-                {labelWrapper("How Many Floor")}
-                <select
-                  value={floorCount}
-                  onChange={(e) => setFloorCount(e.target.value)}
-                  style={inputStyle}
-                >
-                  <option value="">[Select floor count]</option>
-                  {[1, 2, 3, 4, 5].map((f) => (
-                    <option key={f} value={f}>
-                      {f}
-                    </option>
-                  ))}
-                </select>
-              </div>
+        {/* Address */}
+        <div>
+          {labelWrapper("*Address")}
+          <textarea
+            className="form-control"
+            value={address}
+            onChange={(e) => setAddress(e.target.value)}
+            rows="3"
+          />
+        </div>
 
-              <div style={rowStyle}>
-                {labelWrapper("How Many Bedroom(s)")}
-                <input
-                  type="number"
-                  value={bedroom}
-                  onChange={(e) => setBedroom(e.target.value)}
-                  style={inputStyle}
-                  placeholder="e.g. 3"
-                />
-              </div>
+        {/* Google/Waze */}
+        <div>
+          {labelWrapper("Google/ Waze Location")}
+          <input
+            className="form-control"
+            value={wazeLocation}
+            onChange={(e) => setWazeLocation(e.target.value)}
+          />
+          <p className="small text-muted mt-1">
+            *Key in Google/ Waze Pin Location (if any)
+          </p>
+        </div>
 
-              <div style={rowStyle}>
-                {labelWrapper("How Many Bathroom(s)")}
-                <input
-                  type="number"
-                  value={bathroom}
-                  onChange={(e) => setBathroom(e.target.value)}
-                  style={inputStyle}
-                  placeholder="e.g. 2"
-                />
-              </div>
+        {/* Category */}
+        <div>
+          {labelWrapper("*Property Category")}
+          <select
+            className="form-select"
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+          >
+            <option value="">[Please select a property category]</option>
+            <option value="Landed">Landed</option>
+            <option value="Highrise">Highrise</option>
+            <option value="Commercial">Commercial</option>
+            <option value="Land">Land</option>
+          </select>
+        </div>
 
-              <div style={rowStyle}>
-                {labelWrapper("Land Area (0 if unknown)")}
-                <input
-                  type="number"
-                  value={landArea}
-                  onChange={(e) => setLandArea(e.target.value)}
-                  style={inputStyle}
-                  placeholder="e.g. 1500"
-                />
-              </div>
-
-              <div style={rowStyle}>
-                {labelWrapper("Built Up Area (0 if unknown)")}
-                <input
-                  type="number"
-                  value={builtUpArea}
-                  onChange={(e) => setBuiltUpArea(e.target.value)}
-                  style={inputStyle}
-                  placeholder="e.g. 1200"
-                />
-              </div>
-            </>
-          )}
-
-          {/* --- Highrise Type --- */}
-          {category === "Highrise" && (
-            <>
-              <div style={rowStyle}>
-                {labelWrapper("Please choose type of high rise")}
-                <select
-                  value={highriseType}
-                  onChange={(e) => setHighriseType(e.target.value)}
-                  style={inputStyle}
-                >
-                  <option value="">[Select highrise type]</option>
-                  <option value="Flat">Flat</option>
-                  <option value="Apartment">Apartment</option>
-                  <option value="Condominium">Condominium</option>
-                  <option value="Penthouse">Penthouse</option>
-                  <option value="Studio (SOHO/SOFO/SOVO)">
-                    Studio (SOHO/SOFO/SOVO)
-                  </option>
-                </select>
-              </div>
-
-              <div style={rowStyle}>
-                {labelWrapper("How Many Bedroom(s)")}
-                <input
-                  type="number"
-                  value={bedroom}
-                  onChange={(e) => setBedroom(e.target.value)}
-                  style={inputStyle}
-                  placeholder="e.g. 2"
-                />
-              </div>
-
-              <div style={rowStyle}>
-                {labelWrapper("How Many Bathroom(s)")}
-                <input
-                  type="number"
-                  value={bathroom}
-                  onChange={(e) => setBathroom(e.target.value)}
-                  style={inputStyle}
-                  placeholder="e.g. 1"
-                />
-              </div>
-
-              <div style={rowStyle}>
-                {labelWrapper("Land Area (0 if unknown)")}
-                <input
-                  type="number"
-                  value={landArea}
-                  onChange={(e) => setLandArea(e.target.value)}
-                  style={inputStyle}
-                  placeholder="e.g. 850"
-                />
-              </div>
-            </>
-          )}
-
-          {/* --- Commercial Type --- */}
-          {category === "Commercial" && (
-            <div style={rowStyle}>
-              {labelWrapper("Please choose type of commercial")}
-              <select
-                value={commercialType}
-                onChange={(e) => setCommercialType(e.target.value)}
-                style={inputStyle}
-              >
-                <option value="">[Select commercial type]</option>
-                <option value="Shop Lot">Shop Lot</option>
-                <option value="Shop House">Shop House</option>
-                <option value="Office Space">Office Space</option>
-                <option value="WareHouse">Warehouse</option>
-                <option value="Factory">Factory</option>
-                <option value="Hotel">Hotel</option>
-                <option value="En bloc building">En bloc building</option>
-              </select>
-            </div>
-          )}
-          {category === "Land" && (
-            <>
-              <div style={rowStyle}>
-                {labelWrapper("Please choose type of land")}
-                <select
-                  value={landLotType}
-                  onChange={(e) => setLandLotType(e.target.value)}
-                  style={inputStyle}
-                >
-                  <option value="">[Select land type]</option>
-                  <option value="Agriculture">Agriculture</option>
-                  <option value="Building">Building</option>
-                  <option value="Industrial">Industrial</option>
-                  <option value="Don't know">Don't know</option>
-                </select>
-              </div>
-
-              <div style={rowStyle}>
-                {labelWrapper("Land Status")}
-                <div style={{ display: "flex", gap: "16px", flexWrap: "wrap" }}>
-                  {["Lot NonBumi", "Lot Bumi", "Malay Reserve"].map(
-                    (status) => (
-                      <label
-                        key={status}
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: "8px",
-                        }}
-                      >
-                        <input
-                          type="checkbox"
-                          checked={landStatuses.includes(status)}
-                          onChange={() => {
-                            if (landStatuses.includes(status)) {
-                              setLandStatuses(
-                                landStatuses.filter((s) => s !== status)
-                              );
-                            } else {
-                              setLandStatuses([...landStatuses, status]);
-                            }
-                          }}
-                        />
-                        {status}
-                      </label>
-                    )
-                  )}
-                </div>
-              </div>
-
-              <div style={rowStyle}>
-                {labelWrapper("Land Area")}
-                <input
-                  type="number"
-                  value={landArea}
-                  onChange={(e) => setLandArea(e.target.value)}
-                  style={inputStyle}
-                  placeholder="Enter land area (0 if unknown)"
-                />
-              </div>
-            </>
-          )}
-          {category === "Others" && (
-            <div style={rowStyle}>
-              {labelWrapper("Others")}
-              <input
-                type="text"
-                value={otherCategory}
-                onChange={(e) => setOtherCategory(e.target.value)}
-                style={inputStyle}
-                placeholder="Please specify"
-              />
-            </div>
-          )}
-          {/* Plan to sell */}
-          <div style={rowStyle}>
-            {labelWrapper("*Are you planning to sell this property soon?")}
-            <div style={{ display: "flex", gap: "12px" }}>
-              <button
-                onClick={() => setPlanToSell("yes")}
-                style={{
-                  ...inputStyle,
-                  width: "400px",
-                  backgroundColor: planToSell === "yes" ? "#F4980E" : "#fff",
-                  color: planToSell === "yes" ? "#fff" : "#737373",
-                }}
-              >
-                Yes
-              </button>
-              <button
-                onClick={() => setPlanToSell("no")}
-                style={{
-                  ...inputStyle,
-                  width: "400px",
-                  backgroundColor: planToSell === "no" ? "#F4980E" : "#fff",
-                  color: planToSell === "no" ? "#fff" : "#737373",
-                }}
-              >
-                No
-              </button>
-            </div>
+        {/* Own Property */}
+        <div>
+          {labelWrapper("*Do you own this property?")}
+          <div className="d-flex gap-2 flex-wrap">
+            <button
+              onClick={() => setOwnProperty("yes")}
+              className={`btn w-100 w-md-50 ${
+                ownProperty === "yes"
+                  ? "btn-warning text-white"
+                  : "btn-outline-secondary"
+              }`}
+            >
+              Yes
+            </button>
+            <button
+              onClick={() => setOwnProperty("no")}
+              className={`btn w-100 w-md-50 ${
+                ownProperty === "no"
+                  ? "btn-warning text-white"
+                  : "btn-outline-secondary"
+              }`}
+            >
+              No
+            </button>
           </div>
         </div>
 
         {/* Help with Selling */}
-        <div
-          style={{
-            backgroundColor: "#FAFAFA",
-            border: "1px solid var(--Grey-3, #DBDBDB)",
-            display: "flex",
-            width: "1150px",
-            padding: "16px 24px 24px 24px",
-            flexDirection: "column",
-            alignItems: "flex-start",
-            gap: "24px",
-            borderRadius: "6px",
-            fontFamily: "Poppins",
-          }}
-        >
-          <div style={{ fontWeight: "600" }}>Help with selling my property</div>
-          <label
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "12px",
-              fontSize: "12px",
-              fontFamily: "Poppins",
-              cursor: "pointer",
-            }}
-          >
+        <div className="bg-white border rounded p-4 w-100">
+          <div className="fw-semibold mb-2">Help with selling my property</div>
+          <div className="form-check">
             <input
               type="checkbox"
+              id="helpWithSelling"
+              className="form-check-input"
               checked={helpWithSelling}
               onChange={(e) => setHelpWithSelling(e.target.checked)}
-              style={{ display: "none" }} // hide the default checkbox
-              id="custom-checkbox"
             />
-            <span
-              style={{
-                width: "18px",
-                height: "18px",
-                border: "2px solid #ccc",
-                borderRadius: "4px",
-                backgroundColor: helpWithSelling ? "#F4980E" : "transparent",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                color: "#fff",
-                fontWeight: "bold",
-                fontSize: "10px",
-                transition: "all 0.2s ease",
-              }}
+            <label
+              className="form-check-label small"
+              htmlFor="helpWithSelling"
             >
-              {helpWithSelling ? "✓" : ""}
-            </span>
-            I agree to let property agents contact me to help sell my property.
-          </label>
+              I agree to let property agents contact me to help sell my
+              property.
+            </label>
+          </div>
         </div>
 
-        {/* Submit Button */}
-        <div style={{ textAlign: "right", width: "100%" }}>
+        {/* Submit */}
+        <div className="text-end w-100">
           <button
-            style={{
-              backgroundColor: "#F4980E",
-              color: "#fff",
-              padding: "12px 24px",
-              borderRadius: "6px",
-              border: "none",
-              fontWeight: "600",
-              fontFamily: "Poppins",
-            }}
+            className="btn btn-warning text-white fw-semibold px-4 py-2"
             onClick={handleViewDetails}
           >
             Submit Now
@@ -789,30 +397,10 @@ if (isSuccess === false) {
         </div>
       </div>
     </div>
+  </div>
+</div>
+
   );
 };
-const styles = {
-  loadingContainer: {
-    minHeight: "100vh",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",
-    background: "#fafafa",
-  },
-  spinner: {
-    width: "50px",
-    height: "50px",
-    border: "6px solid #ddd",
-    borderTop: "6px solid #F4980E",
-    borderRadius: "50%",
-    animation: "spin 1s linear infinite",
-  },
-  loadingText: {
-    marginTop: "16px",
-    fontSize: "14px",
-    fontFamily: "Poppins",
-    color: "#555",
-  },
-};
+
 export default PropertyRequestForm;

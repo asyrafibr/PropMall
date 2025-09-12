@@ -1,0 +1,141 @@
+/* Card styling */
+.legal-card {
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 30px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  background-color: #FAFAFA;
+}
+
+/* Title */
+.legal-title {
+  font-family: Poppins, sans-serif;
+  font-size: 18px;
+  font-weight: 400;
+  margin-bottom: 20px;
+}
+
+/* Flex row (use Bootstrap d-flex + justify-content-between + gap) */
+.legal-flex {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+/* Input */
+.legal-input {
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 12px;
+  width: 100%;
+}
+.legal-section {
+  margin-bottom: 30px;
+}
+.legal-section-title {
+  font-weight: bold;
+  font-size: 18px;
+  font-family: Poppins, sans-serif;
+}
+
+/* Button */
+.legal-btn {
+  margin-top: 10px;
+  padding: 8px 16px;
+  background-color: white;
+  border: 1px solid orange;
+  color: orange;
+  border-radius: 5px;
+  cursor: pointer;
+  width: 120px;
+}
+
+/* Totals */
+.legal-total-label {
+  font-weight: bold;
+  margin-top: 10px;
+}
+
+.legal-total-amount {
+  color: red;
+  font-weight: bold;
+  font-size: 18px;
+}
+.legal-note {
+  font-size: 10px;
+  margin-top: 10px;
+  display: block;
+  color: #666;
+}
+.legal-small {
+  font-size: 12px;
+  color: #666;
+}
+
+.legal-monthly {
+  font-size: 14px;
+  font-weight: bold;
+}
+
+/* Progress bars */
+.progress-container {
+  display: flex;
+  height: 8px;
+  border-radius: 5px;
+  overflow: hidden;
+  margin: 10px 0;
+  background: #eee;
+}
+
+.progress-blue {
+  background: #1e90ff;
+}
+
+.progress-teal {
+  background: #20b2aa;
+}
+
+.legend {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  margin-top: 8px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.legend-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+/* Inputs & Buttons */
+.legal-input {
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 12px;
+  width: 100%;
+}
+
+.legal-btn {
+  margin-top: 15px;
+  border: 1px solid #ff9900;
+  background: transparent;
+  color: #ff9900;
+  padding: 8px;
+  border-radius: 5px;
+  cursor: pointer;
+  width: 120px;
+}
+.icon-40 {
+  width: 40px;
+  height: 40px;
+}
