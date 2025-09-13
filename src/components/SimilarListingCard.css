@@ -93,5 +93,13 @@
   }
   .scroll-button {
     display: none !important;
+  }  .property-card {
+    width: 100% !important;
+    flex-shrink: 1 !important;
+  }
+
+  .property-card {
+    flex: 0 0 100% !important; /* take full width */
+    max-width: 100% !important;
   }
 }

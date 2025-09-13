@@ -105,6 +105,8 @@ const SimilarListing = ({ listings }) => {
       ref={scrollRef}
       id="scroll-container"
       className="scroll-container flex-md-row flex-column"
+        onScroll={handleScroll}  // ✅ make sure this is here
+
     >
       {(listings ?? []).slice(0, 12).map((card) => {
         const modus = card.listing_modus?.toUpperCase();

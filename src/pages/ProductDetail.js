@@ -136,11 +136,10 @@ const ProductDetail = () => {
     <div>
       <div className="pt-3 bg-light">
         <div
-          className="container"
-          style={{ maxWidth: "1200px", padding: "0 50px" }}
+          className="container px-3 px-md-5"
         >
           {/* Breadcrumb */}
-          <div className="pb-4" style={{ maxWidth: "1300px" }}>
+          <div className="pb-4">
             {/* Breadcrumb with left padding */}
             <div className="ps-0 ps-md-5">
               <nav aria-label="breadcrumb">
@@ -341,7 +340,7 @@ const ProductDetail = () => {
           )}
 
           {/* Pricing + Agent Info */}
-          <div className="card shadow-sm mt-4">
+          <div className="card shadow-sm mt-4 ">
             <div className="row g-4 p-4">
               {/* Pricing + Details */}
               <div className="col-lg-8">

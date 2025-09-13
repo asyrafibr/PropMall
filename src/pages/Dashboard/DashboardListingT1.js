@@ -3,6 +3,8 @@ import { FaBed, FaBath } from "react-icons/fa";
 import { useTemplate } from "../../context/TemplateContext";
 import "./DashboardListingT1.css"; // Create this for modal CSS
 import bg from "../../image/titlebg3.png";
+import { FaLocationDot } from "react-icons/fa6";
+
 const DashboardListingT1 = ({ listings, handleViewDetails }) => {
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
@@ -61,7 +63,7 @@ const DashboardListingT1 = ({ listings, handleViewDetails }) => {
       });
     }
   }, [currentImageIndex]);
- const showNextImage = () => {
+  const showNextImage = () => {
     setModalImageIndex((prev) =>
       prev === modalImages.length - 1 ? 0 : prev + 1
     );
@@ -194,16 +196,25 @@ const DashboardListingT1 = ({ listings, handleViewDetails }) => {
                       <p className=" mb-1 resp-textTitle">{card.ads_title}</p>
 
                       <p className="text-muted mb-2 resp-text1">
-                        {card.location_description}
+                        <div className="d-flex align-items-center gap-2">
+                          <FaLocationDot className="text-secondary" />{" "}
+                          {/* Bootstrap gray */}
+                          <span>{card.location_description}</span>
+                        </div>
+
                         <br />
                         {card.category_type_title_holding_lottype_storey}
                         <br />
-                        {card.built_size && (
+                        {card.built_size && card.land_size && (
                           <>
                             Built-up Size: {card.built_size}
                             {card.built_size_unit}
+                            <br/>
+                                                        Land Size: {card.land_size} {card.land_size_unit}
+
                           </>
                         )}
+                          
                         {!card.built_size && card.land_size && (
                           <>
                             Land Size: {card.land_size} {card.land_size_unit}
@@ -212,16 +223,16 @@ const DashboardListingT1 = ({ listings, handleViewDetails }) => {
                       </p>
 
                       {/* Rooms & Bathrooms */}
-                      {card.bathroom && card.room > 0 && (
-                        <div className="d-flex flex-wrap gap-3 mb-3">
-                          <span className="d-flex align-items-center gap-2 resp-text1">
-                            <FaBed /> {card.room}
-                          </span>
-                          <span className="d-flex align-items-center gap-2 resp-text1">
-                            <FaBath /> {card.bathroom}
-                          </span>
-                        </div>
-                      )}
+                    {card.bathroom && card.room > 0 && (
+  <div className="d-flex flex-wrap gap-3 mb-3">
+    <span className="d-flex align-items-end gap-2 resp-text1">
+      <FaBed className="align-self-end" /> {card.room}
+    </span>
+    <span className="d-flex align-items-end gap-2 resp-text1">
+      <FaBath className="align-self-end" /> {card.bathroom}
+    </span>
+  </div>
+)}
 
                       {/* Action Buttons */}
                       <div className="d-flex gap-2 mt-auto">
@@ -313,43 +324,43 @@ const DashboardListingT1 = ({ listings, handleViewDetails }) => {
         </div>
       )} */}
       {modalOpen && (
-          <div className="modal-overlay" onClick={handleCloseModal}>
-            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-              <button className="close-button" onClick={handleCloseModal}>
-                &times;
+        <div className="modal-overlay" onClick={handleCloseModal}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <button className="close-button" onClick={handleCloseModal}>
+              &times;
+            </button>
+            <div className="modal-body">
+              <img
+                src={modalImages[modalImageIndex]}
+                alt="Main View"
+                className="modal-image"
+              />
+              <div className="image-counter">
+                {modalImageIndex + 1} / {modalImages.length}
+              </div>
+              <button className="nav-button prev" onClick={showPrevImage}>
+                &#10094;
               </button>
-              <div className="modal-body">
-                <img
-                  src={modalImages[modalImageIndex]}
-                  alt="Main View"
-                  className="modal-image"
-                />
-                <div className="image-counter">
-                  {modalImageIndex + 1} / {modalImages.length}
-                </div>
-                <button className="nav-button prev" onClick={showPrevImage}>
-                  &#10094;
-                </button>
-                <button className="nav-button next" onClick={showNextImage}>
-                  &#10095;
-                </button>
-                <div className="thumbnail-container">
-                  {modalImages.map((img, idx) => (
-                    <img
-                      key={idx}
-                      src={img}
-                      className={`thumbnail ${
-                        modalImageIndex === idx ? "active" : ""
-                      }`}
-                      onClick={() => setModalImageIndex(idx)}
-                      alt={`Thumb ${idx}`}
-                    />
-                  ))}
-                </div>
+              <button className="nav-button next" onClick={showNextImage}>
+                &#10095;
+              </button>
+              <div className="thumbnail-container">
+                {modalImages.map((img, idx) => (
+                  <img
+                    key={idx}
+                    src={img}
+                    className={`thumbnail ${
+                      modalImageIndex === idx ? "active" : ""
+                    }`}
+                    onClick={() => setModalImageIndex(idx)}
+                    alt={`Thumb ${idx}`}
+                  />
+                ))}
               </div>
             </div>
           </div>
-        )}
+        </div>
+      )}
     </div>
   );
 };
