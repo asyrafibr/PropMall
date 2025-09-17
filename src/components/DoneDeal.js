@@ -98,32 +98,32 @@ const DoneDeal = () => {
     let m = txt.match(/^(\d+)\s*days?\s*ago(?:\s+at\s+.+)?$/i);
     if (m) {
       target.setDate(target.getDate() - parseInt(m[1], 10));
-      return `Posted on ${formatPostedDate(target, { timeZone })}`;
+      return `Listed on ${formatPostedDate(target, { timeZone })}`;
     }
 
     // 2) yesterday
     if (/^yesterday(?:\s+at\s+.+)?$/i.test(txt)) {
       target.setDate(target.getDate() - 1);
-      return `Posted on ${formatPostedDate(target, { timeZone })}`;
+      return `Listed on ${formatPostedDate(target, { timeZone })}`;
     }
 
     // 3) today
     if (/^today(?:\s+at\s+.+)?$/i.test(txt)) {
-      return `Posted on ${formatPostedDate(target, { timeZone })}`;
+      return `Listed on ${formatPostedDate(target, { timeZone })}`;
     }
 
     // 4) X hours ago
     m = txt.match(/^(\d+)\s*hours?\s*ago(?:\s+at\s+.+)?$/i);
     if (m) {
       target.setHours(target.getHours() - parseInt(m[1], 10));
-      return `Posted on ${formatPostedDate(target, { timeZone })}`;
+      return `Listed on ${formatPostedDate(target, { timeZone })}`;
     }
 
     // 5) X minutes ago
     m = txt.match(/^(\d+)\s*minutes?\s*ago(?:\s+at\s+.+)?$/i);
     if (m) {
       target.setMinutes(target.getMinutes() - parseInt(m[1], 10));
-      return `Posted on ${formatPostedDate(target, { timeZone })}`;
+      return `Listed on ${formatPostedDate(target, { timeZone })}`;
     }
 
     // 6) Absolute: "Saturday 26th July 2025" OR "26th July 2025" (day name optional & ignored)
@@ -453,7 +453,7 @@ px-4 px-lg-5 py-4 pb-1    ${
                             <button className="btn btn-outline-secondary w-100">
                               <i className="bi bi-whatsapp me-1"></i> Whatsapp
                             </button>
-                            <button
+                            {/* <button
                               onClick={() =>
                                 handleViewDetails(
                                   card.id_listing,
@@ -464,7 +464,7 @@ px-4 px-lg-5 py-4 pb-1    ${
                               className="btn btn-outline-secondary w-100"
                             >
                               <i className="bi bi-info-circle me-1"></i> Details
-                            </button>
+                            </button> */}
                           </div>
                         </div>
                       </div>

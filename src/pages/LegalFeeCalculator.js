@@ -329,9 +329,7 @@ const MortgageCalculator = () => {
     loanTenure: "",
   });
     const handleCalculateMortgage = () => {
-    console.log("Loan Amount:", mortgage.loanAmount);
-    console.log("Interest Rate:", mortgage.interestRate);
-    console.log("Loan Tenure:", mortgage.loanTenure);
+
     const P = parseFloat(mortgage.loanAmount.replace(/,/g, ""));
     const r = parseFloat(mortgage.interestRate) / 100 / 12;
     const n = parseInt(mortgage.loanTenure) * 12;
@@ -346,12 +344,7 @@ const MortgageCalculator = () => {
 
     const downpayment =
       parseFloat(mortgage.propertyPrice.replace(/,/g, "")) - P;
-    console.log("monthly", monthly);
-    console.log("P", P);
 
-    console.log("r", r);
-
-    console.log("n", n);
 
     setMortgageResult({
       monthly: Math.round(monthly),

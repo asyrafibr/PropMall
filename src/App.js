@@ -3,7 +3,7 @@ import {
   BrowserRouter as Router,
   Routes,
   Route,
-  useLocation,
+  useLocation,Navigate
 } from "react-router-dom";
 import { TemplateProvider, useTemplate } from "./context/TemplateContext";
 
@@ -28,7 +28,7 @@ import Articles from "./pages/Articles";
 import AboutMe from "./pages/Aboutme";
 import Tools from "./pages/Tools";
 import AgentBox from "./components/AgentBox";
-import './custom-bootstrap.scss';
+import "./custom-bootstrap.scss";
 
 // remove the static CSS import here
 // import "./index.css";
@@ -38,19 +38,19 @@ const Layout = () => {
   const { loading, template } = useTemplate();
 
   // Dynamically load CSS file based on template
-useEffect(() => {
-  let link = document.querySelector("#dynamic-template-style");
+  useEffect(() => {
+    let link = document.querySelector("#dynamic-template-style");
 
-  if (!link) {
-    link = document.createElement("link");
-    link.rel = "stylesheet";
-    link.id = "dynamic-template-style";
-    document.head.appendChild(link);
-  }
+    if (!link) {
+      link = document.createElement("link");
+      link.rel = "stylesheet";
+      link.id = "dynamic-template-style";
+      document.head.appendChild(link);
+    }
 
-  // change path if files are in public/
-  link.href = template === "template2" ? "/index2.css" : "/index.css";
-}, [template]);
+    // change path if files are in public/
+    link.href = template === "template2" ? "/index2.css" : "/index.css";
+  }, [template]);
 
   const hideHeaderFooter = location.pathname === "/business-card";
 
@@ -63,7 +63,11 @@ useEffect(() => {
       </div>
     );
   }
-
+function RedirectListToForSale() {
+  const location = useLocation();
+  const newPath = location.pathname.replace("/list/", "/for-sale/");
+  return <Navigate to={newPath} replace />;
+}
   return (
     <>
       {!hideHeaderFooter && <Header />}
@@ -71,21 +75,30 @@ useEffect(() => {
       <Routes>
         <Route path="/" element={<Dashboard />} />
         <Route path="/home" element={<Dashboard />} />
-        <Route path="/search" element={<SearchProduct />} />
+        <Route path="/:tab" element={<SearchProduct />} />
         <Route path="/sale" element={<Sale />} />
-        <Route path="/rent" element={<Rent />} />
-        <Route path="/new-project" element={<NewProject />} />
-        <Route path="/auction" element={<Auction />} />
+        {/* <Route path="/rent" element={<Rent />} /> */}
+        {/* <Route path="/new-project" element={<NewProject />} /> */}
+        {/* <Route path="/auction" element={<Auction />} /> */}
         <Route path="/articles" element={<Articles />} />
         <Route path="/aboutme" element={<AboutMe />} />
         <Route path="/tools" element={<Tools />} />
-        <Route path="/buy" element={<WTBWTRFormPage mode="buy" />} />
-        <Route path="/rent" element={<WTBWTRFormPage mode="rent" />} />
+        <Route path="/i-want-to" element={<WTBWTRFormPage mode="buy" />} />
+        {/* <Route path="/rent" element={<WTBWTRFormPage mode="rent" />} /> */}
         <Route path="/donedeal/:id" element={<DoneDealDetail />} />
         <Route path="/donedeal" element={<DoneDeal />} />
         <Route path="/property/:slug" element={<ProductDetailPage />} />
+        <Route path="/for-sale/:slug" element={<ProductDetailPage />} />
+        <Route path="/for-rent/:slug" element={<ProductDetailPage />} />
+        <Route path="/new-project/:slug" element={<ProductDetailPage />} />
+        <Route path="/auction/:slug" element={<ProductDetailPage />} />
+
+      <Route path="/list/:slug" element={<RedirectListToForSale />} />
         <Route path="/business-card" element={<BusinessCard />} />
-        <Route path="/i-want-to" element={<WTSWTLFormPage mode="sale" />} />
+        <Route
+          path="/i-want-to-sell"
+          element={<WTSWTLFormPage mode="sale" />}
+        />
       </Routes>
 
       {!hideHeaderFooter && <Footer />}

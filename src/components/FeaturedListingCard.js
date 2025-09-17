@@ -48,6 +48,7 @@ const ListingCard = ({ product, handleViewDetails }) => {
                 objectFit: "cover",
                 borderRadius: "6px",
               }}
+              onClick={() => openModal(card.photos || [], 0)}
             />
 
             {/* Tag Badges (top-left) */}
@@ -132,7 +133,7 @@ const ListingCard = ({ product, handleViewDetails }) => {
               <div style={{ fontWeight: 600, fontSize: "18px" }}>
                 RM {price}
               </div>
-              <button
+              {/* <button
                 className="btn d-flex align-items-center"
                 style={{
                   gap: "5px",
@@ -152,7 +153,7 @@ const ListingCard = ({ product, handleViewDetails }) => {
                   }}
                 />
                 Save
-              </button>
+              </button> */}
             </div>
 
             {/* Title */}
@@ -201,13 +202,19 @@ const ListingCard = ({ product, handleViewDetails }) => {
               style={{ fontSize: "14px", color: "#444" }}
             >
               {room && (
-                <span className="d-flex align-items-center" style={{ gap: "6px" }}>
+                <span
+                  className="d-flex align-items-center"
+                  style={{ gap: "6px" }}
+                >
                   <FaBed />
                   {room} beds
                 </span>
               )}
               {bathroom && (
-                <span className="d-flex align-items-center" style={{ gap: "6px" }}>
+                <span
+                  className="d-flex align-items-center"
+                  style={{ gap: "6px" }}
+                >
                   <FaBath />
                   {bathroom} baths
                 </span>
@@ -235,6 +242,57 @@ const ListingCard = ({ product, handleViewDetails }) => {
           </div>
         </div>
       </div>
+      {modalOpen && (
+        <div className="modal-overlay" onClick={handleCloseModal}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <button className="close-button" onClick={handleCloseModal}>
+              &times;
+            </button>
+            <div className="modal-body">
+              {/* Prev Button (hide if first image) */}
+              {modalImageIndex > 0 && (
+                <button className="nav-button prev" onClick={showPrevImage}>
+                  &#10094;
+                </button>
+              )}
+
+              {/* Main Image */}
+              <img
+                src={modalImages[modalImageIndex]}
+                alt="Main View"
+                className="modal-image"
+              />
+
+              {/* Next Button (hide if last image) */}
+              {modalImageIndex < modalImages.length - 1 && (
+                <button className="nav-button next" onClick={showNextImage}>
+                  &#10095;
+                </button>
+              )}
+
+              {/* Counter */}
+              <div className="image-counter">
+                {modalImageIndex + 1} / {modalImages.length}
+              </div>
+
+              {/* Thumbnails */}
+              <div className="thumbnail-container">
+                {modalImages.map((img, idx) => (
+                  <img
+                    key={idx}
+                    src={img}
+                    className={`thumbnail ${
+                      modalImageIndex === idx ? "active" : ""
+                    }`}
+                    onClick={() => setModalImageIndex(idx)}
+                    alt={`Thumb ${idx}`}
+                  />
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

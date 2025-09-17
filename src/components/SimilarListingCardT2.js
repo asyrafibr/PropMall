@@ -157,7 +157,7 @@ const SimilarListing = ({ listings }) => {
                     paddingLeft: 10,
                   }}
                 >
-                  Posted on {card.publish_dt}
+                  Listed on {card.publish_dt}
                 </text>
 
                 <div className="position-relative">

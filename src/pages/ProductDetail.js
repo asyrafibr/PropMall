@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
@@ -29,25 +29,45 @@ const ProductDetail = () => {
   const [similarListing, setSimilarListing] = useState([]);
   // const [agent, setAgent] = useState({});
   const { agent, template, agentInfo } = useTemplate();
+  const { slug } = useParams(); // capture slug from /property/:slug
 
   const whatsappMessage = `Hello My Lovely Agent,\nI'm interested in the property that you advertise at website\n${window.location.href}\nand I would love to visit this property.\nMy name is:`;
   const [modalOpen, setModalOpen] = useState(false);
   const [modalImages, setModalImages] = useState([]);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const thumbnailRefs = useRef([]);
+  const navigate = useNavigate();
+  // const location = useLocation();
+
   useEffect(() => {
-    console.log("template", template);
+    // Check if URL contains the old "/list/" permalink
+    if (location.pathname.startsWith("/list/")) {
+      const newPath = location.pathname.replace("/list/", "/for-sale/");
+      navigate(newPath, { replace: true }); // replace history so old link isn’t stored
+    }
+  }, [location, navigate]);
+  useEffect(() => {
+    // redirect old permalink
+    if (location.pathname.startsWith("/list/")) {
+      const newPath = location.pathname.replace("/list/", "/for-sale/");
+      navigate(newPath, { replace: true });
+    }
+  }, [location, navigate]);
+
+  useEffect(() => {
     const fetchProductDetails = async () => {
       try {
+        setLoading(true);
+
         const hostname = window.location.hostname;
         const domain = hostname.replace(/^www\./, "").split(".")[0];
         const url_fe = window.location.href;
 
-        const response = await getListingInfo({
-          id_listing: productId,
-          domain,
-          url_fe,
-        });
+        const params = productId
+          ? { id_listing: productId, domain, url_fe } // if we know the id
+          : { permalink: `/for-sale/${slug}`, domain, url_fe }; // fallback to permalink
+
+        const response = await getListingInfo(params);
 
         setProduct(response.data.listing_info);
       } catch (err) {
@@ -57,8 +77,10 @@ const ProductDetail = () => {
       }
     };
 
-    if (productId) fetchProductDetails();
-  }, [productId]);
+    if (productId || slug) {
+      fetchProductDetails();
+    }
+  }, [productId, slug]);
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === "Escape") setModalOpen(false);
@@ -135,9 +157,7 @@ const ProductDetail = () => {
   return (
     <div>
       <div className="pt-3 bg-light">
-        <div
-          className="container px-3 px-md-5"
-        >
+        <div className="container px-3 px-md-5">
           {/* Breadcrumb */}
           <div className="pb-4">
             {/* Breadcrumb with left padding */}
@@ -187,10 +207,11 @@ const ProductDetail = () => {
           </div>
 
           {/* Photos */}
-          {product?.photos?.length > 0 && (
-            <div className="d-flex flex-lg-row flex-column gap-3 align-items-start flex-wrap">
-              {/* Main Image */}
-              <div className="position-relative flex-grow-1">
+          {/* Container for main + thumbnails */}
+          <div className="d-flex flex-column flex-md-row gap-3 align-items-start">
+            {/* Main Image */}
+            <div className="flex-grow-1" style={{ minWidth: "0" }}>
+              <div className="position-relative w-100">
                 <img
                   src={product.photos[0]}
                   alt="Main Property"
@@ -204,7 +225,7 @@ const ProductDetail = () => {
                 />
 
                 {/* Mobile Show All Button */}
-                <div className="d-lg-none position-absolute bottom-0 end-0 m-2">
+                <div className="d-md-none position-absolute bottom-0 end-0 m-2">
                   <div
                     className="d-flex align-items-center px-3 py-2 border rounded bg-light text-secondary small font-poppins"
                     style={{ cursor: "pointer" }}
@@ -219,52 +240,28 @@ const ProductDetail = () => {
                   </div>
                 </div>
               </div>
+            </div>
 
-              {/* Thumbnail Grid (Desktop only) */}
-              <div
-                className="d-none d-lg-grid gap-3"
-                style={{
-                  gridTemplateColumns: "repeat(2, 1fr)",
-                  maxWidth: "480px",
-                  width: "100%",
-                  maxHeight: "480px",
-                }}
-              >
-                {product.photos.slice(1, 5).map((photo, i) => {
-                  const actualIndex = i + 1;
-                  if (i === 3 && product.photos.length > 5) {
-                    return (
-                      <div
-                        key="show-all"
-                        className="position-relative rounded overflow-hidden bg-cover bg-center"
-                        style={{
-                          backgroundImage: `url(${photo})`,
-                          height: "calc(480px / 2 - 23px)",
-                          cursor: "pointer",
-                        }}
-                        onClick={() => {
-                          setModalImages(product.photos);
-                          setCurrentImageIndex(actualIndex);
-                          setModalOpen(true);
-                        }}
-                      >
-                        <div className="position-absolute bottom-0 end-0 m-2">
-                          <div className="d-flex align-items-center px-3 py-2 border rounded bg-light small font-poppins text-secondary">
-                            <FiCamera size={16} className="me-1" />
-                            <span>Show All</span>
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  }
-
+            {/* Thumbnails (only ≥ md / 768px) */}
+            <div
+              className="d-none d-md-grid gap-3"
+              style={{
+                gridTemplateColumns: "repeat(2, 1fr)",
+                width: "320px", // 🔑 fixed width so it doesn’t wrap under
+                maxHeight: "450px",
+                flexShrink: 0, // 🔑 prevents shrinking
+              }}
+            >
+              {product.photos.slice(1, 5).map((photo, i) => {
+                const actualIndex = i + 1;
+                if (i === 3 && product.photos.length > 5) {
                   return (
                     <div
-                      key={photo}
-                      className="rounded overflow-hidden bg-cover bg-center"
+                      key="show-all"
+                      className="position-relative rounded overflow-hidden bg-cover bg-center"
                       style={{
                         backgroundImage: `url(${photo})`,
-                        height: "calc(460px / 2 - 12px)",
+                        height: "calc(450px / 2 - 15px)",
                         cursor: "pointer",
                       }}
                       onClick={() => {
@@ -272,72 +269,94 @@ const ProductDetail = () => {
                         setCurrentImageIndex(actualIndex);
                         setModalOpen(true);
                       }}
-                    />
+                    >
+                      <div className="position-absolute bottom-0 end-0 m-2">
+                        <div className="d-flex align-items-center px-3 py-2 border rounded bg-light small font-poppins text-secondary">
+                          <FiCamera size={16} className="me-1" />
+                          <span>Show All</span>
+                        </div>
+                      </div>
+                    </div>
                   );
-                })}
-              </div>
+                }
+
+                return (
+                  <div
+                    key={photo}
+                    className="rounded overflow-hidden bg-cover bg-center"
+                    style={{
+                      backgroundImage: `url(${photo})`,
+                      height: "calc(450px / 2 - 15px)",
+                      cursor: "pointer",
+                    }}
+                    onClick={() => {
+                      setModalImages(product.photos);
+                      setCurrentImageIndex(actualIndex);
+                      setModalOpen(true);
+                    }}
+                  />
+                );
+              })}
             </div>
-          )}
+          </div>
 
           {/* MODAL PREVIEW */}
-          {modalOpen && (
-            <div className="modal-overlay" onClick={closeModal}>
-              <div
-                className="modal-content"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <button className="close-button" onClick={closeModal}>
-                  &times;
-                </button>
+       {modalOpen && (
+  <div className="modal-overlay" onClick={closeModal}>
+    <div
+      className="modal-content"
+      onClick={(e) => e.stopPropagation()}
+    >
+      <button className="close-button" onClick={closeModal}>
+        &times;
+      </button>
 
-                <div className="modal-body">
-                  <img
-                    src={modalImages[currentImageIndex]}
-                    alt="Full View"
-                    className="modal-image"
-                  />
-                  <div className="image-counter">
-                    {currentImageIndex + 1} / {modalImages.length}
-                  </div>
+      <div className="modal-body">
+        <div className="image-wrapper">
+          <button className="nav-button prev" onClick={showPrev}>
+            &#10094;
+          </button>
 
-                  {modalImages.length > 1 && (
-                    <>
-                      <button className="nav-button prev" onClick={showPrev}>
-                        &#10094;
-                      </button>
-                      <button className="nav-button next" onClick={showNext}>
-                        &#10095;
-                      </button>
-                    </>
-                  )}
+          <img
+            src={modalImages[currentImageIndex]}
+            alt="Full View"
+            className="modal-image"
+          />
 
-                  <div className="thumbnail-container">
-                    {getThumbnailSlice().map((img, idx) => {
-                      const actualIndex =
-                        Math.max(
-                          0,
-                          Math.min(
-                            currentImageIndex - 5,
-                            modalImages.length - 10
-                          )
-                        ) + idx;
-                      return (
-                        <img
-                          key={actualIndex}
-                          src={img}
-                          alt={`Thumbnail ${actualIndex}`}
-                          className={`thumbnail ${
-                            currentImageIndex === actualIndex ? "active" : ""
-                          }`}
-                          onClick={() => setCurrentImageIndex(actualIndex)}
-                        />
-                      );
-                    })}
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
+          <button className="nav-button next" onClick={showNext}>
+            &#10095;
+          </button>
+        </div>
+
+        <div className="image-counter">
+          {currentImageIndex + 1} / {modalImages.length}
+        </div>
+
+        <div className="thumbnail-container">
+          {getThumbnailSlice().map((img, idx) => {
+            const actualIndex =
+              Math.max(
+                0,
+                Math.min(currentImageIndex - 5, modalImages.length - 10)
+              ) + idx;
+            return (
+              <img
+                key={actualIndex}
+                src={img}
+                alt={`Thumbnail ${actualIndex}`}
+                className={`thumbnail ${
+                  currentImageIndex === actualIndex ? "active" : ""
+                }`}
+                onClick={() => setCurrentImageIndex(actualIndex)}
+              />
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  </div>
+)}
+
 
           {/* Pricing + Agent Info */}
           <div className="card shadow-sm mt-4 ">

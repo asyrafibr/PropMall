@@ -53,7 +53,25 @@ const Dashboard = () => {
 
   //   }, []);
 
-  const handleSearch = async () => {
+  const urlMap = {
+    Buy: "buy",
+    Rent: "rent",
+    "New Project": "new-project",
+    Auction: "auction",
+  };
+  const getSubdomain = () => {
+    const hostname = window.location.hostname; // e.g., "prohartanah.myhartanah.co"
+    const parts = hostname.split(".");
+
+    // Handle localhost (e.g., "localhost" or "localhost:3000")
+    if (hostname.includes("localhost")) return "localhost";
+
+    // e.g. ["prohartanah", "myhartanah", "co"]
+    if (parts.length > 2) return parts[0]; // "prohartanah"
+    return null; // fallback if no subdomain
+  };
+
+  const handleSearch = async (tabName = activeTab) => {
     const locationId = selectedLocation;
     const selectedLocationObj = locations.find(
       (loc) => loc.id_state === locationId
@@ -61,8 +79,8 @@ const Dashboard = () => {
     const locationName = selectedLocationObj?.state_name || "";
 
     const payload = {
-      domain: "dev-agentv3.propmall.net",
-      url_fe: "http://dev-agentv3.propmall.net",
+      domain: getSubdomain(),
+      url_fe: window.location.href,
       search: {
         page_num: 1,
         page_size: 10,
@@ -73,9 +91,10 @@ const Dashboard = () => {
         },
         search_filters: {
           objective: {
-            sale: activeTab === "sale",
-            rent: activeTab === "rent",
-            project: activeTab === "project",
+            sale: tabName === "Buy",
+            rent: tabName === "Rent",
+            project: tabName === "New Project",
+            auction: tabName === "Auction",
           },
           location: {
             id_country: 1,
@@ -97,16 +116,15 @@ const Dashboard = () => {
     try {
       const response = await getListings(payload);
 
-      const stingtype = String(locationId);
-
-      //
-
-      navigate("/search", {
+      // Navigate to the correct tab path
+      const pathSegment = urlMap[tabName] || "buy";
+      navigate(`/${pathSegment}`, {
         state: {
           products: response.data.listing_search.listing_rows,
+          activeTab: tabName,
           selectedLocationName: locationName,
           selectedLocationId: locationId,
-          searchType: activeTab,
+          searchType: tabName,
           years,
         },
       });
@@ -117,20 +135,26 @@ const Dashboard = () => {
 
   const slugify = (text) =>
     text?.toLowerCase().trim().replace(/\s+/g, "-") || "";
-  const handleViewDetails = useCallback(
-    (productId, title, location) => {
-      const titleSlug = slugify(title);
-      console.log("productid", productId);
-      navigate(`/property/${titleSlug}`, {
-        state: {
-          productId,
-          title,
-          location,
-        },
-      });
-    },
-    [navigate]
-  );
+const handleViewDetails = useCallback(
+  (productId, title, location, permalink, permalink_previous) => {
+    // ✅ Always prefer the latest permalink
+    const targetLink = permalink || permalink_previous;
+
+    if (!targetLink) {
+      console.error("No permalink available for product:", productId);
+      return;
+    }
+
+    navigate(targetLink, {
+      state: {
+        productId,
+        title,
+        location,
+      },
+    });
+  },
+  [navigate]
+);
   const renderByTemplate = () => {
     switch (template) {
       case "template1":
@@ -202,7 +226,7 @@ const Dashboard = () => {
           </>
         );
       case "template4":
-         return (
+        return (
           <>
             <FilterT4
               locations={locations}

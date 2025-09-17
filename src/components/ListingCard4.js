@@ -144,7 +144,7 @@ const ListingCard = ({ product, handleViewDetails }) => {
             <div style={{ fontWeight: 600, fontSize: "18px" }}>
               {monetary_currency} {price}
             </div>
-            <button
+            {/* <button
               className="btn d-flex align-items-center"
               style={{
                 gap: "5px",
@@ -164,7 +164,7 @@ const ListingCard = ({ product, handleViewDetails }) => {
                 }}
               />
               Save
-            </button>
+            </button> */}
           </div>
 
           {/* Title */}

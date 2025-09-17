@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { FaBed, FaBath, FaPhone, FaStar } from "react-icons/fa";
+import { useTemplate } from "../context/TemplateContext";
 
 const ListingCard = ({ product, handleViewDetails }) => {
   const {
@@ -16,8 +17,51 @@ const ListingCard = ({ product, handleViewDetails }) => {
     photos,
     monetary_currency,
     category_type_title_holding_lottype_storey,
+    permalink,
+    permalink_previous
   } = product;
+  const [modalImages, setModalImages] = useState([]);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [modalOpen, setModalOpen] = useState(false);
+  const thumbnailRefs = useRef([]);
+  const { agent, template, agentInfo } = useTemplate();
 
+  const [modalImageIndex, setModalImageIndex] = useState(0);
+  const showPrevImage = () => {
+    setModalImageIndex((prev) =>
+      prev === 0 ? modalImages.length - 1 : prev - 1
+    );
+  };
+  const showNextImage = () => {
+    setModalImageIndex((prev) =>
+      prev === modalImages.length - 1 ? 0 : prev + 1
+    );
+  };
+  const handleCloseModal = () => {
+    setModalOpen(false);
+    document.body.classList.remove("no-scroll");
+  };
+  const whatsappMessage = `Hello My Lovely Agent,\nI'm interested in the property that you advertise at website\n${window.location.href}\nand I would love to visit this property.\nMy name is:`;
+
+  const openModal = (images, index) => {
+    setModalImages(images);
+    setCurrentImageIndex(index);
+    setModalOpen(true);
+    thumbnailRefs.current = [];
+
+    thumbnailRefs.current = [];
+
+    setTimeout(() => {
+      const node = thumbnailRefs.current[index];
+      if (node) {
+        node.scrollIntoView({
+          behavior: "auto",
+          inline: "center",
+          block: "nearest",
+        });
+      }
+    }, 300);
+  };
   const location = `${location_area}, ${location_state}`;
   const photo1 = photos?.[0] || "https://via.placeholder.com/860x300";
 
@@ -32,20 +76,26 @@ const ListingCard = ({ product, handleViewDetails }) => {
     <div className="d-flex justify-content-center mb-3">
       <div className="card w-100">
         <div className="p-3">
-
           {/* Image with Badges */}
-          <div className="position-relative mb-3 overflow-hidden rounded" style={{height: "300px"}}>
+          <div
+            className="position-relative mb-3 overflow-hidden rounded"
+            style={{ height: "300px" }}
+          >
             <img
               src={photo1}
               alt={ads_title}
-              className="img-fluid w-100 h-100 object-fit-cover"
+              className="card-img-top h-100 w-100 object-fit-cover cursor-pointer"
+              onClick={() => openModal(photos || [], 0)}
             />
 
             {/* Tag Badges */}
             {(statusText || isBelowMarket) && (
               <div className="position-absolute top-0 start-0 d-flex flex-column gap-2 p-2">
                 {statusText && (
-                  <span className="badge text-white" style={{ backgroundColor: statusColor }}>
+                  <span
+                    className="badge text-white"
+                    style={{ backgroundColor: statusColor }}
+                  >
                     {statusText}
                   </span>
                 )}
@@ -82,15 +132,21 @@ const ListingCard = ({ product, handleViewDetails }) => {
                 Exclusive
               </div>
             )}
+            <span className="position-absolute bottom-0 end-0 m-2 text-white small">
+              <i className="bi bi-camera-fill me-1"></i>
+              {photos.length ?? 0}
+            </span>
           </div>
 
           {/* Price + Save */}
           <div className="d-flex justify-content-between align-items-center mb-2">
-            <div className="fw-bold fs-5">{monetary_currency} {price}</div>
-            <button className="btn btn-link p-0 d-flex align-items-center gap-1">
+            <div className="fw-bold fs-5">
+              {monetary_currency} {price}
+            </div>
+            {/* <button className="btn btn-link p-0 d-flex align-items-center gap-1">
               <FaStar className="text-warning" />
               Save
-            </button>
+            </button> */}
           </div>
 
           {/* Title */}
@@ -111,36 +167,141 @@ const ListingCard = ({ product, handleViewDetails }) => {
           </p>
 
           {/* Room / Bath and Buttons */}
-         <div className="d-flex flex-row justify-content-between align-items-center gap-2 mt-auto flex-nowrap flex-md-nowrap">
-  <div className="d-flex gap-3 text-secondary small align-items-center">
-    {room && (
-      <span className="d-flex align-items-center gap-1">
-        <FaBed /> {room}
-      </span>
-    )}
-    {bathroom && (
-      <span className="d-flex align-items-center gap-1">
-        <FaBath /> {bathroom}
-      </span>
-    )}
-  </div>
+          <div className="d-flex flex-column justify-content-between align-items-start gap-3 mt-auto">
+            {/* 🛏️ Bedroom & 🚿 Bathroom */}
+            <div className="d-flex flex-row text-secondary small gap-2">
+              {room && (
+                <span className="d-flex align-items-center gap-2">
+                  <FaBed /> {room}
+                </span>
+              )}
+              {bathroom && (
+                <span className="d-flex align-items-center gap-2">
+                  <FaBath /> {bathroom}
+                </span>
+              )}
+            </div>
 
-  <div className="d-flex gap-2">
-    <button className="btn btn-outline-secondary d-flex align-items-center gap-1">
-      <FaPhone />
-      Contact Agent
-    </button>
-    <button
-      className="btn btn-outline-secondary d-flex align-items-center gap-1"
-      onClick={() => handleViewDetails(id_listing, ads_title, location)}
-    >
-      View Details
-    </button>
-  </div>
-</div>
+            {/* 📞 Buttons */}
+            {/* 📱 Mobile Call button (only visible on mobile) */}
+            {/* 📱 Mobile buttons (Call + WhatsApp + Details) */}
+            {/* 📱 Mobile buttons (icons only) */}
+            <div className="d-flex flex-row w-100 gap-2 d-sm-none">
+              <a
+                href={`tel:${agentInfo.phone || agentInfo.whatsapp || ""}`}
+                className="btn btn-outline-primary w-100 d-flex align-items-center justify-content-center"
+              >
+                <FaPhone />
+              </a>
 
+              <a
+                href={`https://wa.me/${
+                  agentInfo.whatsapp
+                }?text=${encodeURIComponent(whatsappMessage)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn btn-outline-success w-100 d-flex align-items-center justify-content-center"
+              >
+                <i className="bi bi-whatsapp"></i>
+              </a>
+
+              <button
+                className="btn btn-outline-secondary w-100 d-flex align-items-center justify-content-center"
+                onClick={() =>
+                  handleViewDetails(id_listing, ads_title, location)
+                }
+              >
+                <i className="bi bi-info-circle"></i>
+              </button>
+            </div>
+
+            {/* 💻 Desktop/Tablet (icons + text) */}
+            <div className="d-none d-sm-flex flex-row w-100 gap-2 justify-content-end">
+              <a
+                href={`https://wa.me/${
+                  agentInfo.whatsapp
+                }?text=${encodeURIComponent(whatsappMessage)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn btn-outline-success d-flex align-items-center justify-content-center gap-2"
+              >
+                <i className="bi bi-whatsapp"></i>
+                Whatsapp
+              </a>
+
+              <button
+                className="btn btn-outline-secondary d-flex align-items-center justify-content-center gap-2"
+                onClick={() =>
+                  handleViewDetails(id_listing, ads_title, location,permalink,permalink_previous)
+                }
+              >
+                <i className="bi bi-info-circle"></i>
+                View Details
+              </button>
+            </div>
+          </div>
         </div>
       </div>
+      {modalOpen && (
+  <div className="modal-overlay" onClick={handleCloseModal}>
+    <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+      <button className="close-button" onClick={handleCloseModal}>
+        &times;
+      </button>
+
+      <div className="modal-body">
+        {/* Wrap image + arrows together */}
+        <div className="main-image-wrapper">
+          {/* Prev Button (always visible, disabled if first) */}
+          <button
+            className="nav-button prev"
+            onClick={showPrevImage}
+            disabled={modalImageIndex === 0}
+          >
+            &#10094;
+          </button>
+
+          {/* Main Image */}
+          <img
+            src={modalImages[modalImageIndex]}
+            alt="Main View"
+            className="modal-image"
+          />
+
+          {/* Next Button (always visible, disabled if last) */}
+          <button
+            className="nav-button next"
+            onClick={showNextImage}
+            disabled={modalImageIndex === modalImages.length - 1}
+          >
+            &#10095;
+          </button>
+        </div>
+
+        {/* Counter */}
+        <div className="image-counter">
+          {modalImageIndex + 1} / {modalImages.length}
+        </div>
+
+        {/* Thumbnails */}
+        <div className="thumbnail-container">
+          {modalImages.map((img, idx) => (
+            <img
+              key={idx}
+              src={img}
+              className={`thumbnail ${
+                modalImageIndex === idx ? "active" : ""
+              }`}
+              onClick={() => setModalImageIndex(idx)}
+              alt={`Thumb ${idx}`}
+            />
+          ))}
+        </div>
+      </div>
+    </div>
+  </div>
+)}
+
     </div>
   );
 };

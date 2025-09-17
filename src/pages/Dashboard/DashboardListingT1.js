@@ -10,10 +10,9 @@ const DashboardListingT1 = ({ listings, handleViewDetails }) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [modalImages, setModalImages] = useState([]);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const { template } = useTemplate();
   const thumbnailRefs = useRef([]);
   const [modalImageIndex, setModalImageIndex] = useState(0);
-
+  const { agent, template, agentInfo } = useTemplate();
   const openModal = (images, index) => {
     setModalImages(images);
     setCurrentImageIndex(index);
@@ -76,6 +75,8 @@ const DashboardListingT1 = ({ listings, handleViewDetails }) => {
     setCurrentImageIndex((prev) =>
       prev === modalImages.length - 1 ? 0 : prev + 1
     );
+  const whatsappMessage = `Hello My Lovely Agent,\nI'm interested in the property that you advertise at website\n${window.location.href}\nand I would love to visit this property.\nMy name is:`;
+
   const getThumbnailSlice = () => {
     const total = modalImages.length;
     const start = Math.max(0, Math.min(currentImageIndex - 5, total - 10));
@@ -107,7 +108,7 @@ const DashboardListingT1 = ({ listings, handleViewDetails }) => {
   );
 
   return (
-    <div className="container-fluid py-5 px-3 px-md-5 mt-3">
+    <div className="container-xl px-3 px-xl-0 py-5 mt-3">
       {/* Header */}
       <div
         className={`mb-4 ${
@@ -139,11 +140,14 @@ const DashboardListingT1 = ({ listings, handleViewDetails }) => {
               const belowMarket = card.below_market === "Y";
 
               return (
-                <div key={card.id_listing} className="col-12 col-md-4 d-flex">
+                <div
+                  key={card.id_listing}
+                  className="col-12 col-sm-6 col-lg-4 d-flex"
+                >
                   <div className="card h-100 w-100 shadow-sm">
                     {/* Posted Date */}
                     <div className="mb-1 p-3 resp-text1">
-                      Posted on {card.publish_dt}
+                      Listed on {card.publish_dt}
                     </div>
 
                     {/* Image & Badges */}
@@ -209,12 +213,11 @@ const DashboardListingT1 = ({ listings, handleViewDetails }) => {
                           <>
                             Built-up Size: {card.built_size}
                             {card.built_size_unit}
-                            <br/>
-                                                        Land Size: {card.land_size} {card.land_size_unit}
-
+                            <br />
+                            Land Size: {card.land_size} {card.land_size_unit}
                           </>
                         )}
-                          
+
                         {!card.built_size && card.land_size && (
                           <>
                             Land Size: {card.land_size} {card.land_size_unit}
@@ -223,34 +226,56 @@ const DashboardListingT1 = ({ listings, handleViewDetails }) => {
                       </p>
 
                       {/* Rooms & Bathrooms */}
-                    {card.bathroom && card.room > 0 && (
-  <div className="d-flex flex-wrap gap-3 mb-3">
-    <span className="d-flex align-items-end gap-2 resp-text1">
-      <FaBed className="align-self-end" /> {card.room}
-    </span>
-    <span className="d-flex align-items-end gap-2 resp-text1">
-      <FaBath className="align-self-end" /> {card.bathroom}
-    </span>
-  </div>
-)}
+                      {card.bathroom && card.room > 0 && (
+                        <div className="d-flex flex-wrap gap-3 mb-3">
+                          <span className="d-flex align-items-end gap-2 resp-text1">
+                            <FaBed className="align-self-end" /> {card.room}
+                          </span>
+                          <span className="d-flex align-items-end gap-2 resp-text1">
+                            <FaBath className="align-self-end" />{" "}
+                            {card.bathroom}
+                          </span>
+                        </div>
+                      )}
 
                       {/* Action Buttons */}
                       <div className="d-flex gap-2 mt-auto">
-                        <button className="btn btn-outline-secondary w-100">
-                          <i className="bi bi-whatsapp me-1"></i> Whatsapp
-                        </button>
+                        {/* 📱 Whatsapp */}
+                        <a
+                          className="btn btn-outline-secondary w-100 d-flex flex-sm-row flex-column align-items-center gap-1 gap-sm-4"
+                          href={`https://wa.me/${
+                            agentInfo.whatsapp
+                          }?text=${encodeURIComponent(whatsappMessage)}`}
+                        >
+                          <i className="bi bi-whatsapp"></i>
+                          <span className="d-none d-sm-inline">Whatsapp</span>
+                        </a>
+
+                        {/* 📱 Details */}
                         <button
                           onClick={() =>
                             handleViewDetails(
                               card.id_listing,
                               card.ads_title,
-                              card.location
+                              card.location,
+                              card.permalink,
+                              card.permalink_previous
                             )
                           }
-                          className="btn btn-outline-secondary w-100"
+                          className="btn btn-outline-secondary w-100 d-flex flex-sm-row flex-column align-items-center gap-1 gap-sm-4"
                         >
-                          <i className="bi bi-info-circle me-1"></i> Details
+                          <i className="bi bi-info-circle"></i>
+                          <span className="d-none d-sm-inline">Details</span>
                         </button>
+
+                        {/* 📱 Call Agent (only mobile) */}
+                        <a
+                          className="btn btn-outline-primary w-100 d-sm-none d-flex flex-sm-row flex-column align-items-center gap-1 gap-sm-2"
+                          href={`tel:${agentInfo.whatsapp}`} // ✅ phone number here
+                        >
+                          <i className="bi bi-telephone"></i>
+                          <span className="d-none d-sm-inline">Call</span>
+                        </a>
                       </div>
                     </div>
                   </div>
@@ -323,44 +348,64 @@ const DashboardListingT1 = ({ listings, handleViewDetails }) => {
           </div>
         </div>
       )} */}
-      {modalOpen && (
-        <div className="modal-overlay" onClick={handleCloseModal}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <button className="close-button" onClick={handleCloseModal}>
-              &times;
-            </button>
-            <div className="modal-body">
-              <img
-                src={modalImages[modalImageIndex]}
-                alt="Main View"
-                className="modal-image"
-              />
-              <div className="image-counter">
-                {modalImageIndex + 1} / {modalImages.length}
-              </div>
-              <button className="nav-button prev" onClick={showPrevImage}>
-                &#10094;
-              </button>
-              <button className="nav-button next" onClick={showNextImage}>
-                &#10095;
-              </button>
-              <div className="thumbnail-container">
-                {modalImages.map((img, idx) => (
-                  <img
-                    key={idx}
-                    src={img}
-                    className={`thumbnail ${
-                      modalImageIndex === idx ? "active" : ""
-                    }`}
-                    onClick={() => setModalImageIndex(idx)}
-                    alt={`Thumb ${idx}`}
-                  />
-                ))}
-              </div>
-            </div>
-          </div>
+{modalOpen && (
+  <div className="modal-overlay" onClick={handleCloseModal}>
+    <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+      <button className="close-button" onClick={handleCloseModal}>
+        &times;
+      </button>
+
+      <div className="modal-body">
+        {/* Wrap image + arrows together */}
+        <div className="main-image-wrapper" style={{ position: "relative" }}>
+          {/* Prev Button (always visible) */}
+          <button
+            className="nav-button prev"
+            onClick={showPrevImage}
+            disabled={modalImageIndex === 0}
+          >
+            &#10094;
+          </button>
+
+          {/* Main Image */}
+          <img
+            src={modalImages[modalImageIndex]}
+            alt="Main View"
+            className="modal-image"
+          />
+
+          {/* Next Button (always visible) */}
+          <button
+            className="nav-button next"
+            onClick={showNextImage}
+            disabled={modalImageIndex === modalImages.length - 1}
+          >
+            &#10095;
+          </button>
         </div>
-      )}
+
+        {/* Counter */}
+        <div className="image-counter">
+          {modalImageIndex + 1} / {modalImages.length}
+        </div>
+
+        {/* Thumbnails */}
+        <div className="thumbnail-container">
+          {modalImages.map((img, idx) => (
+            <img
+              key={idx}
+              src={img}
+              className={`thumbnail ${modalImageIndex === idx ? "active" : ""}`}
+              onClick={() => setModalImageIndex(idx)}
+              alt={`Thumb ${idx}`}
+            />
+          ))}
+        </div>
+      </div>
+    </div>
+  </div>
+)}
+
     </div>
   );
 };

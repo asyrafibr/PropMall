@@ -171,7 +171,7 @@ const RentPage = () => {
                 <div key={card.id_listing} className="col-12 col-md-4 mb-4 d-flex">
                   <div className="card h-100 d-flex flex-column w-100" style={{ borderRadius: "8px", boxShadow: "2px 2px 15px 0 rgba(0, 0, 0, 0.15)" }}>
                     <div className="mb-1" style={{ fontFamily: "Poppins", fontSize: "14px", fontWeight: 400, padding: "12px" }}>
-                      Posted on {card.publish_dt}
+                      Listed on {card.publish_dt}
                     </div>
                     <div className="position-relative" style={{ overflow: "hidden", height: "260px" }}>
                       <img

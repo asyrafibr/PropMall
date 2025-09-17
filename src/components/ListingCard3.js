@@ -157,7 +157,7 @@ const ListingCard = ({ product, handleViewDetails }) => {
               <div
                 style={{ fontSize: "12px", color: "#777", marginBottom: "4px" }}
               >
-                Posted on {created_at || "24th August 2024"}
+                Listed on {created_at || "24th August 2024"}
               </div>
 
               {/* Price */}

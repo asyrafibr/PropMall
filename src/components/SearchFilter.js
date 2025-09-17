@@ -10,7 +10,7 @@ import {
 } from "../api/axiosApi";
 import { useLocation } from "react-router-dom";
 import RangeSliderModal from "../components/RangeSliderModal";
-
+import "./SearchFilters.css";
 const SearchFilter = ({
   locations,
   years,
@@ -69,6 +69,8 @@ const SearchFilter = ({
   const location = useLocation();
   const [openModalLabel, setOpenModalLabel] = useState(null);
   const [priceModalOpen, setPriceModalOpen] = useState(false);
+const activeTabRef = useRef(activeTab);
+      const tabKey = activeTabRef.current; // ✅ always latest
 
   const BUY_AMOUNTS = [
     0, 100000, 200000, 300000, 400000, 500000, 600000, 700000, 800000, 900000,
@@ -193,8 +195,7 @@ const SearchFilter = ({
           ...(holdingList.data.property_holding || []),
           ...(lotList.data?.property_lot_type || []), // Adjust key based on lotList structure
         ]);
-        console.log("lot", lotList);
-        console.log("masuk 2", holdingList);
+   
 
         // ❌ agent is NOT updated here yet
       } catch (error) {
@@ -205,18 +206,23 @@ const SearchFilter = ({
     fetchData();
   }, []);
 
-  useEffect(() => {
-    console.log("locatoion", location);
-    if (location.state?.activeTab) {
-      setActiveTab(location.state.activeTab);
-    }
-  }, [location.state?.activeTab]);
+  // useEffect(() => {
+  //   console.log("locatoion123", activeTab);
+  //   if (activeTab) {
+  //     setActiveTab(activeTab);
+  //   }
+  // }, [activeTab]);
+useEffect(() => {
 
+  console.log("activeTab changed to:",activeTab);
+    console.log("activeTab changed to123:",tabKey);
+
+}, [activeTab]);
   useEffect(() => {
     // If autoSearch flag is set, run handleSearch after tab is updated
-    console.log("LOCATION NOW", location.state.activeTab);
-    if (location.state?.autoSearch && location.state?.activeTab) {
-      handleSearch(location.state.activeTab);
+    console.log("LOCATION NOW123", activeTab);
+    if (location.state?.autoSearch || location.state?.activeTab) {
+      handleSearch(activeTab);
     }
   }, [location.state?.autoSearch, location.state?.activeTab]);
   // --- Initial Load of Countries ---
@@ -422,7 +428,7 @@ const SearchFilter = ({
               <div className="mb-2">
                 {tabMap
                   .filter(({ key }) => category[key])
-                  .map(({ label }) => (
+                  .map(({ label,key }) => (
                     <button
                       key={label}
                       className={`btn me-3 px-2 py-1 fw-normal fs-6 text-white rounded-0`}
@@ -463,24 +469,18 @@ const SearchFilter = ({
               <input
                 id="search"
                 type="text"
-                className="form-control flex-grow-1 h-100"
+                className="form-control flex-grow-1 h-60 font-poppins"
                 placeholder="Search"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                style={{ height: "60px", fontFamily: "Poppins" }}
               />
-             <button
-  className="btn text-white w-md-auto"
-  style={{
-    backgroundColor: "#F4980E",
-    width: "120px",
-    height: "60px",
-    borderRadius: "8px",
-  }}
-  onClick={handleSearch}
->
-  Search
-</button>
+              <button
+                className="btn btn-search bg-orange text-white flex-shrink-0 h-60 rounded"
+                style={{ minWidth: "120px" }} // optional to set desktop width
+                onClick={handleSearch}
+              >
+                Search
+              </button>
             </div>
           </div>
 

@@ -58,10 +58,10 @@ const Navbar = () => {
               <li className="nav-item">
                 <Link
                   className="nav-link text-nowrap fw-normal font-poppins fs-6 fs-md-5"
-                  to="/search"
+                  to="/buy"
                   state={{ activeTab: "Buy", autoSearch: true }}
                 >
-                  Sale
+                  Buy
                 </Link>
               </li>
             )}
@@ -70,7 +70,7 @@ const Navbar = () => {
               <li className="nav-item">
                 <Link
                   className="nav-link text-nowrap fw-normal font-poppins fs-6 fs-md-5"
-                  to="/search"
+                  to="/rent"
                   state={{ activeTab: "Rent", autoSearch: true }}
                 >
                   Rent
@@ -82,7 +82,7 @@ const Navbar = () => {
               <li className="nav-item">
                 <Link
                   className="nav-link text-nowrap fw-normal font-poppins fs-6 fs-md-5"
-                  to="/search"
+                  to="/new-project"
                   state={{ activeTab: "New Project", autoSearch: true }}
                 >
                   New Project
@@ -94,7 +94,7 @@ const Navbar = () => {
               <li className="nav-item">
                 <Link
                   className="nav-link text-nowrap fw-normal font-poppins fs-6 fs-md-5"
-                  to="/search"
+                  to="/auction"
                   state={{ activeTab: "Auction", autoSearch: true }}
                 >
                   Auction
@@ -137,14 +137,14 @@ const Navbar = () => {
                   <li>
                     <Link
                       className="dropdown-item font-poppins fs-6 fs-md-5"
-                      to="/buy"
-                      onClick={() => handleNavigate("/buy")}
+                      to="/i-want-to"
+                      onClick={() => handleNavigate("/i-want-to")}
                     >
                       Buy a Property (WTB)
                     </Link>
                   </li>
                   <li>
-                    <Link className="dropdown-item font-poppins fs-6 fs-md-5" to="/buy">
+                    <Link className="dropdown-item font-poppins fs-6 fs-md-5" to="/i-want-to">
                       Rent a Property (WTR)
                     </Link>
                   </li>
@@ -154,7 +154,7 @@ const Navbar = () => {
                   <li>
                     <Link
                       className="dropdown-item font-poppins fs-6 fs-md-5"
-                      to="/i-want-to"
+                      to="/i-want-to-sell"
                       onClick={() => handleNavigate("/saleprops")}
                     >
                       Sell a Property (WTS)
@@ -163,7 +163,7 @@ const Navbar = () => {
                   <li>
                     <Link
                       className="dropdown-item font-poppins fs-6 fs-md-5"
-                      to="/i-want-to"
+                      to="/i-want-to-sell"
                       onClick={() => handleNavigate("/saleprops")}
                     >
                       Buy a Property (WTB)

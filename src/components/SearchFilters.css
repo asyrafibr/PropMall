@@ -1,0 +1,14 @@
+.bg-orange {
+  background-color: #F4980E !important;
+}
+
+.h-60 {
+  height: 60px !important;
+}
+
+.font-poppins {
+  font-family: 'Poppins', sans-serif !important;
+}
+.btn-search {
+  width: 100px; /* desired desktop width */
+}

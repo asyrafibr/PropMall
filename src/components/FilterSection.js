@@ -101,8 +101,7 @@ const Filters = ({
           ...(holdingList.data.property_holding || []),
           ...(lotList.data?.property_lot_type || []), // Adjust key based on lotList structure
         ]);
-        console.log("lot", lotList);
-        console.log("holdingList", holdingList);
+   
 
         // ❌ agent is NOT updated here yet
       } catch (error) {
@@ -362,7 +361,6 @@ const Filters = ({
       const hostname = window.location.hostname;
       const domain = hostname.replace(/^www\./, "").split(".")[0];
       const url_fe = window.location.href;
-      console.log("selectedHolding", selectedHolding);
       const payload = {
         domain,
         url_fe,
@@ -404,7 +402,6 @@ const Filters = ({
       };
 
       const response = await getListings(payload);
-      console.log("Payload", payload);
       navigate("/search", {
         state: {
           products: response.data.listing_search.listing_rows,
@@ -447,7 +444,7 @@ const Filters = ({
   };
 
   return (
-    <div>
+    <div className="container-xl px-0">
       <div className="order-1 order-md-2 w-100 w-md-auto">
         <AgentBox />
       </div>
@@ -463,13 +460,13 @@ const Filters = ({
     w-100 
     min-vh-50 
     text-white 
-     px-md-5   <!-- ✅ smaller left/right padding on mobile -->
+    px-md-5 px-xl-5   <!-- ✅ extra padding at ≥1200px -->
     py-3 py-md-5   <!-- ✅ keep top/bottom responsive -->
         header-section
 
   "
       >
-        <div className="container-fluid order-2 order-md-1 position-relative z-2 flex-fill pt-5 responsive-padding">
+        <div className="container-xl order-2 order-md-1 position-relative z-2 flex-fill pt-5 responsive-padding">
           <div className="hero-heading text-white fw-bold text-end mb-4">
             Discover Your Dream Properties at {mainAgent.name}
           </div>
@@ -515,13 +512,15 @@ const Filters = ({
                 <input
                   id="search"
                   type="text"
-                  className="form-control flex-grow-1 h-60px font-poppins"
+                  className="form-control font-poppins"
                   placeholder="Search"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
+                  style={{ height: "60px", width: "100%" }}
                 />
                 <button
-                  className="btn btn-search text-white w-md-auto h-60px"
+                  className="btn btn-search text-white w-100 w-md-auto"
+                  style={{ height: "60px",maxWidth:'120px' }}
                   onClick={handleSearch}
                 >
                   Search
