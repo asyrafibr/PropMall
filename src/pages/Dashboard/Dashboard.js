@@ -118,16 +118,17 @@ const Dashboard = () => {
 
       // Navigate to the correct tab path
       const pathSegment = urlMap[tabName] || "buy";
-      navigate(`/${pathSegment}`, {
-        state: {
-          products: response.data.listing_search.listing_rows,
-          activeTab: tabName,
-          selectedLocationName: locationName,
-          selectedLocationId: locationId,
-          searchType: tabName,
-          years,
-        },
-      });
+      console.log('test',pathSegment)
+      // navigate(`/${pathSegment}`, {
+      //   state: {
+      //     products: response.data.listing_search.listing_rows,
+      //     activeTab: tabName,
+      //     selectedLocationName: locationName,
+      //     selectedLocationId: locationId,
+      //     searchType: tabName,
+      //     years,
+      //   },
+      // });
     } catch (error) {
       console.error("Error fetching listings:", error);
     }

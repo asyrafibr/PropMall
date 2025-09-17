@@ -75,9 +75,7 @@ const SearchPage = () => {
   const [selectedHolding, setSelectedHolding] = useState([]);
   const [selectedAreaIds, setSelectedAreaIds] = useState([]);
   const { tab } = useParams(); // buy, rent, new-project, auction
-  const [activeTab1, setActiveTab1] = useState(
-    tabMap[tab?.toLowerCase()] || "Buy"
-  );
+
   const activeKey = tabKeyMap[tab?.toLowerCase()] || "sale"; // fallback to "sale"
   const activeTabRef = useRef(activeTab);
   useEffect(() => {

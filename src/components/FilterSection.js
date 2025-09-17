@@ -356,64 +356,63 @@ const Filters = ({
     setLocationTree([]);
   };
 
-  const handleSearch = async () => {
-    try {
-      const hostname = window.location.hostname;
-      const domain = hostname.replace(/^www\./, "").split(".")[0];
-      const url_fe = window.location.href;
-      const payload = {
-        domain,
-        url_fe,
-        listing_search: {
-          page_num: 1,
-          page_size: 10,
-          search_text: searchTerm || null,
-          search_fields: {
-            title: true,
-            description: true,
-          },
-          search_filters: {
-            objective: objectiveMap[activeTab] || {},
+const handleSearch = async () => {
+  try {
+    const hostname = window.location.hostname;
+    const domain = hostname.replace(/^www\./, "").split(".")[0];
+    const url_fe = window.location.href;
 
-            location: {
-              id_country: selectedCountry?.id_country || null,
-              id_state: selectedState?.id || null,
-              id_area: selectedAreaIds.length ? selectedAreaIds : [],
-              id_province: [],
-              id_cities: [],
-            },
-            property_category: selectedCategory.id || [],
-            property_holding: selectedHolding.map((h) => h.id) || [],
-            property_lot_type: null,
-            room: {
-              min: roomRange?.min || null,
-              max: roomRange?.max || null,
-            },
-            bathroom: {
-              min: bathroomRange?.min || null,
-              max: bathroomRange?.max || null,
-            },
-            price: {
-              min: priceRange?.min || null,
-              max: priceRange?.max || null,
-            },
+    const payload = {
+      domain,
+      url_fe,
+      listing_search: {
+        page_num: 1,
+        page_size: 10,
+        search_text: searchTerm || null,
+        search_fields: { title: true, description: true },
+        search_filters: {
+          objective: objectiveMap[activeTab] || {},
+          location: {
+            id_country: selectedCountry?.id_country || null,
+            id_state: selectedState?.id || null,
+            id_area: selectedAreaIds.length ? selectedAreaIds : [],
+            id_province: [],
+            id_cities: [],
           },
+          property_category: selectedCategory.id || [],
+          property_holding: selectedHolding.map((h) => h.id) || [],
+          property_lot_type: null,
+          room: { min: roomRange?.min || null, max: roomRange?.max || null },
+          bathroom: { min: bathroomRange?.min || null, max: bathroomRange?.max || null },
+          price: { min: priceRange?.min || null, max: priceRange?.max || null },
         },
-      };
+      },
+    };
 
-      const response = await getListings(payload);
-      navigate("/search", {
-        state: {
-          products: response.data.listing_search.listing_rows,
-          selectedLocationName: selectedState?.name,
-          selectedLocationId: selectedState?.id,
-          searchType: activeTab,
-        },
-      });
-    } catch (error) {
-      console.error("Error fetching listings:", error);
-    }
-  };
+    const response = await getListings(payload);
+
+    const tabUrlMap = {
+      Buy: "buy",
+      Rent: "rent",
+      "New Project": "new-project",
+      Auction: "auction",
+    };
+
+    const tabPath = tabUrlMap[activeTab] || "buy";
+
+    navigate(`/${tabPath}`, {
+      state: {
+        products: response.data.listing_search.listing_rows,
+        selectedLocationName: selectedState?.name,
+        selectedLocationId: selectedState?.id,
+        searchType: activeTab,
+      },
+    });
+  } catch (error) {
+    console.error("Error fetching listings:", error);
+  }
+};
+
   const objectiveMap = {
     Buy: { sale: true },
     Rent: { rent: true },
