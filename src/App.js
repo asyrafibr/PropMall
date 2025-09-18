@@ -3,7 +3,8 @@ import {
   BrowserRouter as Router,
   Routes,
   Route,
-  useLocation,Navigate
+  useLocation,
+  Navigate,
 } from "react-router-dom";
 import { TemplateProvider, useTemplate } from "./context/TemplateContext";
 
@@ -28,6 +29,7 @@ import Articles from "./pages/Articles";
 import AboutMe from "./pages/Aboutme";
 import Tools from "./pages/Tools";
 import AgentBox from "./components/AgentBox";
+import SeoProvider from "./SEO";
 import "./custom-bootstrap.scss";
 
 // remove the static CSS import here
@@ -63,11 +65,11 @@ const Layout = () => {
       </div>
     );
   }
-function RedirectListToForSale() {
-  const location = useLocation();
-  const newPath = location.pathname.replace("/list/", "/for-sale/");
-  return <Navigate to={newPath} replace />;
-}
+  function RedirectListToForSale() {
+    const location = useLocation();
+    const newPath = location.pathname.replace("/list/", "/for-sale/");
+    return <Navigate to={newPath} replace />;
+  }
   return (
     <>
       {!hideHeaderFooter && <Header />}
@@ -93,7 +95,7 @@ function RedirectListToForSale() {
         <Route path="/new-project/:slug" element={<ProductDetailPage />} />
         <Route path="/auction/:slug" element={<ProductDetailPage />} />
 
-      <Route path="/list/:slug" element={<RedirectListToForSale />} />
+        <Route path="/list/:slug" element={<RedirectListToForSale />} />
         <Route path="/business-card" element={<BusinessCard />} />
         <Route
           path="/i-want-to-sell"
@@ -107,11 +109,13 @@ function RedirectListToForSale() {
 };
 
 const App = () => (
-  <TemplateProvider>
-    <Router>
+<TemplateProvider>
+  <Router>
+    <SeoProvider>
       <Layout />
-    </Router>
-  </TemplateProvider>
+    </SeoProvider>
+  </Router>
+</TemplateProvider>
 );
 
 export default App;
