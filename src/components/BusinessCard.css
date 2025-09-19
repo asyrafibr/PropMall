@@ -52,7 +52,7 @@
   height: 52px;
   border-radius: 8px;
   padding: 12px 16px;
-  background-color: #ffffff;
+  background-color: #ffffff !important;
   box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.5);
   border: none;
   color: #3a3a3a;
@@ -63,6 +63,8 @@
   font-weight: 500;
   font-size: 14px;
   transition: all 0.2s ease-in-out;
+    text-decoration: none;   /* 🚀 removes underline */
+
 }
 
 .social-btn:hover {
@@ -189,7 +191,7 @@
 /* Total Listings Card */
 .total-card {
   width: 100%;
-  max-width: 455px;
+  max-width: 620px;
   height: 62px;
 }
 
@@ -222,9 +224,6 @@
     margin-bottom: 10px;
   }
 
-  .total-card {
-    max-width: 100%;
-  }
 
   .d-flex.justify-content-end.align-items-center {
     flex-direction: column;
@@ -268,7 +267,7 @@
 }
 
 .total-card {
-  width: 455px;       /* desktop width */
+  width: 610px;       /* desktop width */
   height: 62px;
 }
 

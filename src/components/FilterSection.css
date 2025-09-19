@@ -97,6 +97,9 @@ input[type="checkbox"]:checked::after {
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center center;
+    width: 100%;          /* full width */
+  min-height: 60vh;  
+  
 }/* Custom height utility */
 /* Custom input/button height */
 .h-60px {
@@ -113,6 +116,11 @@ input[type="checkbox"]:checked::after {
   background-color: #f4980e !important;
   width: 120px !important;
   border-radius: 8px !important;
+}
+@media (min-width: 768px) {
+  .btn-search {
+    max-width: 120px;
+  }
 }
 .cursor-pointer{
   cursor: "pointer" 

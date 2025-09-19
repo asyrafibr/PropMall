@@ -33,9 +33,11 @@ const AgentBox = () => {
 
   return (
     <div
-className="w-100 d-flex align-items-center text-white pb-3 ps-2 pt-3 ps-sm-5 ps-md-5 px-xl-5"
-      style={backgroundStyle}
-    >
+  className="w-100 d-flex align-items-center text-white pb-3 pt-3"
+  style={backgroundStyle}
+>
+  <div className="container-xl px-3 px-md-5">
+    <div className="d-flex align-items-center">
       {agent.photo && (
         <img
           src={agent.photo}
@@ -50,6 +52,9 @@ className="w-100 d-flex align-items-center text-white pb-3 ps-2 pt-3 ps-sm-5 ps-
         <p className="fs-6 mt-2 lh-1 mb-0">{agent.phone}</p>
       </div>
     </div>
+  </div>
+</div>
+
   );
 };
 

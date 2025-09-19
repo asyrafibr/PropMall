@@ -1,7 +1,8 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef,useCallback } from "react";
 import { FaBed, FaBath } from "react-icons/fa";
 import { useTemplate } from "../context/TemplateContext";
 import "./SimilarListingCard.css";
+import { useNavigate } from "react-router-dom";
 
 const CARD_WIDTH = 335;
 const GAP = 20;
@@ -17,6 +18,7 @@ const SimilarListing = ({ listings }) => {
   const { template } = useTemplate();
   const thumbnailRefs = useRef([]);
   const scrollRef = useRef();
+  const navigate = useNavigate();
 
   const openModal = (images, index) => {
     setModalImages(images);
@@ -49,7 +51,28 @@ const SimilarListing = ({ listings }) => {
     setCurrentImageIndex((prev) =>
       prev === 0 ? modalImages.length - 1 : prev - 1
     );
+const handleViewDetails = useCallback(
+  (productId, title, location, permalink, permalink_previous) => {
+      console.log("DATA test",productId, title, location, permalink, permalink_previous)
 
+    // ✅ Always prefer the latest permalink
+    const targetLink = permalink || permalink_previous;
+
+    if (!targetLink) {
+      console.error("No permalink available for product:", productId);
+      return;
+    }
+
+    navigate(targetLink, {
+      state: {
+        productId,
+        title,
+        location,
+      },
+    });
+  },
+  [navigate]
+);
   const showNext = () =>
     setCurrentImageIndex((prev) =>
       prev === modalImages.length - 1 ? 0 : prev + 1
@@ -130,7 +153,15 @@ const SimilarListing = ({ listings }) => {
                 src={card.photos?.[0] || "https://via.placeholder.com/300x200"}
                 className="card-img-top property-img"
                 alt={card.ads_title}
-                onClick={() => openModal(card.photos || [], 0)}
+                   onClick={() =>
+                            handleViewDetails(
+                              card.id_listing,
+                              card.ads_title,
+                              card.location,
+                              card.permalink,
+                              card.permalink_previous
+                            )
+                          }
               />
               {(statusText || belowMarket) && (
                 <div className="position-absolute top-0 start-0 m-2 d-flex flex-column gap-1 z-2">

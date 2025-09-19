@@ -18,7 +18,8 @@ const ListingCard = ({ product, handleViewDetails }) => {
     monetary_currency,
     category_type_title_holding_lottype_storey,
     permalink,
-    permalink_previous
+    permalink_previous,
+    text_message,
   } = product;
   const [modalImages, setModalImages] = useState([]);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -141,7 +142,10 @@ const ListingCard = ({ product, handleViewDetails }) => {
           {/* Price + Save */}
           <div className="d-flex justify-content-between align-items-center mb-2">
             <div className="fw-bold fs-5">
+              {listing_modus === "FOR SALE" && "Asking "}
+              {listing_modus === "NEW PROJECT" && "From "}
               {monetary_currency} {price}
+              {listing_modus === "FOR RENT" && " /month"}
             </div>
             {/* <button className="btn btn-link p-0 d-flex align-items-center gap-1">
               <FaStar className="text-warning" />
@@ -186,56 +190,73 @@ const ListingCard = ({ product, handleViewDetails }) => {
             {/* 📱 Mobile Call button (only visible on mobile) */}
             {/* 📱 Mobile buttons (Call + WhatsApp + Details) */}
             {/* 📱 Mobile buttons (icons only) */}
+            {/* 📱 Mobile (icon + text stacked, centered) */}
+            {/* 📱 Mobile (icon + text stacked, grey style) */}
             <div className="d-flex flex-row w-100 gap-2 d-sm-none">
               <a
-                href={`tel:${agentInfo.phone || agentInfo.whatsapp || ""}`}
-                className="btn btn-outline-primary w-100 d-flex align-items-center justify-content-center"
+                href={`tel:+${agentInfo.phone || agentInfo.whatsapp || ""}`}
+                className="btn btn-outline-secondary text-secondary w-100 d-flex flex-column align-items-center justify-content-center"
               >
-                <FaPhone />
+                <FaPhone className="fs-5 text-secondary" />
+                <span className="small text-secondary">Call</span>
               </a>
 
               <a
                 href={`https://wa.me/${
                   agentInfo.whatsapp
-                }?text=${encodeURIComponent(whatsappMessage)}`}
+                }?text=${encodeURIComponent(text_message)}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="btn btn-outline-success w-100 d-flex align-items-center justify-content-center"
+                className="btn btn-outline-secondary text-secondary w-100 d-flex flex-column align-items-center justify-content-center"
               >
-                <i className="bi bi-whatsapp"></i>
+                <i className="bi bi-whatsapp fs-5 text-secondary"></i>
+                <span className="small text-secondary">Whatsapp</span>
               </a>
 
               <button
-                className="btn btn-outline-secondary w-100 d-flex align-items-center justify-content-center"
+                className="btn btn-outline-secondary text-secondary w-100 d-flex flex-column align-items-center justify-content-center"
                 onClick={() =>
-                  handleViewDetails(id_listing, ads_title, location)
+                  handleViewDetails(
+                    id_listing,
+                    ads_title,
+                    location,
+                    permalink,
+                    permalink_previous
+                  )
                 }
               >
-                <i className="bi bi-info-circle"></i>
+                <i className="bi bi-info-circle fs-5 text-secondary"></i>
+                <span className="small text-secondary">Details</span>
               </button>
             </div>
 
-            {/* 💻 Desktop/Tablet (icons + text) */}
+            {/* 💻 Desktop/Tablet (icons + text, grey style) */}
             <div className="d-none d-sm-flex flex-row w-100 gap-2 justify-content-end">
               <a
                 href={`https://wa.me/${
                   agentInfo.whatsapp
-                }?text=${encodeURIComponent(whatsappMessage)}`}
+                }?text=${encodeURIComponent(text_message)}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="btn btn-outline-success d-flex align-items-center justify-content-center gap-2"
+                className="btn btn-outline-secondary text-secondary d-flex align-items-center justify-content-center gap-2"
               >
-                <i className="bi bi-whatsapp"></i>
+                <i className="bi bi-whatsapp text-secondary"></i>
                 Whatsapp
               </a>
 
               <button
-                className="btn btn-outline-secondary d-flex align-items-center justify-content-center gap-2"
+                className="btn btn-outline-secondary text-secondary d-flex align-items-center justify-content-center gap-2"
                 onClick={() =>
-                  handleViewDetails(id_listing, ads_title, location,permalink,permalink_previous)
+                  handleViewDetails(
+                    id_listing,
+                    ads_title,
+                    location,
+                    permalink,
+                    permalink_previous
+                  )
                 }
               >
-                <i className="bi bi-info-circle"></i>
+                <i className="bi bi-info-circle text-secondary"></i>
                 View Details
               </button>
             </div>
@@ -243,65 +264,64 @@ const ListingCard = ({ product, handleViewDetails }) => {
         </div>
       </div>
       {modalOpen && (
-  <div className="modal-overlay" onClick={handleCloseModal}>
-    <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-      <button className="close-button" onClick={handleCloseModal}>
-        &times;
-      </button>
+        <div className="modal-overlay" onClick={handleCloseModal}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <button className="close-button" onClick={handleCloseModal}>
+              &times;
+            </button>
 
-      <div className="modal-body">
-        {/* Wrap image + arrows together */}
-        <div className="main-image-wrapper">
-          {/* Prev Button (always visible, disabled if first) */}
-          <button
-            className="nav-button prev"
-            onClick={showPrevImage}
-            disabled={modalImageIndex === 0}
-          >
-            &#10094;
-          </button>
+            <div className="modal-body">
+              {/* Wrap image + arrows together */}
+              <div className="main-image-wrapper">
+                {/* Prev Button (always visible, disabled if first) */}
+                <button
+                  className="nav-button prev"
+                  onClick={showPrevImage}
+                  disabled={modalImageIndex === 0}
+                >
+                  &#10094;
+                </button>
 
-          {/* Main Image */}
-          <img
-            src={modalImages[modalImageIndex]}
-            alt="Main View"
-            className="modal-image"
-          />
+                {/* Main Image */}
+                <img
+                  src={modalImages[modalImageIndex]}
+                  alt="Main View"
+                  className="modal-image"
+                />
 
-          {/* Next Button (always visible, disabled if last) */}
-          <button
-            className="nav-button next"
-            onClick={showNextImage}
-            disabled={modalImageIndex === modalImages.length - 1}
-          >
-            &#10095;
-          </button>
+                {/* Next Button (always visible, disabled if last) */}
+                <button
+                  className="nav-button next"
+                  onClick={showNextImage}
+                  disabled={modalImageIndex === modalImages.length - 1}
+                >
+                  &#10095;
+                </button>
+              </div>
+
+              {/* Counter */}
+              <div className="image-counter">
+                {modalImageIndex + 1} / {modalImages.length}
+              </div>
+
+              {/* Thumbnails */}
+              <div className="thumbnail-container">
+                {modalImages.map((img, idx) => (
+                  <img
+                    key={idx}
+                    src={img}
+                    className={`thumbnail ${
+                      modalImageIndex === idx ? "active" : ""
+                    }`}
+                    onClick={() => setModalImageIndex(idx)}
+                    alt={`Thumb ${idx}`}
+                  />
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
-
-        {/* Counter */}
-        <div className="image-counter">
-          {modalImageIndex + 1} / {modalImages.length}
-        </div>
-
-        {/* Thumbnails */}
-        <div className="thumbnail-container">
-          {modalImages.map((img, idx) => (
-            <img
-              key={idx}
-              src={img}
-              className={`thumbnail ${
-                modalImageIndex === idx ? "active" : ""
-              }`}
-              onClick={() => setModalImageIndex(idx)}
-              alt={`Thumb ${idx}`}
-            />
-          ))}
-        </div>
-      </div>
-    </div>
-  </div>
-)}
-
+      )}
     </div>
   );
 };

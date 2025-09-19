@@ -41,6 +41,12 @@ export const getListingInfo = ({ id_listing, domain, url_fe }) =>
     { id_listing, domain, url_fe },
     defaultHeaders
   );
+  export const getAgentCardInfo = ({  domain, url_fe }) =>
+  API.post(
+    "/graph/me",
+    { domain, url_fe },
+    defaultHeaders
+  );
 // Featured listing search
 export const getFeaturedList = (payload) =>
   API.post("/graph/me/featured/search", payload, defaultHeaders);

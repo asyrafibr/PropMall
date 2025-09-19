@@ -6,7 +6,7 @@ import ProductDetailT1 from "../pages/ProductDetail"; // Template 1
 import ProductDetailT2 from "../pages/ProductDetailT2"; // Template 2
 import ProductDetailT3 from "../pages/ProductDetailT3"; // Template 3
 import ProductDetailT4 from "../pages/ProductDetailT4"; // Template 4
-
+import ScrollToTop from './ScrollToTop'
 const ProductDetailPage = () => {
   const { agent, template } = useTemplate();
 
@@ -19,7 +19,10 @@ const ProductDetailPage = () => {
   };
 
   // ✅ Default to template1 if not found
-  return <div>{templateMap[template] || <ProductDetailT1 />}</div>;
+  return <div>
+          <ScrollToTop />  {/* 👈 place it here */}
+
+    {templateMap[template] || <ProductDetailT1 />}</div>;
 };
 
 export default ProductDetailPage;

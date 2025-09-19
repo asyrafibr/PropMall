@@ -101,7 +101,6 @@ const Filters = ({
           ...(holdingList.data.property_holding || []),
           ...(lotList.data?.property_lot_type || []), // Adjust key based on lotList structure
         ]);
-   
 
         // ❌ agent is NOT updated here yet
       } catch (error) {
@@ -356,62 +355,68 @@ const Filters = ({
     setLocationTree([]);
   };
 
-const handleSearch = async () => {
-  try {
-    const hostname = window.location.hostname;
-    const domain = hostname.replace(/^www\./, "").split(".")[0];
-    const url_fe = window.location.href;
+  const handleSearch = async () => {
+    try {
+      const hostname = window.location.hostname;
+      const domain = hostname.replace(/^www\./, "").split(".")[0];
+      const url_fe = window.location.href;
 
-    const payload = {
-      domain,
-      url_fe,
-      listing_search: {
-        page_num: 1,
-        page_size: 10,
-        search_text: searchTerm || null,
-        search_fields: { title: true, description: true },
-        search_filters: {
-          objective: objectiveMap[activeTab] || {},
-          location: {
-            id_country: selectedCountry?.id_country || null,
-            id_state: selectedState?.id || null,
-            id_area: selectedAreaIds.length ? selectedAreaIds : [],
-            id_province: [],
-            id_cities: [],
+      const payload = {
+        domain,
+        url_fe,
+        listing_search: {
+          page_num: 1,
+          page_size: 10,
+          search_text: searchTerm || null,
+          search_fields: { title: true, description: true },
+          search_filters: {
+            objective: objectiveMap[activeTab] || {},
+            location: {
+              id_country: selectedCountry?.id_country || null,
+              id_state: selectedState?.id || null,
+              id_area: selectedAreaIds.length ? selectedAreaIds : [],
+              id_province: [],
+              id_cities: [],
+            },
+            property_category: selectedCategory.id || [],
+            property_holding: selectedHolding.map((h) => h.id) || [],
+            property_lot_type: null,
+            room: { min: roomRange?.min || null, max: roomRange?.max || null },
+            bathroom: {
+              min: bathroomRange?.min || null,
+              max: bathroomRange?.max || null,
+            },
+            price: {
+              min: priceRange?.min || null,
+              max: priceRange?.max || null,
+            },
           },
-          property_category: selectedCategory.id || [],
-          property_holding: selectedHolding.map((h) => h.id) || [],
-          property_lot_type: null,
-          room: { min: roomRange?.min || null, max: roomRange?.max || null },
-          bathroom: { min: bathroomRange?.min || null, max: bathroomRange?.max || null },
-          price: { min: priceRange?.min || null, max: priceRange?.max || null },
         },
-      },
-    };
+      };
 
-    const response = await getListings(payload);
+      const response = await getListings(payload);
 
-    const tabUrlMap = {
-      Buy: "buy",
-      Rent: "rent",
-      "New Project": "new-project",
-      Auction: "auction",
-    };
+      const tabUrlMap = {
+        Buy: "buy",
+        Rent: "rent",
+        "New Project": "new-project",
+        Auction: "auction",
+      };
 
-    const tabPath = tabUrlMap[activeTab] || "buy";
+      const tabPath = tabUrlMap[activeTab] || "buy";
 
-    navigate(`/${tabPath}`, {
-      state: {
-        products: response.data.listing_search.listing_rows,
-        selectedLocationName: selectedState?.name,
-        selectedLocationId: selectedState?.id,
-        searchType: activeTab,
-      },
-    });
-  } catch (error) {
-    console.error("Error fetching listings:", error);
-  }
-};
+      navigate(`/${tabPath}`, {
+        state: {
+          products: response.data.listing_search.listing_rows,
+          selectedLocationName: selectedState?.name,
+          selectedLocationId: selectedState?.id,
+          searchType: activeTab,
+        },
+      });
+    } catch (error) {
+      console.error("Error fetching listings:", error);
+    }
+  };
 
   const objectiveMap = {
     Buy: { sale: true },
@@ -443,29 +448,29 @@ const handleSearch = async () => {
   };
 
   return (
-    <div className="container-xl px-0">
+    <div>
       <div className="order-1 order-md-2 w-100 w-md-auto">
         <AgentBox />
       </div>
 
+      {/* ✅ Full width hero background */}
       <div
         className="
-    d-flex 
+    w-100
+    text-white
+    position-relative
+    header-section
+    d-flex
     flex-column flex-md-row
-    align-items-start 
-    justify-content-center 
-    flex-wrap 
-    position-relative 
-    w-100 
-    min-vh-50 
-    text-white 
-    px-md-5 px-xl-5   <!-- ✅ extra padding at ≥1200px -->
-    py-3 py-md-5   <!-- ✅ keep top/bottom responsive -->
-        header-section
-
+    align-items-start
+    justify-content-center
+    flex-wrap
+    min-vh-50
+    py-3 py-md-5
   "
       >
-        <div className="container-xl order-2 order-md-1 position-relative z-2 flex-fill pt-5 responsive-padding">
+        {/* Constrain content inside again */}
+        <div className="container-xl order-2 order-md-1 position-relative z-2 flex-fill pt-5 responsive-padding px-3 px-md-5">
           <div className="hero-heading text-white fw-bold text-end mb-4">
             Discover Your Dream Properties at {mainAgent.name}
           </div>
@@ -519,7 +524,7 @@ const handleSearch = async () => {
                 />
                 <button
                   className="btn btn-search text-white w-100 w-md-auto"
-                  style={{ height: "60px",maxWidth:'120px' }}
+                  style={{ height: "60px" }}
                   onClick={handleSearch}
                 >
                   Search
@@ -890,32 +895,6 @@ const handleSearch = async () => {
           </div>
         </div>
       )}
-
-      {/* {priceModalOpen && (
-        <div className="modal-overlay" onClick={() => setPriceModalOpen(false)}>
-          <div className="modal-box" onClick={(e) => e.stopPropagation()}>
-            <h5>Select Price Range (RM)</h5>
-            <RangeSliderModal
-              label="Price"
-              scale={activeTab === "Buy" ? BUY_AMOUNTS : RENT_AMOUNTS}
-              range={priceRange}
-              setRange={setPriceRange}
-              setRangeDisplay={setPriceRangeDisplay}
-              handleSearch={handleSearch}
-              setOpenDropdown={setOpenDropdown}
-            />
-            <button
-              className="btn btn-primary"
-              onClick={() => {
-                setPriceModalOpen(false);
-                setOpenDropdown(null);
-              }}
-            >
-              Apply
-            </button>
-          </div>
-        </div>
-      )} */}
     </div>
   );
 };

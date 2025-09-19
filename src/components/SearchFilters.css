@@ -12,3 +12,8 @@
 .btn-search {
   width: 100px; /* desired desktop width */
 }
+@media (min-width: 768px) {
+  .btn-search {
+    min-width: 120px; /* only applies on desktop/tablet */
+  }
+}

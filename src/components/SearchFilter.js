@@ -69,8 +69,8 @@ const SearchFilter = ({
   const location = useLocation();
   const [openModalLabel, setOpenModalLabel] = useState(null);
   const [priceModalOpen, setPriceModalOpen] = useState(false);
-const activeTabRef = useRef(activeTab);
-      const tabKey = activeTabRef.current; // ✅ always latest
+  const activeTabRef = useRef(activeTab);
+  const tabKey = activeTabRef.current; // ✅ always latest
 
   const BUY_AMOUNTS = [
     0, 100000, 200000, 300000, 400000, 500000, 600000, 700000, 800000, 900000,
@@ -195,7 +195,6 @@ const activeTabRef = useRef(activeTab);
           ...(holdingList.data.property_holding || []),
           ...(lotList.data?.property_lot_type || []), // Adjust key based on lotList structure
         ]);
-   
 
         // ❌ agent is NOT updated here yet
       } catch (error) {
@@ -212,12 +211,10 @@ const activeTabRef = useRef(activeTab);
   //     setActiveTab(activeTab);
   //   }
   // }, [activeTab]);
-useEffect(() => {
-
-  console.log("activeTab changed to:",activeTab);
-    console.log("activeTab changed to123:",tabKey);
-
-}, [activeTab]);
+  useEffect(() => {
+    console.log("activeTab changed to:", activeTab);
+    console.log("activeTab changed to123:", tabKey);
+  }, [activeTab]);
   useEffect(() => {
     // If autoSearch flag is set, run handleSearch after tab is updated
     console.log("LOCATION NOW123", activeTab);
@@ -428,7 +425,7 @@ useEffect(() => {
               <div className="mb-2">
                 {tabMap
                   .filter(({ key }) => category[key])
-                  .map(({ label,key }) => (
+                  .map(({ label, key }) => (
                     <button
                       key={label}
                       className={`btn me-3 px-2 py-1 fw-normal fs-6 text-white rounded-0`}
@@ -475,8 +472,7 @@ useEffect(() => {
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
               <button
-                className="btn btn-search bg-orange text-white flex-shrink-0 h-60 rounded"
-                style={{ minWidth: "120px" }} // optional to set desktop width
+                className="btn btn-search bg-orange text-white flex-shrink-0 h-60 rounded w-100 w-md-auto"
                 onClick={handleSearch}
               >
                 Search

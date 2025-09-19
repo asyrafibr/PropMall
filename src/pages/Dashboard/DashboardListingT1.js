@@ -146,7 +146,7 @@ const DashboardListingT1 = ({ listings, handleViewDetails }) => {
                 >
                   <div className="card h-100 w-100 shadow-sm">
                     {/* Posted Date */}
-                    <div className="mb-1 p-3 resp-text1">
+                    <div className=" p-2 resp-text1">
                       Listed on {card.publish_dt}
                     </div>
 
@@ -195,12 +195,16 @@ const DashboardListingT1 = ({ listings, handleViewDetails }) => {
 
                     {/* Card Body */}
                     <div className="card-body d-flex flex-column flex-grow-1">
-                      <h5 className="resp-title">RM {card.price}</h5>
-
+                      <h5 className="resp-title">
+                        {card.listing_modus === "FOR SALE" && "Asking "}
+                        {card.listing_modus === "NEW PROJECT" && "From "}
+                        RM {card.price}
+                        {card.listing_modus === "FOR RENT" && " /monthly"}
+                      </h5>
                       <p className=" mb-1 resp-textTitle">{card.ads_title}</p>
 
                       <p className="text-muted mb-2 resp-text1">
-                        <div className="d-flex align-items-center gap-2">
+                        <div className="d-flex align-items-center gap-2 mt-2">
                           <FaLocationDot className="text-secondary" />{" "}
                           {/* Bootstrap gray */}
                           <span>{card.location_description}</span>
@@ -211,16 +215,25 @@ const DashboardListingT1 = ({ listings, handleViewDetails }) => {
                         <br />
                         {card.built_size && card.land_size && (
                           <>
-                            Built-up Size: {card.built_size}
-                            {card.built_size_unit}
+                            Built-up Size: {card.built_size}{" "}
+                            {card.built_size_unit}{" "}
+                            <small className="text-muted">
+                              (RM {card.built_price_per_sqft} per sqft)
+                            </small>
                             <br />
-                            Land Size: {card.land_size} {card.land_size_unit}
+                            Land Size: {card.land_size} {card.land_size_unit}{" "}
+                            <small className="text-muted">
+                              (RM {card.land_price_per_sqft} per sqft)
+                            </small>
                           </>
                         )}
 
                         {!card.built_size && card.land_size && (
                           <>
-                            Land Size: {card.land_size} {card.land_size_unit}
+                            Land Size: {card.land_size} {card.land_size_unit}{" "}
+                            <small className="text-muted">
+                              (RM {card.land_price_per_unit} per acre)
+                            </small>
                           </>
                         )}
                       </p>
@@ -242,13 +255,15 @@ const DashboardListingT1 = ({ listings, handleViewDetails }) => {
                       <div className="d-flex gap-2 mt-auto">
                         {/* 📱 Whatsapp */}
                         <a
-                          className="btn btn-outline-secondary w-100 d-flex flex-sm-row flex-column align-items-center gap-1 gap-sm-4"
+                          className="btn btn-outline-secondary w-100 d-flex flex-sm-row flex-column align-items-center justify-content-center text-center gap-1"
                           href={`https://wa.me/${
                             agentInfo.whatsapp
-                          }?text=${encodeURIComponent(whatsappMessage)}`}
+                          }?text=${encodeURIComponent(card.text_message)}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
                         >
-                          <i className="bi bi-whatsapp"></i>
-                          <span className="d-none d-sm-inline">Whatsapp</span>
+                          <i className="bi bi-whatsapp fs-5"></i>
+                          <span>Whatsapp</span>
                         </a>
 
                         {/* 📱 Details */}
@@ -262,19 +277,19 @@ const DashboardListingT1 = ({ listings, handleViewDetails }) => {
                               card.permalink_previous
                             )
                           }
-                          className="btn btn-outline-secondary w-100 d-flex flex-sm-row flex-column align-items-center gap-1 gap-sm-4"
+                          className="btn btn-outline-secondary w-100 d-flex flex-sm-row flex-column align-items-center justify-content-center text-center gap-1"
                         >
-                          <i className="bi bi-info-circle"></i>
-                          <span className="d-none d-sm-inline">Details</span>
+                          <i className="bi bi-info-circle fs-5"></i>
+                          <span>Details</span>
                         </button>
 
                         {/* 📱 Call Agent (only mobile) */}
                         <a
-                          className="btn btn-outline-primary w-100 d-sm-none d-flex flex-sm-row flex-column align-items-center gap-1 gap-sm-2"
-                          href={`tel:${agentInfo.whatsapp}`} // ✅ phone number here
+                          className="btn btn-outline-primary w-100 d-sm-none d-flex flex-column align-items-center justify-content-center text-center gap-1"
+                          href={`tel:+${agentInfo.whatsapp}`} // ✅ phone number here
                         >
-                          <i className="bi bi-telephone"></i>
-                          <span className="d-none d-sm-inline">Call</span>
+                          <i className="bi bi-telephone fs-5"></i>
+                          <span>Call</span>
                         </a>
                       </div>
                     </div>
@@ -348,64 +363,68 @@ const DashboardListingT1 = ({ listings, handleViewDetails }) => {
           </div>
         </div>
       )} */}
-{modalOpen && (
-  <div className="modal-overlay" onClick={handleCloseModal}>
-    <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-      <button className="close-button" onClick={handleCloseModal}>
-        &times;
-      </button>
+      {modalOpen && (
+        <div className="modal-overlay" onClick={handleCloseModal}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <button className="close-button" onClick={handleCloseModal}>
+              &times;
+            </button>
 
-      <div className="modal-body">
-        {/* Wrap image + arrows together */}
-        <div className="main-image-wrapper" style={{ position: "relative" }}>
-          {/* Prev Button (always visible) */}
-          <button
-            className="nav-button prev"
-            onClick={showPrevImage}
-            disabled={modalImageIndex === 0}
-          >
-            &#10094;
-          </button>
+            <div className="modal-body">
+              {/* Wrap image + arrows together */}
+              <div
+                className="main-image-wrapper"
+                style={{ position: "relative" }}
+              >
+                {/* Prev Button (always visible) */}
+                <button
+                  className="nav-button prev"
+                  onClick={showPrevImage}
+                  disabled={modalImageIndex === 0}
+                >
+                  &#10094;
+                </button>
 
-          {/* Main Image */}
-          <img
-            src={modalImages[modalImageIndex]}
-            alt="Main View"
-            className="modal-image"
-          />
+                {/* Main Image */}
+                <img
+                  src={modalImages[modalImageIndex]}
+                  alt="Main View"
+                  className="modal-image"
+                />
 
-          {/* Next Button (always visible) */}
-          <button
-            className="nav-button next"
-            onClick={showNextImage}
-            disabled={modalImageIndex === modalImages.length - 1}
-          >
-            &#10095;
-          </button>
+                {/* Next Button (always visible) */}
+                <button
+                  className="nav-button next"
+                  onClick={showNextImage}
+                  disabled={modalImageIndex === modalImages.length - 1}
+                >
+                  &#10095;
+                </button>
+              </div>
+
+              {/* Counter */}
+              <div className="image-counter">
+                {modalImageIndex + 1} / {modalImages.length}
+              </div>
+
+              {/* Thumbnails */}
+              <div className="thumbnail-container">
+                {modalImages.map((img, idx) => (
+                  <img
+                    key={idx}
+                    src={img}
+                    className={`thumbnail ${
+                      modalImageIndex === idx ? "active" : ""
+                    }`}
+                    onClick={() => setModalImageIndex(idx)}
+                    alt={`Thumb ${idx}`}
+                  />
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
-
-        {/* Counter */}
-        <div className="image-counter">
-          {modalImageIndex + 1} / {modalImages.length}
-        </div>
-
-        {/* Thumbnails */}
-        <div className="thumbnail-container">
-          {modalImages.map((img, idx) => (
-            <img
-              key={idx}
-              src={img}
-              className={`thumbnail ${modalImageIndex === idx ? "active" : ""}`}
-              onClick={() => setModalImageIndex(idx)}
-              alt={`Thumb ${idx}`}
-            />
-          ))}
-        </div>
-      </div>
-    </div>
-  </div>
-)}
-
+      )}
     </div>
   );
 };
