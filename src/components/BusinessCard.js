@@ -182,8 +182,8 @@ function BusinessCard() {
 
         const response = await getAgentCardInfo({ domain, url_fe });
 
-        // setListingData(response.data);
-        setListingData(mockJson);
+        setListingData(response.data);
+        // setListingData(mockJson);
         console.log("response123", mockJson);
       } catch (err) {
         console.error("Error fetching listing info:", err);
