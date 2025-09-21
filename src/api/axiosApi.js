@@ -17,7 +17,7 @@ const baseURL =
     ? process.env.REACT_APP_API_BASE
     : 
     // window.location.origin;
-    `http://dev-agentv3.propmall.net`
+    `https://dev-agentv3.propmall.net`
 const API = axios.create({
   baseURL,
   headers: {
