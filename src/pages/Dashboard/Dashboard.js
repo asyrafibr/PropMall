@@ -15,12 +15,12 @@ import DashboardListingT1 from "./DashboardListingT1";
 import FilterT2 from "./DashboardT2";
 import FilterT3 from "./DashboardT3";
 import FilterT4 from "./DashboardT4";
-
+import SEO from '../../SEO'
 const data = {};
 const Dashboard = () => {
   const navigate = useNavigate();
   const { template } = useTemplate();
-  const { agent, category } = useTemplate();
+  const { agent, category,mainAgent,agentInfo } = useTemplate();
 
   const [locations, setLocations] = useState([]);
   // const [agent, setAgent] = useState([]);
@@ -32,6 +32,19 @@ const Dashboard = () => {
   const [selectedYear, setSelectedYear] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [activeTab, setActiveTab] = useState("Buy");
+
+
+
+    const title = `${agentInfo?.agent_name || "MyHartanah.co"} - ${
+    agent?.company || ""
+  }`;
+  const description = `Find property listings with ${
+    agent?.agent_name || "our agents"
+  } on MyHartanah.co`;
+  const image =
+    agent?.photo ||
+    "https://myhartanah.co/assets/img/logo-propmall-500x500-web-icon.jpg";
+
 
   useEffect(() => {
     const fetchFilterData = async () => {
@@ -260,6 +273,8 @@ const handleViewDetails = useCallback(
         backgroundColor: template === "template2" ? "#FAFAFA" : "#F8F6F4",
       }}
     >
+            <SEO title={title} description={description} image={image} />
+
       {renderByTemplate()}
     </div>
   );
