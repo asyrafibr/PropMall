@@ -1,7 +1,9 @@
 import React, { useEffect, useState, useRef } from "react";
 import { FaBed, FaBath, FaPhone, FaStar } from "react-icons/fa";
 import { useTemplate } from "../context/TemplateContext";
-
+import { FaLocationDot } from "react-icons/fa6";
+import builtIcon from "../image/built_up.svg";
+import landIcon from "../image/land_size.svg";
 const ListingCard = ({ product, handleViewDetails }) => {
   const {
     id_listing,
@@ -20,6 +22,13 @@ const ListingCard = ({ product, handleViewDetails }) => {
     permalink,
     permalink_previous,
     text_message,
+    location_description,
+    land_size,
+    built_price_per_sqft,
+    land_price_per_sqft,
+    land_size_unit,
+    land_price_per_unit,
+    built_size_unit
   } = product;
   const [modalImages, setModalImages] = useState([]);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -157,15 +166,80 @@ const ListingCard = ({ product, handleViewDetails }) => {
           <h6 className="fw-normal mb-1 fs-6">{ads_title}</h6>
 
           {/* Location */}
-          <p className="text-muted mb-1 small">{location}</p>
+          {/* <p className="text-muted mb-1 small">{location}</p>
 
-          {/* Category & Built-up size */}
           <p className="text-muted mb-3 small d-flex flex-wrap align-items-center">
             <span>{category_type_title_holding_lottype_storey}</span>
             {built_size && (
               <>
                 <span className="mx-2">&bull;</span>
                 <span>Built-up size: {built_size} sqft</span>
+              </>
+            )}
+          </p> */}
+          <p className="text-muted mb-2 resp-text1">
+            <div className="d-flex align-items-center gap-2 mt-2">
+              <FaLocationDot className="text-secondary" />{" "}
+              {/* Bootstrap gray */}
+              <span>{location_description}</span>
+            </div>
+
+            <br />
+            {category_type_title_holding_lottype_storey}
+            <br />
+            {built_size && land_size && (
+              <>
+                <div className="d-flex align-items-center mb-1">
+                  <img
+                    src={builtIcon}
+                    alt="Built-up Icon"
+                    width={16}
+                    height={16}
+                    className="me-2"
+                  />
+                  <span>
+                    Built-up Size: {built_size} {built_size_unit}{" "}
+                    <small className="text-muted">
+                      (RM {built_price_per_sqft} per sqft)
+                    </small>
+                  </span>
+                </div>
+
+                <div className="d-flex align-items-center">
+                  <img
+                    src={landIcon}
+                    alt="Land Size Icon"
+                    width={16}
+                    height={16}
+                    className="me-2"
+                  />
+                  <span>
+                    Land Size: {land_size} {land_size_unit}{" "}
+                    <small className="text-muted">
+                      (RM {land_price_per_sqft} per sqft)
+                    </small>
+                  </span>
+                </div>
+              </>
+            )}
+
+            {!built_size && land_size && (
+              <>
+             <div className="d-flex align-items-center">
+                  <img
+                    src={landIcon}
+                    alt="Land Size Icon"
+                    width={16}
+                    height={16}
+                    className="me-2"
+                  />
+                  <span>
+                    Land Size: {land_size} {land_size_unit}{" "}
+                    <small className="text-muted">
+                      (RM {land_price_per_sqft} per sqft)
+                    </small>
+                  </span>
+                </div>
               </>
             )}
           </p>

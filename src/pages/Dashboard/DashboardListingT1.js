@@ -4,6 +4,8 @@ import { useTemplate } from "../../context/TemplateContext";
 import "./DashboardListingT1.css"; // Create this for modal CSS
 import bg from "../../image/titlebg3.png";
 import { FaLocationDot } from "react-icons/fa6";
+import builtIcon from "../../image/built_up.svg";
+import landIcon from "../../image/land_size.svg";
 
 const DashboardListingT1 = ({ listings, handleViewDetails }) => {
   const [loading, setLoading] = useState(true);
@@ -215,16 +217,39 @@ const DashboardListingT1 = ({ listings, handleViewDetails }) => {
                         <br />
                         {card.built_size && card.land_size && (
                           <>
-                            Built-up Size: {card.built_size}{" "}
-                            {card.built_size_unit}{" "}
-                            <small className="text-muted">
-                              (RM {card.built_price_per_sqft} per sqft)
-                            </small>
-                            <br />
-                            Land Size: {card.land_size} {card.land_size_unit}{" "}
-                            <small className="text-muted">
-                              (RM {card.land_price_per_sqft} per sqft)
-                            </small>
+                            <div className="d-flex align-items-center mb-1">
+                              <img
+                                src={builtIcon}
+                                alt="Built-up Icon"
+                                width={16}
+                                height={16}
+                                className="me-2"
+                              />
+                              <span>
+                                Built-up Size: {card.built_size}{" "}
+                                {card.built_size_unit}{" "}
+                                <small className="text-muted">
+                                  (RM {card.built_price_per_sqft} per sqft)
+                                </small>
+                              </span>
+                            </div>
+
+                            <div className="d-flex align-items-center">
+                              <img
+                                src={landIcon}
+                                alt="Land Size Icon"
+                                width={16}
+                                height={16}
+                                className="me-2"
+                              />
+                              <span>
+                                Land Size: {card.land_size}{" "}
+                                {card.land_size_unit}{" "}
+                                <small className="text-muted">
+                                  (RM {card.land_price_per_sqft} per sqft)
+                                </small>
+                              </span>
+                            </div>
                           </>
                         )}
 
