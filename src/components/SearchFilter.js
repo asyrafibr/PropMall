@@ -86,7 +86,26 @@ const SearchFilter = ({
   ];
 
   const ROOM_COUNTS = Array.from({ length: 21 }, (_, i) => i); // 0..20
+const dropdownRef = useRef(null);
 
+useEffect(() => {
+  function handleClickOutside(event) {
+    if (
+      dropdownRef.current &&
+      !dropdownRef.current.contains(event.target)
+    ) {
+      setOpenDropdown(null);
+    }
+  }
+
+  if (openDropdown === "All Categories" || openDropdown === "All Holding Types") {
+    document.addEventListener("mousedown", handleClickOutside);
+  }
+
+  return () => {
+    document.removeEventListener("mousedown", handleClickOutside);
+  };
+}, [openDropdown]);
   // === Helpers ===
   const nearestIndex = (arr, n) => {
     if (n == null || Number.isNaN(n)) return 0;
@@ -483,29 +502,25 @@ const SearchFilter = ({
           <div className="row mt-4" ref={containerRef}>
             <div className="col-12 d-flex flex-column flex-md-row gap-3">
               {Object.entries(filters).map(([label, options]) => (
-                <div
-                  key={label}
-                  style={{ position: "relative", width: "100%" }}
-                >
+                <div key={label} className="position-relative w-100">
+                  {/* Dropdown / modal button */}
                   <button
                     onClick={() => handleButtonClick(label)}
-                    className="btn p-0 d-flex align-items-center"
+                    className="btn p-0 d-flex align-items-center justify-content-between w-100 text-white"
                     style={{
-                      justifyContent: "space-between",
-                      width: "100%",
                       background: "transparent",
                       border: "none",
                       fontSize: "14px",
                       fontFamily: "Poppins",
-                      color: "white",
-                      textDecoration: "none",
                     }}
                   >
                     <span>
                       {label === "All Categories"
                         ? selectedCategory?.name || label
                         : label === "All Holding Types"
-                        ? selectedHolding?.name || label
+                        ? selectedHolding.length > 0
+                          ? selectedHolding.map((h) => h.name).join(", ")
+                          : label
                         : label === "Price Ranges (RM)"
                         ? priceRangeDisplay || label
                         : label === "Bedroom(s)"
@@ -514,51 +529,27 @@ const SearchFilter = ({
                         ? bathroomDisplay || label
                         : label}
                     </span>
-                    <span style={{ marginLeft: "6px", fontSize: "0.7rem" }}>
-                      ▼
-                    </span>
+                    <span className="ms-1 small">▼</span>
                   </button>
 
-                  {/* --- Keep dropdown ONLY for All Categories / All Holding Types --- */}
+                  {/* --- Dropdown for All Categories / All Holding Types --- */}
                   {openDropdown === label &&
                     (label === "All Categories" ||
                       label === "All Holding Types") && (
-                      <div
-                        style={{
-                          position: "absolute",
-                          top: "100%",
-                          width: "100%",
-                          // width: "750px",
-                          // height: "500px",
-                          background: "white",
-                          zIndex: 1000,
-                          borderRadius: "8px",
-                          padding: "10px",
-                          boxShadow: "0 4px 8px rgba(0,0,0,0.15)",
-                        }}
-                      >
-                        <ul
-                          style={{ listStyle: "none", padding: 0, margin: 0 }}
-                        >
+                      <div       ref={dropdownRef}
+className="position-absolute top-100 start-0 w-100 bg-white z-3 rounded-3 p-2 shadow">
+                        <ul className="list-unstyled m-0 p-0">
                           {(options && Array.isArray(options) ? options : [])
                             .length === 0 ? (
-                            <li
-                              style={{
-                                padding: "6px 0",
-                                color: "gray",
-                                fontFamily: "Poppins",
-                              }}
-                            >
+                            <li className="py-1 text-secondary">
                               No options available.
                             </li>
                           ) : (
                             (options || []).map((item, i) => (
                               <li
                                 key={i}
-                                style={{
-                                  cursor: "pointer",
-                                  padding: "6px 0",
-                                }}
+                                className="py-1 d-flex justify-content-between align-items-center"
+                                style={{ cursor: "pointer" }}
                                 onClick={() => {
                                   if (label === "All Categories") {
                                     setSelectedCategory({
@@ -569,103 +560,70 @@ const SearchFilter = ({
                                   }
                                 }}
                               >
-                                <label
-                                  style={{
-                                    display: "flex",
-                                    justifyContent: "space-between",
-                                    alignItems: "center",
-                                    width: "100%",
-                                  }}
-                                >
-                                  <span
-                                    style={{
-                                      fontFamily: "Poppins",
-                                      fontSize: 14,
-                                      fontStyle: "normal",
-                                      fontWeight: 400,
-                                      lineHeight: "normal",
-                                      color: "black",
-                                    }}
-                                  >
-                                    {item.desc}
-                                  </span>
+                                <span className="fw-normal text-dark small">
+                                  {item.desc}
+                                </span>
 
-                                  {label === "All Holding Types" && (
-                                    <label
+                                {label === "All Holding Types" && (
+                                  <label className="d-flex justify-content-end align-items-center cursor-pointer mb-0">
+                                    <input
+                                      type="checkbox"
+                                      className="d-none"
+                                      onChange={(e) => {
+                                        e.stopPropagation();
+                                        setSelectedHolding((prev) => {
+                                          const isChecked = e.target.checked;
+                                          if (isChecked) {
+                                            return [
+                                              ...prev,
+                                              {
+                                                id: item.id,
+                                                name: item.desc,
+                                              },
+                                            ];
+                                          } else {
+                                            return prev.filter(
+                                              (holding) =>
+                                                holding.id !== item.id
+                                            );
+                                          }
+                                        });
+                                      }}
+                                      checked={selectedHolding.some(
+                                        (holding) => holding.id === item.id
+                                      )}
+                                    />
+                                    <span
+                                      className={`d-inline-block position-relative border border-2 rounded 
+                              ${
+                                selectedHolding.some(
+                                  (holding) => holding.id === item.id
+                                )
+                                  ? "bg-warning border-warning"
+                                  : "bg-white border-warning"
+                              }`}
                                       style={{
-                                        position: "relative",
-                                        display: "inline-flex",
-                                        alignItems: "center",
-                                        cursor: "pointer",
+                                        width: "18px",
+                                        height: "18px",
                                       }}
                                     >
-                                      <input
-                                        type="checkbox"
-                                        onChange={(e) => {
-                                          e.stopPropagation();
-                                          setSelectedHolding((prev) => {
-                                            const isChecked = e.target.checked;
-                                            if (isChecked) {
-                                              return [
-                                                ...prev,
-                                                {
-                                                  id: item.id,
-                                                  name: item.desc,
-                                                },
-                                              ];
-                                            } else {
-                                              return prev.filter(
-                                                (holding) =>
-                                                  holding.id !== item.id
-                                              );
-                                            }
-                                          });
-                                        }}
-                                        checked={selectedHolding.some(
-                                          (holding) => holding.id === item.id
-                                        )}
-                                        style={{ display: "none" }} // hide native checkbox
-                                      />
-                                      <span
-                                        style={{
-                                          width: "18px",
-                                          height: "18px",
-                                          border: "2px solid #F4980E",
-                                          borderRadius: "3px",
-                                          display: "inline-block",
-                                          backgroundColor: selectedHolding.some(
-                                            (holding) => holding.id === item.id
-                                          )
-                                            ? "#F4980E"
-                                            : "#fff",
-                                          position: "relative",
-                                          transition: "all 0.2s ease",
-                                        }}
-                                      >
-                                        {selectedHolding.some(
-                                          (holding) => holding.id === item.id
-                                        ) && (
-                                          <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            viewBox="0 0 16 16"
-                                            fill="white"
-                                            width="14"
-                                            height="14"
-                                            style={{
-                                              position: "absolute",
-                                              top: "50%",
-                                              left: "50%",
-                                              transform:
-                                                "translate(-50%, -50%)",
-                                            }}
-                                          >
-                                            <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7.25 7.25a.5.5 0 0 1-.708 0l-3.25-3.25a.5.5 0 1 1 .708-.708L6.25 10.043l6.896-6.897a.5.5 0 0 1 .708 0z" />
-                                          </svg>
-                                        )}
-                                      </span>
-                                    </label>
-                                  )}
-                                </label>
+                                      {selectedHolding.some(
+                                        (holding) => holding.id === item.id
+                                      ) && (
+                                        <svg
+                                          xmlns="http://www.w3.org/2000/svg"
+                                          viewBox="0 0 16 16"
+                                          fill="white"
+                                          width="14"
+                                          height="14"
+                                          className="position-absolute top-50 start-50 translate-middle"
+                                        >
+                                          <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7.25 7.25a.5.5 0 0 1-.708 0l-3.25-3.25a.5.5 0 1 1 .708-.708L6.25 10.043l6.896-6.897a.5.5 0 0 1 .708 0z" />
+                                        </svg>
+                                      )}
+                                    </span>
+                                  </label>
+                                )}
                               </li>
                             ))
                           )}
@@ -673,29 +631,40 @@ const SearchFilter = ({
                       </div>
                     )}
 
+                  {/* --- Modal overlay for sliders --- */}
+                  {/* --- Modal overlay for sliders --- */}
                   {(label === "Price Ranges (RM)" ||
                     label === "Bedroom(s)" ||
                     label === "Bathroom(s)") &&
                     openModalLabel === label && (
                       <div
-                        className="modal-overlay"
-                        onClick={() => setPriceModalOpen(false)}
+                        className="modal-overlay d-flex justify-content-center align-items-center"
+                        onClick={() => {
+                          setPriceModalOpen(false);
+                          setOpenModalLabel(null);
+                        }}
                       >
                         <div
-                          // className="modal-box"
+                          className="bg-white rounded-4 p-4 shadow position-relative w-100 w-lg-75"
                           style={{
-                            background: "#fff",
-                            borderRadius: 12,
-                            padding: 35,
-                            boxShadow: `0 10px 30px rgba(0, 0, 0, 0.25)`,
-                            overflow: "auto",
-                            zIndex: 2,
-                            height: 400,
-                            width: 1000,
+                            maxWidth: "1000px",
+                            maxHeight: "90vh",
+                            overflowY: "auto",
                           }}
-                          onClick={(e) => e.stopPropagation()}
+                          onClick={(e) => e.stopPropagation()} // prevent closing when clicking inside
                         >
-                          <h5 style={{ color: "black" }}>
+                          {/* Close button (X) */}
+                          <button
+                            type="button"
+                            className="btn-close position-absolute top-0 end-0 m-3"
+                            aria-label="Close"
+                            onClick={() => {
+                              setPriceModalOpen(false);
+                              setOpenModalLabel(null);
+                            }}
+                          ></button>
+
+                          <h5 className="text-dark mb-4">
                             {label === "Price Ranges (RM)"
                               ? "Select Price Range (RM)"
                               : label === "Bedroom(s)"

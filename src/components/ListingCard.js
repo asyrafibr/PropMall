@@ -4,6 +4,7 @@ import { useTemplate } from "../context/TemplateContext";
 import { FaLocationDot } from "react-icons/fa6";
 import builtIcon from "../image/built_up.svg";
 import landIcon from "../image/land_size.svg";
+import './ListingCard.css'
 const ListingCard = ({ product, handleViewDetails }) => {
   const {
     id_listing,

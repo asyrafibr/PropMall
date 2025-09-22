@@ -146,14 +146,7 @@ const handleViewDetails = useCallback(
         return (
           <div
             key={card.id_listing}
-            className="card property-card shadow-sm border-0 flex-shrink-0"
-          >
-            <div className="position-relative">
-              <img
-                src={card.photos?.[0] || "https://via.placeholder.com/300x200"}
-                className="card-img-top property-img"
-                alt={card.ads_title}
-                   onClick={() =>
+             onClick={() =>
                             handleViewDetails(
                               card.id_listing,
                               card.ads_title,
@@ -162,6 +155,22 @@ const handleViewDetails = useCallback(
                               card.permalink_previous
                             )
                           }
+            className="card property-card shadow-sm border-0 flex-shrink-0"
+          >
+            <div className="position-relative">
+              <img
+                src={card.photos?.[0] || "https://via.placeholder.com/300x200"}
+                className="card-img-top property-img"
+                alt={card.ads_title}
+                  //  onClick={() =>
+                  //           handleViewDetails(
+                  //             card.id_listing,
+                  //             card.ads_title,
+                  //             card.location,
+                  //             card.permalink,
+                  //             card.permalink_previous
+                  //           )
+                  //         }
               />
               {(statusText || belowMarket) && (
                 <div className="position-absolute top-0 start-0 m-2 d-flex flex-column gap-1 z-2">

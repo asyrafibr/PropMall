@@ -6,6 +6,9 @@ import bg from "../../image/titlebg3.png";
 import { FaLocationDot } from "react-icons/fa6";
 import builtIcon from "../../image/built_up.svg";
 import landIcon from "../../image/land_size.svg";
+import locationIcon from "../../image/size_built.svg";
+import bathIcon from "../../image/bath.svg";
+import bedIcon from "../../image/bed.svg";
 
 const DashboardListingT1 = ({ listings, handleViewDetails }) => {
   const [loading, setLoading] = useState(true);
@@ -206,71 +209,110 @@ const DashboardListingT1 = ({ listings, handleViewDetails }) => {
                       <p className=" mb-1 resp-textTitle">{card.ads_title}</p>
 
                       <p className="text-muted mb-2 resp-text1">
-                        <div className="d-flex align-items-center gap-2 mt-2">
-                          <FaLocationDot className="text-secondary" />{" "}
-                          {/* Bootstrap gray */}
-                          <span>{card.location_description}</span>
-                        </div>
+  {/* Location */}
+  <div className="row mt-2 text-muted resp-text1">
+    <div className="col-auto pe-0">
+      <img
+        src={locationIcon}
+        alt="Location Icon"
+        width={16}
+        height={16}
+        className="me-2"
+      />
+    </div>
+    <div className="col ps-1">{card.location_description}</div>
+  </div>
 
-                        <br />
-                        {card.category_type_title_holding_lottype_storey}
-                        <br />
-                        {card.built_size && card.land_size && (
-                          <>
-                            <div className="d-flex align-items-center mb-1">
-                              <img
-                                src={builtIcon}
-                                alt="Built-up Icon"
-                                width={16}
-                                height={16}
-                                className="me-2"
-                              />
-                              <span>
-                                Built-up Size: {card.built_size}{" "}
-                                {card.built_size_unit}{" "}
-                                <small className="text-muted">
-                                  (RM {card.built_price_per_sqft} per sqft)
-                                </small>
-                              </span>
-                            </div>
+  {/* Category / Type */}
+  <div className="row mt-3 text-muted resp-text1" style={{ lineHeight: "1.3" }}>
+    <div className="col">{card.category_type_title_holding_lottype_storey}</div>
+  </div>
 
-                            <div className="d-flex align-items-center">
-                              <img
-                                src={landIcon}
-                                alt="Land Size Icon"
-                                width={16}
-                                height={16}
-                                className="me-2"
-                              />
-                              <span>
-                                Land Size: {card.land_size}{" "}
-                                {card.land_size_unit}{" "}
-                                <small className="text-muted">
-                                  (RM {card.land_price_per_sqft} per sqft)
-                                </small>
-                              </span>
-                            </div>
-                          </>
-                        )}
+  {/* Built-up and Land Size */}
+  {card.built_size && card.land_size && (
+    <>
+      <div className="row mt-2 text-muted resp-text1 lh-1">
+        <div className="col-auto pe-0">
+          <img
+            src={builtIcon}
+            alt="Built-up Icon"
+            width={16}
+            height={16}
+            className="me-2"
+          />
+        </div>
+        <div className="col ps-0">
+          Built-up Size: {card.built_size} {card.built_size_unit}{" "}
+          <small className="text-muted">
+            (RM {card.built_price_per_sqft} per sqft)
+          </small>
+        </div>
+      </div>
 
-                        {!card.built_size && card.land_size && (
-                          <>
-                            Land Size: {card.land_size} {card.land_size_unit}{" "}
-                            <small className="text-muted">
-                              (RM {card.land_price_per_unit} per acre)
-                            </small>
-                          </>
-                        )}
-                      </p>
+      <div className="row mt-2 text-muted resp-text1 lh-1">
+        <div className="col-auto pe-0">
+          <img
+            src={landIcon}
+            alt="Land Size Icon"
+            width={16}
+            height={16}
+            className="me-2"
+          />
+        </div>
+        <div className="col ps-0">
+          Land Size: {card.land_size} {card.land_size_unit}{" "}
+          <small className="text-muted">
+            (RM {card.land_price_per_sqft} per sqft)
+          </small>
+        </div>
+      </div>
+    </>
+  )}
+
+  {/* Only Land Size */}
+  {!card.built_size && card.land_size && (
+    <div className="row mt-2 text-muted resp-text1 lh-1">
+      <div className="col-auto pe-0">
+        <img
+          src={landIcon}
+          alt="Land Size Icon"
+          width={16}
+          height={16}
+          className="me-2"
+        />
+      </div>
+      <div className="col ps-0">
+        Land Size: {card.land_size} {card.land_size_unit}{" "}
+        <small className="text-muted">
+          (RM {card.land_price_per_sqft} per sqft)
+        </small>
+      </div>
+    </div>
+  )}
+</p>
+
 
                       {/* Rooms & Bathrooms */}
                       {card.bathroom && card.room > 0 && (
                         <div className="d-flex flex-wrap gap-3 mb-3">
                           <span className="d-flex align-items-end gap-2 resp-text1">
-                            <FaBed className="align-self-end" /> {card.room}
+                            <img
+                              src={bedIcon}
+                              alt="Land Size Icon"
+                              width={16}
+                              height={16}
+                              className="me-2"
+                            />{" "}
+                            {card.room}
                           </span>
                           <span className="d-flex align-items-end gap-2 resp-text1">
-                            <FaBath className="align-self-end" />{" "}
+                            <img
+                              src={bathIcon}
+                              alt="Land Size Icon"
+                              width={16}
+                              height={16}
+                              className="me-2"
+                            />{" "}
                             {card.bathroom}
                           </span>
                         </div>
