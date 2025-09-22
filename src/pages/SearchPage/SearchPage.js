@@ -282,10 +282,10 @@ const handleViewDetails = useCallback(
   ]);
 
   return (
-    <div className="container-fluid bg-light">
-      <div className="container py-3">
+    <div>
+      <div className="py-3">
         {/* Sticky Search Filter */}
-        <div className="sticky-top bg-light py-2 z-index-3">
+        <div className="sticky-top bg-light z-index-3">
           <Suspense fallback={<div>Loading filters...</div>}>
             {template === "template1" && (
               <SearchFilter
@@ -433,21 +433,23 @@ const handleViewDetails = useCallback(
         </div>
 
         {/* Listings + Sidebar */}
-        <div className="row mt-4">
-          <div className="col-lg-9 col-md-8 mb-4">
-            <Suspense fallback={<div>Loading listings...</div>}>
-              {memoizedListings}
-            </Suspense>
-          </div>
-          <div className="col-lg-3 col-md-4">
-            <Suspense fallback={<div>Loading sidebar...</div>}>
-              <SidebarFilters
-                selectedLocationName={searchedLocationName}
-                searchType={searchType}
-              />
-            </Suspense>
-          </div>
-        </div>
+    <div className="container" style={{ maxWidth: "1300px" }}>
+  <div className="row mt-4">
+    <div className="col-lg-9 col-md-8 mb-4">
+      <Suspense fallback={<div>Loading listings...</div>}>
+        {memoizedListings}
+      </Suspense>
+    </div>
+    <div className="col-lg-3 col-md-4">
+      <Suspense fallback={<div>Loading sidebar...</div>}>
+        <SidebarFilters
+          selectedLocationName={searchedLocationName}
+          searchType={searchType}
+        />
+      </Suspense>
+    </div>
+  </div>
+</div>
 
         {/* Pagination */}
         {totalPages > 1 && (

@@ -86,26 +86,26 @@ const SearchFilter = ({
   ];
 
   const ROOM_COUNTS = Array.from({ length: 21 }, (_, i) => i); // 0..20
-const dropdownRef = useRef(null);
+  const dropdownRef = useRef(null);
 
-useEffect(() => {
-  function handleClickOutside(event) {
-    if (
-      dropdownRef.current &&
-      !dropdownRef.current.contains(event.target)
-    ) {
-      setOpenDropdown(null);
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setOpenDropdown(null);
+      }
     }
-  }
 
-  if (openDropdown === "All Categories" || openDropdown === "All Holding Types") {
-    document.addEventListener("mousedown", handleClickOutside);
-  }
+    if (
+      openDropdown === "All Categories" ||
+      openDropdown === "All Holding Types"
+    ) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
 
-  return () => {
-    document.removeEventListener("mousedown", handleClickOutside);
-  };
-}, [openDropdown]);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [openDropdown]);
   // === Helpers ===
   const nearestIndex = (arr, n) => {
     if (n == null || Number.isNaN(n)) return 0;
@@ -419,182 +419,175 @@ useEffect(() => {
     { label: "Auction", key: "auction" },
   ];
   return (
-    <div className="w-100 d-flex justify-content-center">
-      <div
-        className="w-100 position-relative"
-        style={{ maxWidth: "1300px", zIndex: 2 }}
-      >
-        <div
-          className="
-        w-100 
-        p-3   /* padding: 20px ~ p-3 (16px), if you want closer to 20px use p-4 (24px) */
-        text-white 
-      "
-          style={{
-            backgroundColor: "#FAFAFA", // fallback color
-            backgroundImage: `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url(${agentBoxbg})`,
-            backgroundSize: "cover",
-            backgroundRepeat: "no-repeat",
-            backgroundPosition: "center center",
-          }}
-        >
-          {/* Rent / Sell Toggle Buttons */}
+    <div className="w-100">
+  {/* === Full-width background wrapper === */}
+  <div
+    className="w-100 position-relative"
+    style={{
+      backgroundColor: "#FAFAFA", // fallback
+      backgroundImage: `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url(${agentBoxbg})`,
+      backgroundSize: "cover",
+      backgroundRepeat: "no-repeat",
+      backgroundPosition: "center center",
+    }}
+  >
+    {/* === Inner content container (max-width: 1300px, centered) === */}
+    <div className="mx-auto w-100 p-3 text-white" style={{ maxWidth: "1300px", zIndex: 2 }}>
+      {/* Rent / Sell Toggle Buttons */}
+      <div className="mb-2">
+        {category && (
           <div className="mb-2">
-            {category && (
-              <div className="mb-2">
-                {tabMap
-                  .filter(({ key }) => category[key])
-                  .map(({ label, key }) => (
-                    <button
-                      key={label}
-                      className={`btn me-3 px-2 py-1 fw-normal fs-6 text-white rounded-0`}
-                      onClick={() => setActiveTab(label)}
-                      style={{
-                        borderBottom:
-                          activeTab === label
-                            ? "3px solid #F4980E"
-                            : "3px solid transparent",
-                      }}
-                    >
-                      {label}
-                    </button>
-                  ))}
-              </div>
-            )}
+            {tabMap
+              .filter(({ key }) => category[key])
+              .map(({ label, key }) => (
+                <button
+                  key={label}
+                  className={`btn me-3 px-2 py-1 fw-normal fs-6 text-white rounded-0`}
+                  onClick={() => setActiveTab(label)}
+                  style={{
+                    borderBottom:
+                      activeTab === label
+                        ? "3px solid #F4980E"
+                        : "3px solid transparent",
+                  }}
+                >
+                  {label}
+                </button>
+              ))}
           </div>
+        )}
+      </div>
 
-          {/* Filters Row */}
-          <div className="row g-2">
-            {/* All States Dropdown */}
-            <div className="col-12 col-md-3">
-              <div
-                className="form-control d-flex align-items-center justify-content-between cursor-pointer bg-white text-truncate"
-                role="button"
-                onClick={() => setShowModal(true)}
-                style={{ height: "60px" }}
-              >
-                <span className="flex-grow-1 text-truncate fs-5 fw-normal">
-                  {selectedLocation || "All States"}
-                </span>
-                <span className="small ms-2">▼</span>
-              </div>
-            </div>
+      {/* Filters Row */}
+      <div className="row g-2">
+        {/* All States Dropdown */}
+        <div className="col-12 col-md-3">
+          <div
+            className="form-control d-flex align-items-center justify-content-between cursor-pointer bg-white text-truncate"
+            role="button"
+            onClick={() => setShowModal(true)}
+            style={{ height: "60px" }}
+          >
+            <span className="flex-grow-1 text-truncate fs-5 fw-normal">
+              {selectedLocation || "All States"}
+            </span>
+            <span className="small ms-2">▼</span>
+          </div>
+        </div>
 
-            {/* Search Input + Button */}
-            <div className="col-12 col-md-9 d-flex flex-column flex-md-row gap-2">
-              <input
-                id="search"
-                type="text"
-                className="form-control flex-grow-1 h-60 font-poppins"
-                placeholder="Search"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
+        {/* Search Input + Button */}
+        <div className="col-12 col-md-9 d-flex flex-column flex-md-row gap-2">
+          <input
+            id="search"
+            type="text"
+            className="form-control flex-grow-1 h-60 font-poppins"
+            placeholder="Search"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+          <button
+            className="btn btn-search bg-orange text-white flex-shrink-0 h-60 rounded w-100 w-md-auto"
+            onClick={handleSearch}
+          >
+            Search
+          </button>
+        </div>
+      </div>
+
+      <div className="row mt-4" ref={containerRef}>
+        <div className="col-12 d-flex flex-column flex-md-row gap-3">
+          {Object.entries(filters).map(([label, options]) => (
+            <div key={label} className="position-relative w-100">
+              {/* Dropdown / modal button */}
               <button
-                className="btn btn-search bg-orange text-white flex-shrink-0 h-60 rounded w-100 w-md-auto"
-                onClick={handleSearch}
+                onClick={() => handleButtonClick(label)}
+                className="btn p-0 d-flex align-items-center justify-content-between w-100 text-white"
+                style={{
+                  background: "transparent",
+                  border: "none",
+                  fontSize: "14px",
+                  fontFamily: "Poppins",
+                }}
               >
-                Search
+                <span>
+                  {label === "All Categories"
+                    ? selectedCategory?.name || label
+                    : label === "All Holding Types"
+                    ? selectedHolding.length > 0
+                      ? selectedHolding.map((h) => h.name).join(", ")
+                      : label
+                    : label === "Price Ranges (RM)"
+                    ? priceRangeDisplay || label
+                    : label === "Bedroom(s)"
+                    ? bedroomDisplay || label
+                    : label === "Bathroom(s)"
+                    ? bathroomDisplay || label
+                    : label}
+                </span>
+                <span className="ms-1 small">▼</span>
               </button>
-            </div>
-          </div>
 
-          <div className="row mt-4" ref={containerRef}>
-            <div className="col-12 d-flex flex-column flex-md-row gap-3">
-              {Object.entries(filters).map(([label, options]) => (
-                <div key={label} className="position-relative w-100">
-                  {/* Dropdown / modal button */}
-                  <button
-                    onClick={() => handleButtonClick(label)}
-                    className="btn p-0 d-flex align-items-center justify-content-between w-100 text-white"
-                    style={{
-                      background: "transparent",
-                      border: "none",
-                      fontSize: "14px",
-                      fontFamily: "Poppins",
-                    }}
+              {/* --- Dropdown for All Categories / All Holding Types --- */}
+              {openDropdown === label &&
+                (label === "All Categories" ||
+                  label === "All Holding Types") && (
+                  <div
+                    ref={dropdownRef}
+                    className="position-absolute top-100 start-0 w-100 bg-white z-3 rounded-3 p-2 shadow"
                   >
-                    <span>
-                      {label === "All Categories"
-                        ? selectedCategory?.name || label
-                        : label === "All Holding Types"
-                        ? selectedHolding.length > 0
-                          ? selectedHolding.map((h) => h.name).join(", ")
-                          : label
-                        : label === "Price Ranges (RM)"
-                        ? priceRangeDisplay || label
-                        : label === "Bedroom(s)"
-                        ? bedroomDisplay || label
-                        : label === "Bathroom(s)"
-                        ? bathroomDisplay || label
-                        : label}
-                    </span>
-                    <span className="ms-1 small">▼</span>
-                  </button>
+                    <ul className="list-unstyled m-0 p-0">
+                      {(options && Array.isArray(options) ? options : [])
+                        .length === 0 ? (
+                        <li className="py-1 text-secondary">
+                          No options available.
+                        </li>
+                      ) : (
+                        (options || []).map((item, i) => (
+                          <li
+                            key={i}
+                            className="py-1 d-flex justify-content-between align-items-center"
+                            style={{ cursor: "pointer" }}
+                            onClick={() => {
+                              if (label === "All Categories") {
+                                setSelectedCategory({
+                                  id: item.id,
+                                  name: item.desc,
+                                });
+                                setOpenDropdown(null);
+                              }
+                            }}
+                          >
+                            <span className="fw-normal text-dark small">
+                              {item.desc}
+                            </span>
 
-                  {/* --- Dropdown for All Categories / All Holding Types --- */}
-                  {openDropdown === label &&
-                    (label === "All Categories" ||
-                      label === "All Holding Types") && (
-                      <div       ref={dropdownRef}
-className="position-absolute top-100 start-0 w-100 bg-white z-3 rounded-3 p-2 shadow">
-                        <ul className="list-unstyled m-0 p-0">
-                          {(options && Array.isArray(options) ? options : [])
-                            .length === 0 ? (
-                            <li className="py-1 text-secondary">
-                              No options available.
-                            </li>
-                          ) : (
-                            (options || []).map((item, i) => (
-                              <li
-                                key={i}
-                                className="py-1 d-flex justify-content-between align-items-center"
-                                style={{ cursor: "pointer" }}
-                                onClick={() => {
-                                  if (label === "All Categories") {
-                                    setSelectedCategory({
-                                      id: item.id,
-                                      name: item.desc,
+                            {label === "All Holding Types" && (
+                              <label className="d-flex justify-content-end align-items-center cursor-pointer mb-0">
+                                <input
+                                  type="checkbox"
+                                  className="d-none"
+                                  onChange={(e) => {
+                                    e.stopPropagation();
+                                    setSelectedHolding((prev) => {
+                                      const isChecked = e.target.checked;
+                                      if (isChecked) {
+                                        return [
+                                          ...prev,
+                                          { id: item.id, name: item.desc },
+                                        ];
+                                      } else {
+                                        return prev.filter(
+                                          (holding) => holding.id !== item.id
+                                        );
+                                      }
                                     });
-                                    setOpenDropdown(null);
-                                  }
-                                }}
-                              >
-                                <span className="fw-normal text-dark small">
-                                  {item.desc}
-                                </span>
-
-                                {label === "All Holding Types" && (
-                                  <label className="d-flex justify-content-end align-items-center cursor-pointer mb-0">
-                                    <input
-                                      type="checkbox"
-                                      className="d-none"
-                                      onChange={(e) => {
-                                        e.stopPropagation();
-                                        setSelectedHolding((prev) => {
-                                          const isChecked = e.target.checked;
-                                          if (isChecked) {
-                                            return [
-                                              ...prev,
-                                              {
-                                                id: item.id,
-                                                name: item.desc,
-                                              },
-                                            ];
-                                          } else {
-                                            return prev.filter(
-                                              (holding) =>
-                                                holding.id !== item.id
-                                            );
-                                          }
-                                        });
-                                      }}
-                                      checked={selectedHolding.some(
-                                        (holding) => holding.id === item.id
-                                      )}
-                                    />
-                                    <span
-                                      className={`d-inline-block position-relative border border-2 rounded 
+                                  }}
+                                  checked={selectedHolding.some(
+                                    (holding) => holding.id === item.id
+                                  )}
+                                />
+                                <span
+                                  className={`d-inline-block position-relative border border-2 rounded 
                               ${
                                 selectedHolding.some(
                                   (holding) => holding.id === item.id
@@ -602,367 +595,350 @@ className="position-absolute top-100 start-0 w-100 bg-white z-3 rounded-3 p-2 sh
                                   ? "bg-warning border-warning"
                                   : "bg-white border-warning"
                               }`}
-                                      style={{
-                                        width: "18px",
-                                        height: "18px",
-                                      }}
+                                  style={{
+                                    width: "18px",
+                                    height: "18px",
+                                  }}
+                                >
+                                  {selectedHolding.some(
+                                    (holding) => holding.id === item.id
+                                  ) && (
+                                    <svg
+                                      xmlns="http://www.w3.org/2000/svg"
+                                      viewBox="0 0 16 16"
+                                      fill="white"
+                                      width="14"
+                                      height="14"
+                                      className="position-absolute top-50 start-50 translate-middle"
                                     >
-                                      {selectedHolding.some(
-                                        (holding) => holding.id === item.id
-                                      ) && (
-                                        <svg
-                                          xmlns="http://www.w3.org/2000/svg"
-                                          viewBox="0 0 16 16"
-                                          fill="white"
-                                          width="14"
-                                          height="14"
-                                          className="position-absolute top-50 start-50 translate-middle"
-                                        >
-                                          <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7.25 7.25a.5.5 0 0 1-.708 0l-3.25-3.25a.5.5 0 1 1 .708-.708L6.25 10.043l6.896-6.897a.5.5 0 0 1 .708 0z" />
-                                        </svg>
-                                      )}
-                                    </span>
-                                  </label>
-                                )}
-                              </li>
-                            ))
-                          )}
-                        </ul>
-                      </div>
-                    )}
+                                      <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7.25 7.25a.5.5 0 0 1-.708 0l-3.25-3.25a.5.5 0 1 1 .708-.708L6.25 10.043l6.896-6.897a.5.5 0 0 1 .708 0z" />
+                                    </svg>
+                                  )}
+                                </span>
+                              </label>
+                            )}
+                          </li>
+                        ))
+                      )}
+                    </ul>
+                  </div>
+                )}
 
-                  {/* --- Modal overlay for sliders --- */}
-                  {/* --- Modal overlay for sliders --- */}
-                  {(label === "Price Ranges (RM)" ||
-                    label === "Bedroom(s)" ||
-                    label === "Bathroom(s)") &&
-                    openModalLabel === label && (
-                      <div
-                        className="modal-overlay d-flex justify-content-center align-items-center"
+              {/* --- Modal overlay for sliders --- */}
+              {(label === "Price Ranges (RM)" ||
+                label === "Bedroom(s)" ||
+                label === "Bathroom(s)") &&
+                openModalLabel === label && (
+                  <div
+                    className="modal-overlay d-flex justify-content-center align-items-center"
+                    onClick={() => {
+                      setPriceModalOpen(false);
+                      setOpenModalLabel(null);
+                    }}
+                  >
+                    <div
+                      className="bg-white rounded-4 p-4 shadow position-relative w-100 w-lg-75"
+                      style={{
+                        maxWidth: "1000px",
+                        maxHeight: "90vh",
+                        overflowY: "auto",
+                      }}
+                      onClick={(e) => e.stopPropagation()} // prevent closing when clicking inside
+                    >
+                      {/* Close button (X) */}
+                      <button
+                        type="button"
+                        className="btn-close position-absolute top-0 end-0 m-3"
+                        aria-label="Close"
                         onClick={() => {
                           setPriceModalOpen(false);
                           setOpenModalLabel(null);
                         }}
-                      >
-                        <div
-                          className="bg-white rounded-4 p-4 shadow position-relative w-100 w-lg-75"
-                          style={{
-                            maxWidth: "1000px",
-                            maxHeight: "90vh",
-                            overflowY: "auto",
-                          }}
-                          onClick={(e) => e.stopPropagation()} // prevent closing when clicking inside
-                        >
-                          {/* Close button (X) */}
-                          <button
-                            type="button"
-                            className="btn-close position-absolute top-0 end-0 m-3"
-                            aria-label="Close"
-                            onClick={() => {
-                              setPriceModalOpen(false);
-                              setOpenModalLabel(null);
-                            }}
-                          ></button>
+                      ></button>
 
-                          <h5 className="text-dark mb-4">
-                            {label === "Price Ranges (RM)"
-                              ? "Select Price Range (RM)"
-                              : label === "Bedroom(s)"
-                              ? "Select Bedroom Range"
-                              : "Select Bathroom Range"}
-                          </h5>
+                      <h5 className="text-dark mb-4">
+                        {label === "Price Ranges (RM)"
+                          ? "Select Price Range (RM)"
+                          : label === "Bedroom(s)"
+                          ? "Select Bedroom Range"
+                          : "Select Bathroom Range"}
+                      </h5>
 
-                          <RangeSliderModal
-                            label={label}
-                            setOpenModalLabel={setOpenModalLabel}
-                            scale={
-                              label === "Price Ranges (RM)"
-                                ? activeTab === "Buy"
-                                  ? BUY_AMOUNTS
-                                  : RENT_AMOUNTS
-                                : ROOM_COUNTS
-                            }
-                            range={
-                              label === "Price Ranges (RM)"
-                                ? priceRange
-                                : label === "Bedroom(s)"
-                                ? roomRange
-                                : bathroomRange
-                            }
-                            setRange={
-                              label === "Price Ranges (RM)"
-                                ? setPriceRange
-                                : label === "Bedroom(s)"
-                                ? setRoomRange
-                                : setBathroomRange
-                            }
-                            setRangeDisplay={
-                              label === "Price Ranges (RM)"
-                                ? setPriceRangeDisplay
-                                : label === "Bedroom(s)"
-                                ? setBedroomDisplay
-                                : setBathroomDisplay
-                            }
-                            handleSearch={handleSearch}
-                            setOpenDropdown={setOpenDropdown}
-                          />
-                        </div>
-                      </div>
-                    )}
-                </div>
-              ))}
+                      <RangeSliderModal
+                        label={label}
+                        setOpenModalLabel={setOpenModalLabel}
+                        scale={
+                          label === "Price Ranges (RM)"
+                            ? activeTab === "Buy"
+                              ? BUY_AMOUNTS
+                              : RENT_AMOUNTS
+                            : ROOM_COUNTS
+                        }
+                        range={
+                          label === "Price Ranges (RM)"
+                            ? priceRange
+                            : label === "Bedroom(s)"
+                            ? roomRange
+                            : bathroomRange
+                        }
+                        setRange={
+                          label === "Price Ranges (RM)"
+                            ? setPriceRange
+                            : label === "Bedroom(s)"
+                            ? setRoomRange
+                            : setBathroomRange
+                        }
+                        setRangeDisplay={
+                          label === "Price Ranges (RM)"
+                            ? setPriceRangeDisplay
+                            : label === "Bedroom(s)"
+                            ? setBedroomDisplay
+                            : setBathroomDisplay
+                        }
+                        handleSearch={handleSearch}
+                        setOpenDropdown={setOpenDropdown}
+                      />
+                    </div>
+                  </div>
+                )}
             </div>
-          </div>
+          ))}
         </div>
       </div>
-      {showModal && (
-        <div
-          className="modal-overlay d-flex justify-content-center align-items-center position-fixed top-0 start-0 w-100 h-100 bg-dark bg-opacity-50 pt-6"
-          onClick={() => setShowModal(false)}
-          style={{ zIndex: 9999, paddingTop: "50px" }} // 👈 push down
-        >
-          <div
-            className="
-    modal-box 
-    bg-white 
-    rounded-4 
-    d-flex 
-    flex-column 
-    position-relative 
-    mt-5 
-    w-100 
-    h-auto
-    "
-            style={{ maxWidth: "750px", maxHeight: "80vh" }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* ===== Header ===== */}
-            <div className="d-flex align-items-center justify-content-between p-3 border-bottom">
-              <div>
-                {navigationStack.length > 1 && (
-                  <button
-                    onClick={handleBack}
-                    className="btn p-0 d-flex justify-content-center align-items-center text-dark border-0 bg-transparent me-2"
-                  >
-                    &lt;
-                  </button>
-                )}
-              </div>
+    </div>
+  </div>
 
-              <div className="flex-grow-1">
-                {(() => {
-                  const levelNum =
-                    typeof currentLevel === "object"
-                      ? currentLevel?.node_level ?? navigationStack.length - 1
-                      : typeof currentLevel === "number"
-                      ? currentLevel
-                      : navigationStack.length - 1;
-
-                  return (
-                    <>
-                      <h6 className="m-0 fw-semibold fs-6 text-start mb-1">
-                        {levelNum === 0
-                          ? "Search by State"
-                          : levelNum === 1
-                          ? "Select City/Area"
-                          : levelNum === 2
-                          ? "Select City/Area"
-                          : "Select Area"}
-                      </h6>
-
-                      {levelNum === 1 && navigationStack[0] && (
-                        <p className="m-0 small text-muted">
-                          {navigationStack[1].name}
-                        </p>
-                      )}
-
-                      {levelNum === 2 && navigationStack[1] && (
-                        <p className="m-0 small text-muted">
-                          {navigationStack[1].name}
-                        </p>
-                      )}
-                    </>
-                  );
-                })()}
-              </div>
-
-              <div>
-                <button
-                  onClick={() => {
-                    console.log("data location", selectedCountry);
-                    setShowModal(false);
-                  }}
-                  className="btn btn-sm border-0 bg-transparent text-dark"
-                >
-                  ✕
-                </button>
-              </div>
-            </div>
-
-            {/* ===== Content ===== */}
-            <div className="flex-grow-1 overflow-auto p-4">
-              {loadingLocationData ? (
-                <div className="d-flex justify-content-center align-items-center h-100">
-                  <div className="spinner-border text-primary" role="status">
-                    <span className="visually-hidden">Loading...</span>
-                  </div>
-                </div>
-              ) : (
-                <>
-                  {navigationStack.length > 0 && (
-                    <>
-                      {(() => {
-                        const depth = navigationStack.length;
-                        const isLeafLevel =
-                          Array.isArray(displayList) &&
-                          displayList.length > 0 &&
-                          displayList.every(
-                            (n) =>
-                              !n.child_list ||
-                              (Array.isArray(n.child_list) &&
-                                n.child_list.length === 0) ||
-                              n.child_count === 0
-                          );
-
-                        const showCheckboxes = depth >= 3 || isLeafLevel;
-
-                        return (
-                          <>
-                            {showCheckboxes && displayList.length > 0 && (
-                              <div
-                                className="py-2 d-flex align-items-center"
-                                role="button"
-                                onClick={() => {
-                                  const allIds = displayList.map(
-                                    (item) => item.id
-                                  );
-                                  const allObjects = displayList;
-
-                                  const isAllSelected = allIds.every((id) =>
-                                    selectedAreaIds.includes(id)
-                                  );
-
-                                  if (isAllSelected) {
-                                    setSelectedAreaIds([]);
-                                    setSelectedAreaNames([]);
-                                    setSelectedAreaObjects([]);
-                                  } else {
-                                    setSelectedAreaIds(allIds);
-                                    setSelectedAreaNames(
-                                      allObjects.map((a) => a.name)
-                                    );
-                                    setSelectedAreaObjects(allObjects);
-                                  }
-                                }}
-                              >
-                                <input
-                                  type="checkbox"
-                                  className="form-check-input me-2 border-warning"
-                                  checked={
-                                    displayList.length > 0 &&
-                                    displayList.every((item) =>
-                                      selectedAreaIds.includes(item.id)
-                                    )
-                                  }
-                                  readOnly
-                                />
-                                <span>Select All</span>
-                              </div>
-                            )}
-
-                            {Array.isArray(displayList) &&
-                              displayList.map((node) => {
-                                const nodeIsLeaf =
-                                  !node.child_list ||
-                                  (Array.isArray(node.child_list) &&
-                                    node.child_list.length === 0) ||
-                                  node.child_count === 0;
-
-                                return (
-                                  <div
-                                    key={node.id}
-                                    className="py-2 d-flex align-items-center"
-                                    role="button"
-                                    onClick={() =>
-                                      node.child_count > 0
-                                        ? handleNodeClick(node)
-                                        : handleAreaToggle(node)
-                                    }
-                                  >
-                                    {showCheckboxes && nodeIsLeaf ? (
-                                      <>
-                                        <input
-                                          type="checkbox"
-                                          className="form-check-input me-2"
-                                          checked={selectedAreaIds.includes(
-                                            node.id
-                                          )}
-                                          onChange={() =>
-                                            handleAreaToggle(node)
-                                          }
-                                          onClick={(e) => e.stopPropagation()}
-                                        />
-                                        <span>{node.name}</span>
-                                      </>
-                                    ) : (
-                                      <div className="d-flex justify-content-between align-items-center w-100">
-                                        <span>{node.name}</span>
-                                        {node.child_count > 0 && (
-                                          <span>&#x276F;</span>
-                                        )}
-                                      </div>
-                                    )}
-                                  </div>
-                                );
-                              })}
-                          </>
-                        );
-                      })()}
-                    </>
-                  )}
-                </>
-              )}
-            </div>
-
-            {/* ===== Footer ===== */}
+  {/* === Location Modal === */}
+  {showModal && (
+    <div
+      className="modal-overlay d-flex justify-content-center align-items-center position-fixed top-0 start-0 w-100 h-100 bg-dark bg-opacity-50 pt-6"
+      onClick={() => setShowModal(false)}
+      style={{ zIndex: 9999, paddingTop: "50px" }}
+    >
+      <div
+        className="modal-box bg-white rounded-4 d-flex flex-column position-relative mt-5 w-100 h-auto"
+        style={{ maxWidth: "750px", maxHeight: "80vh" }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Header */}
+        <div className="d-flex align-items-center justify-content-between p-3 border-bottom">
+          <div>
+            {navigationStack.length > 1 && (
+              <button
+                onClick={handleBack}
+                className="btn p-0 d-flex justify-content-center align-items-center text-dark border-0 bg-transparent me-2"
+              >
+                &lt;
+              </button>
+            )}
+          </div>
+          <div className="flex-grow-1">
             {(() => {
-              const depth = navigationStack.length;
-              const isLeafLevel =
-                Array.isArray(displayList) &&
-                displayList.length > 0 &&
-                displayList.every(
-                  (n) =>
-                    !n.child_list ||
-                    (Array.isArray(n.child_list) &&
-                      n.child_list.length === 0) ||
-                    n.child_count === 0
-                );
-              const showFooter = depth >= 3 || isLeafLevel;
+              const levelNum =
+                typeof currentLevel === "object"
+                  ? currentLevel?.node_level ?? navigationStack.length - 1
+                  : typeof currentLevel === "number"
+                  ? currentLevel
+                  : navigationStack.length - 1;
 
               return (
-                showFooter && (
-                  <div className="d-flex justify-content-between p-3 border-top">
-                    <button
-                      className="btn btn-outline-secondary px-4"
-                      onClick={handleClear}
-                    >
-                      Clear
-                    </button>
-                    <button
-                      className="btn px-4 text-white"
-                      style={{ backgroundColor: "#F4980E" }}
-                      onClick={handleApply}
-                    >
-                      Apply
-                    </button>
-                  </div>
-                )
+                <>
+                  <h6 className="m-0 fw-semibold fs-6 text-start mb-1">
+                    {levelNum === 0
+                      ? "Search by State"
+                      : levelNum === 1
+                      ? "Select City/Area"
+                      : levelNum === 2
+                      ? "Select City/Area"
+                      : "Select Area"}
+                  </h6>
+                  {levelNum === 1 && navigationStack[0] && (
+                    <p className="m-0 small text-muted">
+                      {navigationStack[1].name}
+                    </p>
+                  )}
+                  {levelNum === 2 && navigationStack[1] && (
+                    <p className="m-0 small text-muted">
+                      {navigationStack[1].name}
+                    </p>
+                  )}
+                </>
               );
             })()}
           </div>
+          <div>
+            <button
+              onClick={() => {
+                console.log("data location", selectedCountry);
+                setShowModal(false);
+              }}
+              className="btn btn-sm border-0 bg-transparent text-dark"
+            >
+              ✕
+            </button>
+          </div>
         </div>
-      )}
+
+        {/* Content */}
+        <div className="flex-grow-1 overflow-auto p-4">
+          {loadingLocationData ? (
+            <div className="d-flex justify-content-center align-items-center h-100">
+              <div className="spinner-border text-primary" role="status">
+                <span className="visually-hidden">Loading...</span>
+              </div>
+            </div>
+          ) : (
+            <>
+              {navigationStack.length > 0 && (
+                <>
+                  {(() => {
+                    const depth = navigationStack.length;
+                    const isLeafLevel =
+                      Array.isArray(displayList) &&
+                      displayList.length > 0 &&
+                      displayList.every(
+                        (n) =>
+                          !n.child_list ||
+                          (Array.isArray(n.child_list) &&
+                            n.child_list.length === 0) ||
+                          n.child_count === 0
+                      );
+
+                    const showCheckboxes = depth >= 3 || isLeafLevel;
+
+                    return (
+                      <>
+                        {showCheckboxes && displayList.length > 0 && (
+                          <div
+                            className="py-2 d-flex align-items-center"
+                            role="button"
+                            onClick={() => {
+                              const allIds = displayList.map((item) => item.id);
+                              const allObjects = displayList;
+                              const isAllSelected = allIds.every((id) =>
+                                selectedAreaIds.includes(id)
+                              );
+
+                              if (isAllSelected) {
+                                setSelectedAreaIds([]);
+                                setSelectedAreaNames([]);
+                                setSelectedAreaObjects([]);
+                              } else {
+                                setSelectedAreaIds(allIds);
+                                setSelectedAreaNames(
+                                  allObjects.map((a) => a.name)
+                                );
+                                setSelectedAreaObjects(allObjects);
+                              }
+                            }}
+                          >
+                            <input
+                              type="checkbox"
+                              className="form-check-input me-2 border-warning"
+                              checked={
+                                displayList.length > 0 &&
+                                displayList.every((item) =>
+                                  selectedAreaIds.includes(item.id)
+                                )
+                              }
+                              readOnly
+                            />
+                            <span>Select All</span>
+                          </div>
+                        )}
+
+                        {Array.isArray(displayList) &&
+                          displayList.map((node) => {
+                            const nodeIsLeaf =
+                              !node.child_list ||
+                              (Array.isArray(node.child_list) &&
+                                node.child_list.length === 0) ||
+                              node.child_count === 0;
+
+                            return (
+                              <div
+                                key={node.id}
+                                className="py-2 d-flex align-items-center"
+                                role="button"
+                                onClick={() =>
+                                  node.child_count > 0
+                                    ? handleNodeClick(node)
+                                    : handleAreaToggle(node)
+                                }
+                              >
+                                {showCheckboxes && nodeIsLeaf ? (
+                                  <>
+                                    <input
+                                      type="checkbox"
+                                      className="form-check-input me-2"
+                                      checked={selectedAreaIds.includes(
+                                        node.id
+                                      )}
+                                      onChange={() => handleAreaToggle(node)}
+                                      onClick={(e) => e.stopPropagation()}
+                                    />
+                                    <span>{node.name}</span>
+                                  </>
+                                ) : (
+                                  <div className="d-flex justify-content-between align-items-center w-100">
+                                    <span>{node.name}</span>
+                                    {node.child_count > 0 && (
+                                      <span>&#x276F;</span>
+                                    )}
+                                  </div>
+                                )}
+                              </div>
+                            );
+                          })}
+                      </>
+                    );
+                  })()}
+                </>
+              )}
+            </>
+          )}
+        </div>
+
+        {/* Footer */}
+        {(() => {
+          const depth = navigationStack.length;
+          const isLeafLevel =
+            Array.isArray(displayList) &&
+            displayList.length > 0 &&
+            displayList.every(
+              (n) =>
+                !n.child_list ||
+                (Array.isArray(n.child_list) &&
+                  n.child_list.length === 0) ||
+                n.child_count === 0
+            );
+          const showFooter = depth >= 3 || isLeafLevel;
+
+          return (
+            showFooter && (
+              <div className="d-flex justify-content-between p-3 border-top">
+                <button
+                  className="btn btn-outline-secondary px-4"
+                  onClick={handleClear}
+                >
+                  Clear
+                </button>
+                <button
+                  className="btn px-4 text-white"
+                  style={{ backgroundColor: "#F4980E" }}
+                  onClick={handleApply}
+                >
+                  Apply
+                </button>
+              </div>
+            )
+          );
+        })()}
+      </div>
     </div>
+  )}
+</div>
+
   );
 };
 
