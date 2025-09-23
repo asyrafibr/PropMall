@@ -62,6 +62,16 @@ const Filters = ({
   const [loadingLocationData, setLoadingLocationData] = useState(false);
   const [openDropdown, setOpenDropdown] = useState(null);
   const [openModalLabel, setOpenModalLabel] = useState(null);
+  const [tempRange, setTempRange] = useState({ min: null, max: null });
+  const [tempRangePrice, setTempPriceRange] = useState({
+    min: null,
+    max: null,
+  });
+  const [tempRangeBed, setTempRoomRange] = useState({ min: null, max: null });
+  const [tempRangeBath, setTempBathroomRange] = useState({
+    min: null,
+    max: null,
+  });
 
   // when clicking a button
   const handleButtonClick = (label) => {
@@ -75,22 +85,36 @@ const Filters = ({
       setPriceModalOpen(true);
       setOpenModalLabel(label);
 
+      // Pick correct scale
+      const scale =
+        label === "Price Ranges (RM)"
+          ? activeTab === "Buy"
+            ? BUY_AMOUNTS
+            : RENT_AMOUNTS
+          : ROOM_COUNTS;
+
       if (label === "Price Ranges (RM)") {
-        const scale = activeTab === "Buy" ? BUY_AMOUNTS : RENT_AMOUNTS;
-        setPriceRange([scale[0], scale[scale.length - 1]]);
-        setPriceRangeDisplay(`${scale[0]} - ${scale[scale.length - 1]}`);
+        setTempPriceRange(
+          priceRange && priceRange.length > 0
+            ? [...priceRange] // use saved value if exists
+            : [scale[0], scale[scale.length - 1]] // fallback full scale
+        );
       }
 
       if (label === "Bedroom(s)") {
-        const scale = ROOM_COUNTS;
-        setRoomRange([scale[0], scale[scale.length - 1]]);
-        setBedroomDisplay(`${scale[0]} - ${scale[scale.length - 1]}`);
+        setTempRoomRange(
+          roomRange && roomRange.length > 0
+            ? [...roomRange]
+            : [scale[0], scale[scale.length - 1]]
+        );
       }
 
       if (label === "Bathroom(s)") {
-        const scale = ROOM_COUNTS;
-        setBathroomRange([scale[0], scale[scale.length - 1]]);
-        setBathroomDisplay(`${scale[0]} - ${scale[scale.length - 1]}`);
+        setTempBathroomRange(
+          bathroomRange && bathroomRange.length > 0
+            ? [...bathroomRange]
+            : [scale[0], scale[scale.length - 1]]
+        );
       }
     } else {
       setOpenDropdown(label); // keep normal dropdown open
@@ -116,8 +140,10 @@ const Filters = ({
       try {
         const categoryList = await getCategory();
 
-        setCategory(categoryList.data.property_category);
-
+        setCategory([
+          { id: "all_category", desc: "All Categories" },
+          ...categoryList.data.property_category,
+        ]);
         const holdingList = await getHolding();
         const lotList = await getLot();
         setHolding([
@@ -133,17 +159,6 @@ const Filters = ({
 
     fetchData();
   }, []);
-  // useEffect(() => {
-  //   if (selectedHoldingTypes.length === 0) {
-  //     setHoldingDisplay("All Holding Types");
-  //   } else {
-  //     const labels = holdingTypes
-  //       .filter((h) => selectedHoldingTypes.includes(h.id))
-  //       .map((h) => h.name)
-  //       .join(", ");
-  //     setHoldingDisplay(labels);
-  //   }
-  // }, [selectedHoldingTypes, holdingTypes]);
 
   useEffect(() => {
     if (showModal) {
@@ -342,7 +357,13 @@ const Filters = ({
       return newStack;
     });
   };
-
+  // useEffect(() => {
+  //   if (openModalLabel === "Price Ranges (RM)" && priceRange.min === null && priceRange.max === null) {
+  //     const min = activeTab === "Buy" ? BUY_AMOUNTS[0] : RENT_AMOUNTS[0];
+  //     const max = activeTab === "Buy" ? BUY_AMOUNTS[BUY_AMOUNTS.length - 1] : RENT_AMOUNTS[RENT_AMOUNTS.length - 1];
+  //     setPriceRange({ min, max });
+  //   }
+  // }, [openModalLabel, activeTab, priceRange, setPriceRange]);
   // --- Initial Load of Countries ---
   useEffect(() => {
     if (showModal) {
@@ -365,7 +386,7 @@ const Filters = ({
           : [];
 
         setDisplayList(countries);
-
+console.log('tetstt',countries)
         setNavigationStack([
           { node_level: 0, name: "Countries", child_list: countries },
         ]);
@@ -451,7 +472,17 @@ const Filters = ({
       console.error("Error fetching listings:", error);
     }
   };
-
+  const handleCloseModal = (label) => {
+    console.log("price", priceRangeDisplay);
+    if (label === "Price Ranges (RM)") {
+      if (!priceRange.min && !priceRange.max) setPriceRangeDisplay(label);
+    } else if (label === "Bedroom(s)") {
+      if (!roomRange.min && !roomRange.max) setBedroomDisplay(label);
+    } else if (label === "Bathroom(s)") {
+      if (!bathroomRange.min && !bathroomRange.max) setBathroomDisplay(label);
+    }
+    setOpenModalLabel(null);
+  };
   const objectiveMap = {
     Buy: { sale: true },
     Rent: { rent: true },
@@ -504,7 +535,7 @@ const Filters = ({
   "
       >
         {/* Constrain content inside again */}
-        <div className="container-xl order-2 order-md-1 position-relative z-2 flex-fill pt-5 responsive-padding px-3 px-md-5">
+        <div className="container-xl order-2 order-md-1 position-relative z-2 flex-fill pt-5 responsive-padding px-3 px-md-0">
           <div className="hero-heading text-white fw-bold text-end mb-4">
             Discover Your Dream Properties at {mainAgent.name}
           </div>
@@ -538,7 +569,7 @@ const Filters = ({
                   role="button"
                   onClick={() => setShowModal(true)}
                 >
-                  <span className="flex-grow-1 text-truncate fs-5 fw-normal">
+                  <span className="flex-grow-1 text-truncate fs-6 fw-normal">
                     {selectedLocation || "All States"}
                   </span>
                   <span className="small ms-2">▼</span>
@@ -592,9 +623,13 @@ const Filters = ({
                           : label === "Price Ranges (RM)"
                           ? priceRangeDisplay || label
                           : label === "Bedroom(s)"
-                          ? bedroomDisplay || label
+                          ? bedroomDisplay
+                            ? `${bedroomDisplay} Bedroom(s)`
+                            : "Bedroom(s)"
                           : label === "Bathroom(s)"
-                          ? bathroomDisplay || label
+                          ? bathroomDisplay
+                            ? `${bathroomDisplay} Bathroom(s)`
+                            : "Bathroom(s)"
                           : label}
                       </span>
                       <span className="ms-1 small">▼</span>
@@ -706,29 +741,22 @@ const Filters = ({
                       openModalLabel === label && (
                         <div
                           className="modal-overlay d-flex justify-content-center align-items-center"
-                          onClick={() => {
-                            setPriceModalOpen(false);
-                            setOpenModalLabel(null);
-                          }}
+                          onClick={() => handleCloseModal(label)}
                         >
                           <div
                             className="bg-white rounded-4 p-4 shadow position-relative w-100 w-lg-75"
                             style={{
                               maxWidth: "1000px",
-                              maxHeight: "90vh",
+                              height: "60vh",
                               overflowY: "auto",
                             }}
-                            onClick={(e) => e.stopPropagation()} // prevent closing when clicking inside
+                            onClick={(e) => e.stopPropagation()}
                           >
-                            {/* Close button (X) */}
                             <button
                               type="button"
                               className="btn-close position-absolute top-0 end-0 m-3"
                               aria-label="Close"
-                              onClick={() => {
-                                setPriceModalOpen(false);
-                                setOpenModalLabel(null);
-                              }}
+                              onClick={() => handleCloseModal(label)}
                             ></button>
 
                             <h5 className="text-dark mb-4">
@@ -741,7 +769,6 @@ const Filters = ({
 
                             <RangeSliderModal
                               label={label}
-                              setOpenModalLabel={setOpenModalLabel}
                               scale={
                                 label === "Price Ranges (RM)"
                                   ? activeTab === "Buy"
@@ -749,20 +776,8 @@ const Filters = ({
                                     : RENT_AMOUNTS
                                   : ROOM_COUNTS
                               }
-                              range={
-                                label === "Price Ranges (RM)"
-                                  ? priceRange
-                                  : label === "Bedroom(s)"
-                                  ? roomRange
-                                  : bathroomRange
-                              }
-                              setRange={
-                                label === "Price Ranges (RM)"
-                                  ? setPriceRange
-                                  : label === "Bedroom(s)"
-                                  ? setRoomRange
-                                  : setBathroomRange
-                              }
+                              range={tempRange} // 🔹 always edit tempRange
+                              setRange={setTempRange}
                               setRangeDisplay={
                                 label === "Price Ranges (RM)"
                                   ? setPriceRangeDisplay
@@ -770,8 +785,15 @@ const Filters = ({
                                   ? setBedroomDisplay
                                   : setBathroomDisplay
                               }
-                              handleSearch={handleSearch}
-                              setOpenDropdown={setOpenDropdown}
+                              commitRange={
+                                // 🔹 commit after Apply
+                                label === "Price Ranges (RM)"
+                                  ? setPriceRange
+                                  : label === "Bedroom(s)"
+                                  ? setRoomRange
+                                  : setBathroomRange
+                              }
+                              setOpenModalLabel={setOpenModalLabel}
                             />
                           </div>
                         </div>

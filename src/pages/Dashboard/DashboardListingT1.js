@@ -209,88 +209,96 @@ const DashboardListingT1 = ({ listings, handleViewDetails }) => {
                       <p className=" mb-1 resp-textTitle">{card.ads_title}</p>
 
                       <p className="text-muted mb-2 resp-text1">
-  {/* Location */}
-  <div className="row mt-2 text-muted resp-text1">
-    <div className="col-auto pe-0">
-      <img
-        src={locationIcon}
-        alt="Location Icon"
-        width={16}
-        height={16}
-        className="me-2"
-      />
-    </div>
-    <div className="col ps-1">{card.location_description}</div>
-  </div>
+                        {/* Location */}
+                        <div className="row mt-2 text-muted resp-text1">
+                          <div className="col-auto pe-0">
+                            <img
+                              src={locationIcon}
+                              alt="Location Icon"
+                              width={16}
+                              height={16}
+                              className="me-2"
+                            />
+                          </div>
+                          <div className="col ps-1">
+                            {card.location_description}
+                          </div>
+                        </div>
 
-  {/* Category / Type */}
-  <div className="row mt-3 text-muted resp-text1" style={{ lineHeight: "1.3" }}>
-    <div className="col">{card.category_type_title_holding_lottype_storey}</div>
-  </div>
+                        {/* Category / Type */}
+                        <div
+                          className="row mt-3 text-muted resp-text1"
+                          style={{ lineHeight: "1.3" }}
+                        >
+                          <div className="col">
+                            {card.category_type_title_holding_lottype_storey}
+                          </div>
+                        </div>
 
-  {/* Built-up and Land Size */}
-  {card.built_size && card.land_size && (
-    <>
-      <div className="row mt-2 text-muted resp-text1 lh-1">
-        <div className="col-auto pe-0">
-          <img
-            src={builtIcon}
-            alt="Built-up Icon"
-            width={16}
-            height={16}
-            className="me-2"
-          />
-        </div>
-        <div className="col ps-0">
-          Built-up Size: {card.built_size} {card.built_size_unit}{" "}
-          <small className="text-muted">
-            (RM {card.built_price_per_sqft} per sqft)
-          </small>
-        </div>
-      </div>
+                        {/* Built-up and Land Size */}
+                        {card.built_size && card.land_size && (
+                          <>
+                            <div className="row mt-2 text-muted resp-text1 lh-1">
+                              <div className="col-auto pe-0">
+                                <img
+                                  src={builtIcon}
+                                  alt="Built-up Icon"
+                                  width={16}
+                                  height={16}
+                                  className="me-2"
+                                />
+                              </div>
+                              <div className="col ps-0">
+                                Built-up Size: {card.built_size}{" "}
+                                {card.built_size_unit}{" "}
+                                <small className="text-muted">
+                                  (RM {card.built_price_per_sqft} per sqft)
+                                </small>
+                              </div>
+                            </div>
 
-      <div className="row mt-2 text-muted resp-text1 lh-1">
-        <div className="col-auto pe-0">
-          <img
-            src={landIcon}
-            alt="Land Size Icon"
-            width={16}
-            height={16}
-            className="me-2"
-          />
-        </div>
-        <div className="col ps-0">
-          Land Size: {card.land_size} {card.land_size_unit}{" "}
-          <small className="text-muted">
-            (RM {card.land_price_per_sqft} per sqft)
-          </small>
-        </div>
-      </div>
-    </>
-  )}
+                            <div className="row mt-2 text-muted resp-text1 lh-1">
+                              <div className="col-auto pe-0">
+                                <img
+                                  src={landIcon}
+                                  alt="Land Size Icon"
+                                  width={16}
+                                  height={16}
+                                  className="me-2"
+                                />
+                              </div>
+                              <div className="col ps-0">
+                                Land Size: {card.land_size}{" "}
+                                {card.land_size_unit}{" "}
+                                <small className="text-muted">
+                                  (RM {card.land_price_per_sqft} per sqft)
+                                </small>
+                              </div>
+                            </div>
+                          </>
+                        )}
 
-  {/* Only Land Size */}
-  {!card.built_size && card.land_size && (
-    <div className="row mt-2 text-muted resp-text1 lh-1">
-      <div className="col-auto pe-0">
-        <img
-          src={landIcon}
-          alt="Land Size Icon"
-          width={16}
-          height={16}
-          className="me-2"
-        />
-      </div>
-      <div className="col ps-0">
-        Land Size: {card.land_size} {card.land_size_unit}{" "}
-        <small className="text-muted">
-          (RM {card.land_price_per_sqft} per sqft)
-        </small>
-      </div>
-    </div>
-  )}
-</p>
-
+                        {/* Only Land Size */}
+                        {!card.built_size && card.land_size && (
+                          <div className="row mt-2 text-muted resp-text1 lh-1">
+                            <div className="col-auto pe-0">
+                              <img
+                                src={landIcon}
+                                alt="Land Size Icon"
+                                width={16}
+                                height={16}
+                                className="me-2"
+                              />
+                            </div>
+                            <div className="col ps-0">
+                              Land Size: {card.land_size} {card.land_size_unit}{" "}
+                              <small className="text-muted">
+                                (RM {card.land_price_per_sqft} per sqft)
+                              </small>
+                            </div>
+                          </div>
+                        )}
+                      </p>
 
                       {/* Rooms & Bathrooms */}
                       {card.bathroom && card.room > 0 && (

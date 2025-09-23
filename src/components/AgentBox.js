@@ -36,7 +36,7 @@ const AgentBox = () => {
   className="w-100 d-flex align-items-center text-white pb-3 pt-3"
   style={backgroundStyle}
 >
-  <div className="container-xl px-3 px-md-5">
+  <div className="container-xl px-4 px-md-1">
     <div className="d-flex align-items-center">
       {agent.photo && (
         <img

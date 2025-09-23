@@ -86,7 +86,7 @@
 }
  .close-button {
     position: absolute;
-    top: 10px;
+    top: 10%;
     right: 10px;
     z-index: 6;
     background: transparent;
@@ -97,11 +97,13 @@
 /* responsive: hide thumbnails on small screens and enlarge image */
 @media (max-width: 576px) {
   /* hide thumbnails (fallback with !important) */
-  .modal-content .thumbnail-container { display: none !important; }
+  .modal-content .thumbnail-container {
+    display: none !important;
+  }
 
   .modal-content {
-    width: 100vw !important;
-    max-width: 100vw !important;
+    width: 90vw !important;
+    max-width: 90vw !important;
     height: 100vh !important;
     max-height: 100vh !important;
     margin: 0;
@@ -114,7 +116,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    position: relative; /* needed for nav buttons */
+    position: relative; /* needed for nav buttons, X and counter */
     width: 100%;
     height: 100%;
   }
@@ -126,30 +128,52 @@
     z-index: 1; /* image stays behind */
   }
 
-  /* make nav buttons stick to viewport edges */
+  /* nav buttons */
   .nav-button {
     font-size: 2rem;
     padding: 8px 12px;
-  background: transparent;
+    background: transparent;
     z-index: 5;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #fff;
+    border: none;
   }
 
   .nav-button.prev {
-    left: 60px;
+    left: 20px;
   }
 
   .nav-button.next {
-    right:60px;
+    right: 20px;
   }
 
+  /* close button (X) */
   .close-button {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    z-index: 6;
-    background: transparent;
-    border: none;
-    font-size: 1.8rem;
+  position: absolute;
+  top: 10% !important;               /* push to vertical center */
+  right: 45% !important;            /* stick to right edge */
+  transform: translateY(100%); /* adjust back by 50% of its own height */
+  z-index: 6;
+  background: transparent;
+  border: none;
+  font-size: 1.8rem;
   color: #fff !important;
+  cursor: pointer;
+}
+
+  /* ✅ image counter at bottom center of image */
+  .image-counter {
+    position: absolute;
+    bottom: 15% !important;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #fff;
+    z-index: 6;
   }
 }
+
