@@ -18,25 +18,23 @@ const DashboardListingT1 = ({ listings, handleViewDetails }) => {
   const thumbnailRefs = useRef([]);
   const [modalImageIndex, setModalImageIndex] = useState(0);
   const { agent, template, agentInfo } = useTemplate();
-  const openModal = (images, index) => {
-    setModalImages(images);
-    setCurrentImageIndex(index);
-    setModalOpen(true);
-    thumbnailRefs.current = [];
+const openModal = (images) => {
+  setModalImages(images);
+  setCurrentImageIndex(0); // always reset to first image
+  setModalOpen(true);
+  thumbnailRefs.current = [];
 
-    thumbnailRefs.current = [];
-
-    setTimeout(() => {
-      const node = thumbnailRefs.current[index];
-      if (node) {
-        node.scrollIntoView({
-          behavior: "auto",
-          inline: "center",
-          block: "nearest",
-        });
-      }
-    }, 300);
-  };
+  setTimeout(() => {
+    const node = thumbnailRefs.current[0];
+    if (node) {
+      node.scrollIntoView({
+        behavior: "auto",
+        inline: "center",
+        block: "nearest",
+      });
+    }
+  }, 300);
+};
   const showPrevImage = () => {
     setModalImageIndex((prev) =>
       prev === 0 ? modalImages.length - 1 : prev - 1
@@ -55,6 +53,8 @@ const DashboardListingT1 = ({ listings, handleViewDetails }) => {
 
   const handleCloseModal = () => {
     setModalOpen(false);
+      setModalImageIndex(0);
+
     document.body.classList.remove("no-scroll");
   };
   useEffect(() => {
@@ -164,7 +164,7 @@ const DashboardListingT1 = ({ listings, handleViewDetails }) => {
                         }
                         className="card-img-top h-100 w-100 object-fit-cover cursor-pointer rounded-0"
                         alt={card.ads_title}
-                        onClick={() => openModal(card.photos || [], 0)}
+                        onClick={() => openModal(card.photos)}
                       />
                       {/* Badges */}
                       {(showTag || belowMarket) && (
