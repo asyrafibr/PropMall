@@ -162,7 +162,7 @@ const DashboardListingT1 = ({ listings, handleViewDetails }) => {
                           card.photos?.[0] ||
                           "https://via.placeholder.com/300x200"
                         }
-                        className="card-img-top h-100 w-100 object-fit-cover cursor-pointer"
+                        className="card-img-top h-100 w-100 object-fit-cover cursor-pointer rounded-0"
                         alt={card.ads_title}
                         onClick={() => openModal(card.photos || [], 0)}
                       />
@@ -171,13 +171,13 @@ const DashboardListingT1 = ({ listings, handleViewDetails }) => {
                         <div className="position-absolute top-0 start-0 m-2 d-flex flex-column gap-1 badge-container">
                           {showTag && (
                             <div
-                              className={`d-flex align-items-center justify-content-start  rounded resp-badge px-3 py-1 ${statusColor}`}
+                              className={`d-flex align-items-center justify-content-start rounded resp-badge px-3 py-1 ${statusColor}`}
                             >
                               {statusText}
                             </div>
                           )}
                           {belowMarket && (
-                            <div className="d-flex align-items-center justify-content-center rounded bg-success text-white resp-badge px-3 py-1 mt-1 below-market-badge">
+                            <div className="d-flex align-items-center justify-content-center rounded bg-success text-white resp-badge3 px-3 py-1 mt-1 below-market-badge">
                               Below Market
                             </div>
                           )}
@@ -186,7 +186,7 @@ const DashboardListingT1 = ({ listings, handleViewDetails }) => {
 
                       {/* Exclusive Ribbon */}
                       {card.exclusive === "Y" && (
-                        <div className="corner-ribbon resp-badge">
+                        <div className="corner-ribbon resp-badge2">
                           Exclusive
                         </div>
                       )}
@@ -220,7 +220,7 @@ const DashboardListingT1 = ({ listings, handleViewDetails }) => {
                               className="me-2"
                             />
                           </div>
-                          <div className="col ps-1">
+                          <div className="col ps-0">
                             {card.location_description}
                           </div>
                         </div>
@@ -303,7 +303,7 @@ const DashboardListingT1 = ({ listings, handleViewDetails }) => {
                       {/* Rooms & Bathrooms */}
                       {card.bathroom && card.room > 0 && (
                         <div className="d-flex flex-wrap gap-3 mb-3">
-                          <span className="d-flex align-items-end gap-2 resp-text1">
+                          <span className="d-flex align-items-center  gap-2 resp-text1">
                             <img
                               src={bedIcon}
                               alt="Land Size Icon"
@@ -313,7 +313,7 @@ const DashboardListingT1 = ({ listings, handleViewDetails }) => {
                             />{" "}
                             {card.room}
                           </span>
-                          <span className="d-flex align-items-end gap-2 resp-text1">
+                          <span className="d-flex align-items-center  gap-2 resp-text1">
                             <img
                               src={bathIcon}
                               alt="Land Size Icon"
@@ -347,9 +347,10 @@ const DashboardListingT1 = ({ listings, handleViewDetails }) => {
                             handleViewDetails(
                               card.id_listing,
                               card.ads_title,
-                              card.location,
+                              card.location_state,
                               card.permalink,
-                              card.permalink_previous
+                              card.permalink_previous,
+                              card.listing_modus
                             )
                           }
                           className="btn btn-outline-secondary w-100 d-flex flex-sm-row flex-column align-items-center justify-content-center text-center gap-1"
@@ -374,70 +375,7 @@ const DashboardListingT1 = ({ listings, handleViewDetails }) => {
             })}
       </div>
 
-      {/* {modalOpen && (
-        <div
-          className="modal fade show d-flex justify-content-center align-items-center custom-black-modal"
-          onClick={closeModal}
-        >
-          <div
-            className="modal-dialog modal-dialog-centered modal-lg"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="modal-content text-white border-0">
-              <button
-                type="button"
-                className="btn-close btn-close-white position-absolute top-0 end-0 m-3"
-                onClick={closeModal}
-              ></button>
-
-              <div className="modal-body p-3 d-flex flex-column align-items-center py-5">
-                <div className="d-flex justify-content-center align-items-center w-100">
-                  <img
-                    src={modalImages[currentImageIndex]}
-                    alt="Full"
-                    className="main-modal-img"
-                  />
-                </div>
-
-                <div className="mt-2 bg-dark text-white rounded px-2 py-1 small">
-                  {currentImageIndex + 1} / {modalImages.length}
-                </div>
-
-                {modalImages.length > 1 && (
-                  <>
-                    <button
-                      className="btn btn-dark position-absolute top-50 start-0 translate-middle-y"
-                      onClick={showPrev}
-                    >
-                      &#10094;
-                    </button>
-                    <button
-                      className="btn btn-dark position-absolute top-50 end-0 translate-middle-y"
-                      onClick={showNext}
-                    >
-                      &#10095;
-                    </button>
-                  </>
-                )}
-
-                <div className="d-flex justify-content-center mt-3 thumbnail-bar">
-                  {modalImages.map((img, idx) => (
-                    <img
-                      key={idx}
-                      src={img}
-                      alt={`Thumbnail ${idx}`}
-                      className={`thumbnail-img me-2 ${
-                        currentImageIndex === idx ? "border-primary" : ""
-                      } cursor-pointer`}
-                      onClick={() => setCurrentImageIndex(idx)}
-                    />
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )} */}
+    
       {modalOpen && (
         <div className="modal-overlay" onClick={handleCloseModal}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>

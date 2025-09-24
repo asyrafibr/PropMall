@@ -42,7 +42,7 @@
   margin-bottom: 10px;
 }
 @media (max-width: 576px) {
-   .modal-body {
+  .modal-body {
     width: 120%;
     height: 80vh;
     padding: 0;
@@ -51,14 +51,14 @@
     align-items: center;
   }
   .modal-image {
-    width: 100%;      /* force full width */
-    height: auto;     /* keep aspect ratio */
+    width: 100%; /* force full width */
+    height: auto; /* keep aspect ratio */
     max-height: none; /* remove height restriction */
   }
 }
 
 .image-counter {
-    color: white;           /* ✅ Make text white */
+  color: white; /* ✅ Make text white */
   font-weight: bold;
   margin-top: 10px;
   text-align: center;
@@ -104,36 +104,35 @@
 
 /* Dark semi-transparent backdrop */
 .custom-black-modal {
-  display: flex !important;        /* override Bootstrap */
-  align-items: center;             /* vertical center */
-  justify-content: center;         /* horizontal center */
-  background: rgba(0, 0, 0, 0.80); /* dark backdrop */
-  min-height: 100vh;               /* take full screen */
+  display: flex !important; /* override Bootstrap */
+  align-items: center; /* vertical center */
+  justify-content: center; /* horizontal center */
+  background: rgba(0, 0, 0, 0.8); /* dark backdrop */
+  min-height: 100vh; /* take full screen */
 }
 
 /* Remove Bootstrap's default max-width for modal-lg */
 .custom-black-modal .modal-dialog {
-  max-width: 100%;  /* make modal wide enough */
-  margin: 0 auto;  /* force center horizontally */
+  max-width: 100%; /* make modal wide enough */
+  margin: 0 auto; /* force center horizontally */
 }
 
 /* Center content inside modal */
 .custom-black-modal .modal-content {
-  background: transparent;   /* keep black backdrop only */
+  background: transparent; /* keep black backdrop only */
   border: none;
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
-
 .thumbnail-bar {
   display: flex;
   justify-content: center; /* center thumbnails */
-  gap: 10px;               /* spacing between */
+  gap: 10px; /* spacing between */
   margin-top: 1rem;
-  flex-wrap: wrap;         /* allow wrapping on small screens */
-  overflow-x: hidden;      /* prevent horizontal scroll */
+  flex-wrap: wrap; /* allow wrapping on small screens */
+  overflow-x: hidden; /* prevent horizontal scroll */
 }
 
 .thumbnail-img {
@@ -143,10 +142,6 @@
   border-radius: 0.25rem;
   cursor: pointer;
 }
-
-
-
-
 
 .thumbnail-img {
   width: 80px;
@@ -167,15 +162,14 @@
   display: inline-block;
 }
 
-
 /* Thumbnails: small, inline scrollable */
 .thumbnail-img {
-  width: 80px;         /* force smaller thumbnails */
+  width: 80px; /* force smaller thumbnails */
   height: 60px;
   object-fit: cover;
   border-radius: 0.25rem;
   cursor: pointer;
-  flex-shrink: 0;      /* prevent stretching */
+  flex-shrink: 0; /* prevent stretching */
 }
 
 .main-modal-img {
@@ -183,7 +177,7 @@
   max-width: 100%;
   object-fit: contain;
   display: block;
-  margin: 0 auto;   /* horizontal center */
+  margin: 0 auto; /* horizontal center */
 }
 
 .template3-header {
@@ -192,7 +186,6 @@
   background-position: center;
   background-repeat: no-repeat;
 }
-
 
 /* Cursor helper */
 .cursor-pointer {
@@ -215,41 +208,33 @@
   cursor: pointer;
 }
 
-
 /* Corner ribbon like the 2nd screenshot */
 .corner-ribbon {
   position: absolute;
-  top: 50px;              /* how far from the top edge */
-  right: -58px;           /* negative so the rotated band crosses the corner */
+  top: 50px; /* how far from the top edge */
+  right: -58px; /* negative so the rotated band crosses the corner */
   transform: rotate(45deg);
   background: #f6b400;
   color: #fff;
-  width: 220px;           /* ribbon length */
-  height: 34px;           /* ribbon thickness */
+  width: 220px; /* ribbon length */
+  height: 34px; /* ribbon thickness */
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: Poppins, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  font-family: Poppins, system-ui, -apple-system, Segoe UI, Roboto, Arial,
+    sans-serif;
   font-weight: 700;
   font-size: 16px;
   letter-spacing: 0.5px;
   z-index: 1;
   pointer-events: none;
-  box-shadow: 0 2px 6px rgba(0,0,0,.25);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+  padding-left: -50px;
 }
 
 /* small “folds” on each end of the ribbon */
-.corner-ribbon::before,
-.corner-ribbon::after {
-  content: "";
-  position: absolute;
-  top: 10;
-  width: 0;
-  height: 0;
-  border-top: 17px solid #d9a200;   /* slightly darker for a fold effect */
-  border-bottom: 17px solid #d9a200;
-}
 
+/* 
 .corner-ribbon::before {
   left: -34px;
   border-right: 34px solid transparent;
@@ -257,10 +242,9 @@
 .corner-ribbon::after {
   right: -34px;
   border-left: 34px solid transparent;
-}
-.bg-orange{
-  background: #FF7A00;
-
+} */
+.bg-orange {
+  background: #ff7a00;
 }
 /* responsive-fonts.css */
 
@@ -270,7 +254,8 @@
   font-size: 1rem; /* 16px mobile default */
 }
 
-@media (min-width: 768px) { /* tablet and desktop */
+@media (min-width: 768px) {
+  /* tablet and desktop */
   .resp-title {
     font-size: 1.25rem; /* 20px */
   }
@@ -290,20 +275,32 @@
   font-size: 0.875rem; /* 16px mobile */
 }
 
-@media (min-width: 768px) {
-  .resp-text1 {
-    font-size: 1rem; /* 20px tablet/desktop */
-  }
-}
 /* Badges */
 .resp-badge {
   font-weight: 600;
-  font-size: 0.75rem;   /* 📱 12px for mobile */
+  font-size: 0.75rem;
+  width: 100px; /* force same width for all */
+  text-align: center; /* 📱 12px for mobile */
 }
-
+.resp-badge2 {
+  font-weight: 600;
+  font-size: 0.75rem;
+}
+.resp-badge3 {
+  font-weight: 600;
+  font-size: 0.75rem;
+}
 @media (min-width: 768px) {
   .resp-badge {
-    font-size: 1rem;    /* 💻 16px for desktop */
+    font-size: 1rem; /* 💻 16px for desktop */
+  }
+  .resp-badge2 {
+    font-weight: 600;
+    font-size: 1rem;
+  }
+  .resp-badge3 {
+    font-weight: 600;
+    font-size: 1rem;
   }
 }
 /* Skeleton image box */
@@ -375,17 +372,15 @@
   z-index: 1;
 }
 
-
 .resp-textTitle {
   font-size: 1rem; /* 16px mobile */
-  color:'#3A3A3A'
+  color: "#3A3A3A";
 }
 
 @media (min-width: 768px) {
   .resp-textTitle {
     font-size: 1rem; /* 20px tablet/desktop */
-      color:'#3A3A3A'
-
+    color: "#3A3A3A";
   }
 }
 /* Default (mobile-first) */

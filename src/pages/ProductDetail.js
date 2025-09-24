@@ -15,7 +15,11 @@ import MortgageCalculator from "./MortgageCalculator";
 import MortgageCalculator2 from "./MortgageCalculator2";
 import MortgageCalculator3 from "./MortgageCalculator3";
 import MortgageCalculator4 from "./MortgageCalculator4";
-
+import builtIcon from "../image/built_up.svg";
+import landIcon from "../image/land_size.svg";
+import locationIcon from "../image/size_built.svg";
+import bathIcon from "../image/bath.svg";
+import bedIcon from "../image/bed.svg";
 import { useTemplate } from "../context/TemplateContext"; // ✅ Import Template Context
 import bgImage from "../image/template2bg.png";
 
@@ -38,7 +42,7 @@ const ProductDetail = () => {
   const thumbnailRefs = useRef([]);
   const navigate = useNavigate();
   // const location = useLocation();
-
+  console.log("cardd", location.state);
   useEffect(() => {
     // Check if URL contains the old "/list/" permalink
     if (location.pathname.startsWith("/list/")) {
@@ -146,7 +150,15 @@ const ProductDetail = () => {
     setModalOpen(false);
     document.body.classList.remove("no-scroll");
   };
+  const formatModus = (modus) => {
+    if (!modus) return "";
 
+    // Remove "FOR " if it exists
+    let cleaned = modus.replace(/^FOR\s+/i, "");
+
+    // Make only first letter uppercase, rest lowercase
+    return cleaned.charAt(0).toUpperCase() + cleaned.slice(1).toLowerCase();
+  };
   const getThumbnailSlice = () => {
     const total = modalImages.length;
     const start = Math.max(0, Math.min(currentImageIndex - 5, total - 10));
@@ -161,7 +173,7 @@ const ProductDetail = () => {
           {/* Breadcrumb */}
           <div className="pb-4">
             {/* Breadcrumb with left padding */}
-            <div className="ps-0 ps-md-5">
+            <div className="ps-0 ps-md-0">
               <nav aria-label="breadcrumb">
                 <ol
                   className="breadcrumb"
@@ -177,7 +189,7 @@ const ProductDetail = () => {
                       href="/properties"
                       className="text-decoration-none text-dark"
                     >
-                      Properties
+                      {formatModus(location.state?.status)}
                     </a>
                   </li>
                   <li className="breadcrumb-item">
@@ -185,7 +197,7 @@ const ProductDetail = () => {
                       href="/properties/kuala-lumpur"
                       className="text-decoration-none text-dark"
                     >
-                      Kuala Lumpur
+                      {location.state?.location}
                     </a>
                   </li>
                   <li
@@ -301,62 +313,64 @@ const ProductDetail = () => {
           </div>
 
           {/* MODAL PREVIEW */}
-       {modalOpen && (
-  <div className="modal-overlay" onClick={closeModal}>
-    <div
-      className="modal-content"
-      onClick={(e) => e.stopPropagation()}
-    >
-      <button className="close-button" onClick={closeModal}>
-        &times;
-      </button>
+          {modalOpen && (
+            <div className="modal-overlay" onClick={closeModal}>
+              <div
+                className="modal-content"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <button className="close-button" onClick={closeModal}>
+                  &times;
+                </button>
 
-      <div className="modal-body">
-        <div className="image-wrapper">
-          <button className="nav-button prev" onClick={showPrev}>
-            &#10094;
-          </button>
+                <div className="modal-body">
+                  <div className="image-wrapper">
+                    <button className="nav-button prev" onClick={showPrev}>
+                      &#10094;
+                    </button>
 
-          <img
-            src={modalImages[currentImageIndex]}
-            alt="Full View"
-            className="modal-image"
-          />
+                    <img
+                      src={modalImages[currentImageIndex]}
+                      alt="Full View"
+                      className="modal-image"
+                    />
 
-          <button className="nav-button next" onClick={showNext}>
-            &#10095;
-          </button>
-        </div>
+                    <button className="nav-button next" onClick={showNext}>
+                      &#10095;
+                    </button>
+                  </div>
 
-        <div className="image-counter">
-          {currentImageIndex + 1} / {modalImages.length}
-        </div>
+                  <div className="image-counter">
+                    {currentImageIndex + 1} / {modalImages.length}
+                  </div>
 
-        <div className="thumbnail-container">
-          {getThumbnailSlice().map((img, idx) => {
-            const actualIndex =
-              Math.max(
-                0,
-                Math.min(currentImageIndex - 5, modalImages.length - 10)
-              ) + idx;
-            return (
-              <img
-                key={actualIndex}
-                src={img}
-                alt={`Thumbnail ${actualIndex}`}
-                className={`thumbnail ${
-                  currentImageIndex === actualIndex ? "active" : ""
-                }`}
-                onClick={() => setCurrentImageIndex(actualIndex)}
-              />
-            );
-          })}
-        </div>
-      </div>
-    </div>
-  </div>
-)}
-
+                  <div className="thumbnail-container">
+                    {getThumbnailSlice().map((img, idx) => {
+                      const actualIndex =
+                        Math.max(
+                          0,
+                          Math.min(
+                            currentImageIndex - 5,
+                            modalImages.length - 10
+                          )
+                        ) + idx;
+                      return (
+                        <img
+                          key={actualIndex}
+                          src={img}
+                          alt={`Thumbnail ${actualIndex}`}
+                          className={`thumbnail ${
+                            currentImageIndex === actualIndex ? "active" : ""
+                          }`}
+                          onClick={() => setCurrentImageIndex(actualIndex)}
+                        />
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Pricing + Agent Info */}
           <div className="card shadow-sm mt-4 ">
@@ -402,38 +416,168 @@ const ProductDetail = () => {
                 <p className="mb-1 fs-5 fw-normal font-poppins">
                   {product.property_title}
                 </p>
-                <small className="text-muted d-block mb-3 fs-6">
-                  {product.location_area}
-                </small>
+                <p className="text-muted mb-2 resp-text1">
+                  {/* Location */}
+                  <div className="row mt-2 text-muted resp-text1">
+                    <div className="col-auto pe-0">
+                      <img
+                        src={locationIcon}
+                        alt="Location Icon"
+                        width={16}
+                        height={16}
+                        className="me-2"
+                      />
+                    </div>
+                    <div className="col ps-0">
+                      {product.location_description}
+                    </div>
+                  </div>
 
-                {/* Extra Info */}
-                <small className="text-muted d-flex flex-wrap align-items-center gap-2 mb-3 fs-6 font-poppins">
-                  {product.category_type_title_holding_lottype_storey}
-                  <span
-                    className="rounded-circle bg-secondary d-inline-block"
-                    style={{ width: "8px", height: "8px" }}
-                  ></span>
-                  {product?.built_size && (
-                    <span>
-                      Built-up: {product.built_size} {product.built_size_unit}
-                    </span>
+                  {/* Category / Type */}
+                  <div
+                    className="row mt-3 text-muted resp-text1"
+                    style={{ lineHeight: "1.3" }}
+                  >
+                    <div className="col">
+                      {product.category_type_title_holding_lottype_storey}
+                    </div>
+                  </div>
+
+                  {/* Built-up and Land Size */}
+                  {product.built_size && product.land_size && (
+                    <>
+                      <div className="row mt-2 text-muted resp-text1 lh-1">
+                        <div className="col-auto pe-0">
+                          <img
+                            src={builtIcon}
+                            alt="Built-up Icon"
+                            width={16}
+                            height={16}
+                            className="me-2"
+                          />
+                        </div>
+                        <div className="col ps-0">
+                          Built-up Size: {product.built_size}{" "}
+                          {product.built_size_unit}{" "}
+                          <small className="text-muted">
+                            (RM {product.built_price_per_sqft} per sqft)
+                          </small>
+                        </div>
+                      </div>
+
+                      <div className="row mt-2 text-muted resp-text1 lh-1">
+                        <div className="col-auto pe-0">
+                          <img
+                            src={landIcon}
+                            alt="Land Size Icon"
+                            width={16}
+                            height={16}
+                            className="me-2"
+                          />
+                        </div>
+                        <div className="col ps-0">
+                          Land Size: {product.land_size}{" "}
+                          {product.land_size_unit}{" "}
+                          <small className="text-muted">
+                            (RM {product.land_price_per_sqft} per sqft)
+                          </small>
+                        </div>
+                      </div>
+                    </>
                   )}
-                  {product?.land_size && (
-                    <span>
-                      Land-Size: {product.land_price_per_sqft}{" "}
-                      {product.land_size_unit}
-                    </span>
+                  {product.built_size && !product.land_size && (
+                    <div className="row mt-2 text-muted resp-text1 lh-1">
+                      <div className="col-auto pe-0">
+                        <img
+                          src={builtIcon}
+                          alt="Built-up Icon"
+                          width={16}
+                          height={16}
+                          className="me-2"
+                        />
+                      </div>
+                      <div className="col ps-0">
+                        Built-up Size: {product.built_size}{" "}
+                        {product.built_size_unit}{" "}
+                        <small className="text-muted">
+                          (RM {product.built_price_per_sqft} per sqft)
+                        </small>
+                      </div>
+                    </div>
                   )}
-                </small>
+
+                  {/* Only Land Size */}
+                  {!product.built_size && product.land_size && (
+                    <div className="row mt-2 text-muted resp-text1 lh-1">
+                      <div className="col-auto pe-0">
+                        <img
+                          src={landIcon}
+                          alt="Land Size Icon"
+                          width={16}
+                          height={16}
+                          className="me-2"
+                        />
+                      </div>
+                      <div className="col ps-0">
+                        Land Size: {product.land_size} {product.land_size_unit}{" "}
+                        <small className="text-muted">
+                          (RM {product.land_price_per_sqft} per sqft)
+                        </small>
+                      </div>
+                    </div>
+                  )}
+                </p>
 
                 {/* Bed + Bath */}
                 {product.room && product.bathroom > 0 && (
                   <div className="d-flex flex-wrap gap-3 mb-2">
                     <span className="d-flex align-items-center gap-1">
-                      <FaBed /> {product.room} beds
+                      <img
+                        src={bedIcon}
+                        alt="Land Size Icon"
+                        width={16}
+                        height={16}
+                        className="me-2"
+                      />{" "}
+                      <small className="text-muted">{product.room}</small>
                     </span>
                     <span className="d-flex align-items-center gap-1">
-                      <FaBath /> {product.bathroom} baths
+                      <img
+                        src={bathIcon}
+                        alt="Land Size Icon"
+                        width={16}
+                        height={16}
+                        className="me-2"
+                      />{" "}
+                      <small className="text-muted">{product.bathroom}</small>
+                    </span>
+                  </div>
+                )}
+                {!product.room && product.bathroom > 0 && (
+                  <div className="d-flex flex-wrap gap-3 mb-2">
+                    <span className="d-flex align-items-center gap-1">
+                      <img
+                        src={bathIcon}
+                        alt="Land Size Icon"
+                        width={16}
+                        height={16}
+                        className="me-2"
+                      />{" "}
+                      <small className="text-muted">{product.bathroom}</small>
+                    </span>
+                  </div>
+                )}
+                {product.room && !product.bathroom > 0 && (
+                  <div className="d-flex flex-wrap gap-3 mb-2">
+                    <span className="d-flex align-items-center gap-1">
+                      <img
+                        src={bedIcon}
+                        alt="Land Size Icon"
+                        width={16}
+                        height={16}
+                        className="me-2"
+                      />{" "}
+                      <small className="text-muted">{product.room}</small>
                     </span>
                   </div>
                 )}
@@ -555,30 +699,16 @@ const ProductDetail = () => {
           {/* Property Description */}
           {product.ads_description && (
             <div className="card p-3 shadow-sm">
-              <text
-                style={{
-                  fontSize: "18px",
-                  fontFamily: "Poppins",
-                  fontWeight: 600,
-                  paddingBottom: "20px",
-                }}
-              >
-                Description
-              </text>
-              <div
-                style={{
-                  width: "100%", // or a fixed width
-                  height: "1px",
-                  backgroundColor: "var(--Grey-2, #DBDBDB)",
-                  marginBottom: "20px",
-                }}
-              />
+              {/* Title */}
+              <h5 className="fw-semibold mb-3">Description</h5>
+
+              {/* Divider */}
+              <hr className="my-3 text-secondary opacity-50" />
+
+              {/* Content */}
               <p
-                style={{
-                  whiteSpace: "pre-line",
-                  fontFamily: "Poppins",
-                  fontSize: "14px",
-                }}
+                className="mb-0 text-muted fs-6"
+                style={{ whiteSpace: "pre-line" }}
               >
                 {formatAdsDescription(product.ads_description)}
               </p>

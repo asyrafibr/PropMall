@@ -150,8 +150,9 @@ const Dashboard = () => {
   const slugify = (text) =>
     text?.toLowerCase().trim().replace(/\s+/g, "-") || "";
 const handleViewDetails = useCallback(
-  (productId, title, location, permalink, permalink_previous) => {
+  (productId, title, location, permalink, permalink_previous,status) => {
     // ✅ Always prefer the latest permalink
+    
     const targetLink = permalink || permalink_previous;
 
     if (!targetLink) {
@@ -164,6 +165,7 @@ const handleViewDetails = useCallback(
         productId,
         title,
         location,
+        status
       },
     });
   },

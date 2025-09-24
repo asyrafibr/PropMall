@@ -59,27 +59,33 @@
 /* Arrows */
 .scroll-button {
   position: absolute;
-  top: 45%;
+  top: 50%;                 /* center vertically */
   transform: translateY(-50%);
-  background: white;
-  border: 1px solid #ccc;
+  z-index: 5;               /* stay above cards */
+  background: rgba(0, 0, 0, 0.5);
+  color: #fff;
+  border: none;
   border-radius: 50%;
   width: 40px;
   height: 40px;
-  font-size: 22px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  z-index: 10;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
 }
+
 .scroll-button.left {
-  left: 10px;
+  left: -55px; /* adjust so it sits just outside the cards */
 }
+
 .scroll-button.right {
-  right: 10px;
+  right: -55px;
 }
+
+.scroll-button:hover {
+  background: rgba(0, 0, 0, 0.7);
+}
+
 
 /* Mobile view: vertical, no arrows, no side padding */
 @media (max-width: 767.98px) {
