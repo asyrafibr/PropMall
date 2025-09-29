@@ -111,10 +111,25 @@ const RangeSliderModal = ({
     if (pos[0] !== next[0] || pos[1] !== next[1]) setPos(next);
   }, [range, scale]);
 
-  const handleRender = (node, { value, dragging }) => (
+const handleRender = (node, { value, dragging }) => {
+  let formatted;
+
+  if (label === "Price Ranges (RM)") {
+    // show with RM
+    formatted = `RM ${scale[value].toLocaleString("en-MY", {
+      maximumFractionDigits: 0,
+    })}`;
+  } else {
+    // numbers only
+    formatted = scale[value].toLocaleString("en-MY", {
+      maximumFractionDigits: 0,
+    });
+  }
+
+  return (
     <Tooltip
       prefixCls="rc-tooltip"
-      overlay={formatCurrency(scale[value])}
+      overlay={formatted}
       visible={dragging}
       placement="top"
       key={value}
@@ -128,6 +143,9 @@ const RangeSliderModal = ({
       {node}
     </Tooltip>
   );
+};
+
+
 
   const handleSliderChange = (nextPos) => setPos(nextPos);
 
@@ -137,12 +155,11 @@ const RangeSliderModal = ({
       prev?.min === next.min && prev?.max === next.max ? prev : next
     );
   };
-  console.log("LABEL", label);
   return (
     <div className="range-modal">
       {/* Slider */}
       <div className="my-4 px-2">
-        {isClient && label === "Price Ranges (RM)" && (
+        {isClient  && (
           <Slider
             range
             min={0}

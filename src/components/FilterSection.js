@@ -384,11 +384,14 @@ const Filters = ({
         const countries = Array.isArray(res.data.country.child_list)
           ? res.data.country.child_list
           : [];
-
-        setDisplayList(countries);
-console.log('tetstt',countries)
+        const countriesWithAll = [
+          { id: "all", name: "All States", node_level: 2, child_list: [] },
+          ...countries,
+        ];
+        setDisplayList(countriesWithAll);
+        console.log("tetstt", countriesWithAll);
         setNavigationStack([
-          { node_level: 0, name: "Countries", child_list: countries },
+          { node_level: 0, name: "Countries", child_list: countriesWithAll },
         ]);
 
         setCurrentLevel({ node_level: 0 });
@@ -411,6 +414,7 @@ console.log('tetstt',countries)
   };
 
   const handleSearch = async () => {
+    console.log("select all", selectedState);
     try {
       const hostname = window.location.hostname;
       const domain = hostname.replace(/^www\./, "").split(".")[0];
@@ -429,7 +433,12 @@ console.log('tetstt',countries)
             location: {
               id_country: selectedCountry?.id_country || null,
               id_state: selectedState?.id || null,
-              id_area: selectedAreaIds.length ? selectedAreaIds : [],
+              id_area:
+                selectedState === null
+                  ? []
+                  : selectedAreaIds.length
+                  ? selectedAreaIds
+                  : [],
               id_province: [],
               id_cities: [],
             },
@@ -941,38 +950,30 @@ console.log('tetstt',countries)
 
                               return (
                                 <div
-                                  key={node.id}
-                                  className="py-2 d-flex align-items-center cursor-pointer"
-                                  onClick={() =>
-                                    node.child_count > 0
-                                      ? handleNodeClick(node)
-                                      : handleAreaToggle(node)
-                                  }
-                                >
-                                  {showCheckboxes && nodeIsLeaf ? (
-                                    <>
-                                      <input
-                                        type="checkbox"
-                                        className="form-check-input checkbox-orange"
-                                        checked={selectedAreaIds.includes(
-                                          node.id
-                                        )}
-                                        onChange={() => handleAreaToggle(node)}
-                                        onClick={(e) => e.stopPropagation()}
-                                      />
-                                      <label className="form-check-label ms-2 fs-6">
-                                        {node.name}
-                                      </label>
-                                    </>
-                                  ) : (
-                                    <div className="d-flex justify-content-between w-100 fs-6">
-                                      <span>{node.name}</span>
-                                      {node.child_count > 0 && (
-                                        <span>&#x276F;</span>
-                                      )}
-                                    </div>
-                                  )}
-                                </div>
+  key={node.id}
+  className="py-2 d-flex align-items-center justify-content-between cursor-pointer w-100 fs-6"
+  onClick={() => {
+    if (node.id === "all") {
+      const allStates = displayList.filter((s) => s.id !== "all");
+      setSelectedAreaIds(allStates.map((s) => s.id));
+      setSelectedAreaNames(allStates.map((s) => s.name));
+      setSelectedAreaObjects(allStates);
+      setShowModal(false); // optional
+    } else if (node.child_count > 0) {
+      handleNodeClick(node);
+    } else {
+      handleAreaToggle(node);
+    }
+  }}
+>
+  <span>{node.name}</span>
+  {node.id !== "all" && node.child_count > 0 ? (
+    <span>&#x276F;</span>
+  ) : (
+    <span style={{ visibility: "hidden" }}>&#x276F;</span>
+  )}
+</div>
+
                               );
                             })}
                         </>

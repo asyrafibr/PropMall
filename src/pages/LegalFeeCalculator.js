@@ -7,11 +7,11 @@ import {
   FaChartLine,
   FaArrowLeft,
 } from "react-icons/fa";
-import buy from "../image/buy.svg";
-import loan from "../image/loan.svg";
-import legal from "../image/legal.svg";
-import mortgage from "../image/mortgage.svg";
-import gtax from "../image/gtax.svg";
+import buy from "../image/house.svg";
+import loan from "../image/dollar.svg";
+import legal from "../image/sign.svg";
+import mortgage from "../image/calculator.svg";
+import gtax from "../image/chart.svg";
 import "./LegalFeeCalculator.css";
 // Currency formatter
 const formatCurrency = (value) =>
@@ -323,33 +323,32 @@ const MortgageCalculator = () => {
     interestRate: "",
     loanTenure: "",
   });
-const cleanNumber = (value) =>
-  parseFloat(value.replace(/[^\d.]/g, "")) || 0; // keep only digits and decimal
+  const cleanNumber = (value) => parseFloat(value.replace(/[^\d.]/g, "")) || 0; // keep only digits and decimal
 
-const handleCalculateMortgage = () => {
-  const P = cleanNumber(mortgage.loanAmount); // loan amount
-  const r = parseFloat(mortgage.interestRate) / 100 / 12; // monthly interest
-  const n = parseInt(mortgage.loanTenure) * 12; // tenure in months
-  const propertyPrice = cleanNumber(mortgage.propertyPrice);
+  const handleCalculateMortgage = () => {
+    const P = cleanNumber(mortgage.loanAmount); // loan amount
+    const r = parseFloat(mortgage.interestRate) / 100 / 12; // monthly interest
+    const n = parseInt(mortgage.loanTenure) * 12; // tenure in months
+    const propertyPrice = cleanNumber(mortgage.propertyPrice);
 
-  if (!P || !r || !n || !propertyPrice) return;
+    if (!P || !r || !n || !propertyPrice) return;
 
-  // Standard mortgage formula
-  const monthly = (P * r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1);
+    // Standard mortgage formula
+    const monthly = (P * r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1);
 
-  const total = monthly * n;
-  const interest = total - P;
-  const principal = P;
+    const total = monthly * n;
+    const interest = total - P;
+    const principal = P;
 
-  const downpayment = propertyPrice - P;
+    const downpayment = propertyPrice - P;
 
-  setMortgageResult({
-    monthly: Math.round(monthly),
-    principal,
-    interest: Math.round(interest),
-    downpayment,
-  });
-};
+    setMortgageResult({
+      monthly: Math.round(monthly),
+      principal,
+      interest: Math.round(interest),
+      downpayment,
+    });
+  };
 
   const handleCalculate = () => {
     const p = parseFloat(principal);
@@ -365,175 +364,190 @@ const handleCalculateMortgage = () => {
     return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   };
   return (
-   <div className="legal-card">
-  <h4 className="mb-3">Mortgage Calculator</h4>
+    <div className="legal-card">
+      <h4 className="mb-3">Mortgage Calculator</h4>
 
-  {/* Responsive layout */}
-  <div className="d-flex flex-column flex-md-row justify-content-between gap-3">
-    
-    {/* LEFT COLUMN */}
-    <div className="d-flex flex-column gap-3 w-100 w-md-50">
-      {/* Mortgage Breakdown */}
-      <div className="legal-section">
-        <p className="legal-section-title">Mortgage Breakdown</p>
-        <div className="d-flex justify-content-between align-items-center flex-wrap">
-          <p className="legal-small mb-0">Est. monthly repayment</p>
-          <h3 className="legal-monthly mb-0">
-            {mortgageResult
-              ? formatCurrency(mortgageResult.monthly) + "/ month"
-              : "-"}
-          </h3>
+      {/* Responsive layout */}
+      <div className="d-flex flex-column flex-md-row justify-content-between gap-3">
+        {/* LEFT COLUMN */}
+        <div className="d-flex flex-column gap-3 w-100 w-md-50">
+          {/* Mortgage Breakdown */}
+          <div className="legal-section">
+            <p className="legal-section-title">Mortgage Breakdown</p>
+            <div className="d-flex justify-content-between align-items-center flex-wrap">
+              <p className="legal-small mb-0">Est. monthly repayment</p>
+              <h3 className="legal-monthly mb-0">
+                {mortgageResult
+                  ? formatCurrency(mortgageResult.monthly) + "/ month"
+                  : "-"}
+              </h3>
+            </div>
+
+            {/* Progress bar */}
+            <div className="progress-container w-100">
+              <div className="progress-blue" style={{ width: "33%" }}></div>
+              <div className="progress-teal" style={{ width: "67%" }}></div>
+            </div>
+
+            {/* Principal & Interest */}
+            <div className="legend d-flex flex-column flex-sm-row gap-2">
+              <span className="legend-item">
+                <span
+                  className="legend-dot"
+                  style={{ background: "#1E90FF" }}
+                ></span>
+                RM{" "}
+                {mortgageResult
+                  ? formatCurrency(
+                      mortgageResult.principal /
+                        (parseInt(mortgage.loanTenure) * 12)
+                    )
+                  : "-"}{" "}
+                Principal
+              </span>
+              <span className="legend-item">
+                <span
+                  className="legend-dot"
+                  style={{ background: "#20B2AA" }}
+                ></span>
+                RM{" "}
+                {mortgageResult
+                  ? formatCurrency(
+                      mortgageResult.interest /
+                        (parseInt(mortgage.loanTenure) * 12)
+                    )
+                  : "-"}{" "}
+                Interest
+              </span>
+            </div>
+          </div>
+
+          {/* Upfront Costs */}
+          <div className="legal-section">
+            <p className="legal-section-title">Upfront Costs</p>
+            <div className="d-flex justify-content-between align-items-center flex-wrap">
+              <p className="legal-small mb-0">Total Downpayment</p>
+              <h3 className="legal-monthly mb-0">
+                {mortgageResult
+                  ? formatCurrency(mortgageResult.downpayment)
+                  : "-"}
+              </h3>
+            </div>
+
+            <div className="progress-container w-100">
+              <div className="progress-blue" style={{ width: "11%" }}></div>
+              <div className="progress-teal" style={{ width: "89%" }}></div>
+            </div>
+
+            <div className="legend d-flex flex-column gap-2">
+              <span className="legend-item">
+                <span
+                  className="legend-dot"
+                  style={{ background: "#1E90FF" }}
+                ></span>
+                Downpayment
+              </span>
+              <span className="legend-item">
+                <span
+                  className="legend-dot"
+                  style={{ background: "#20B2AA" }}
+                ></span>
+                RM{" "}
+                {mortgage.loanAmount
+                  ? parseFloat(
+                      mortgage.loanAmount.replace(/,/g, "")
+                    ).toLocaleString()
+                  : "-"}{" "}
+                loan amount at{" "}
+                {Math.round(
+                  (parseFloat(mortgage.loanAmount.replace(/,/g, "")) /
+                    parseFloat(mortgage.propertyPrice.replace(/,/g, ""))) *
+                    100
+                )}
+                % Loan-to-value
+              </span>
+            </div>
+          </div>
+
+          {/* Desktop button (inside LEFT column only) */}
+          <button
+            className="legal-btn d-none d-md-block"
+            onClick={handleCalculateMortgage}
+          >
+            Calculate
+          </button>
         </div>
 
-        {/* Progress bar */}
-        <div className="progress-container w-100">
-          <div className="progress-blue" style={{ width: "33%" }}></div>
-          <div className="progress-teal" style={{ width: "67%" }}></div>
-        </div>
-
-        {/* Principal & Interest */}
-        <div className="legend d-flex flex-column flex-sm-row gap-2">
-          <span className="legend-item">
-            <span className="legend-dot" style={{ background: "#1E90FF" }}></span>
-            RM{" "}
-            {mortgageResult
-              ? formatCurrency(
-                  mortgageResult.principal /
-                    (parseInt(mortgage.loanTenure) * 12)
-                )
-              : "-"}{" "}
-            Principal
-          </span>
-          <span className="legend-item">
-            <span className="legend-dot" style={{ background: "#20B2AA" }}></span>
-            RM{" "}
-            {mortgageResult
-              ? formatCurrency(
-                  mortgageResult.interest /
-                    (parseInt(mortgage.loanTenure) * 12)
-                )
-              : "-"}{" "}
-            Interest
-          </span>
-        </div>
-      </div>
-
-      {/* Upfront Costs */}
-      <div className="legal-section">
-        <p className="legal-section-title">Upfront Costs</p>
-        <div className="d-flex justify-content-between align-items-center flex-wrap">
-          <p className="legal-small mb-0">Total Downpayment</p>
-          <h3 className="legal-monthly mb-0">
-            {mortgageResult
-              ? formatCurrency(mortgageResult.downpayment)
-              : "-"}
-          </h3>
-        </div>
-
-        <div className="progress-container w-100">
-          <div className="progress-blue" style={{ width: "11%" }}></div>
-          <div className="progress-teal" style={{ width: "89%" }}></div>
-        </div>
-
-        <div className="legend d-flex flex-column gap-2">
-          <span className="legend-item">
-            <span className="legend-dot" style={{ background: "#1E90FF" }}></span>
-            Downpayment
-          </span>
-          <span className="legend-item">
-            <span className="legend-dot" style={{ background: "#20B2AA" }}></span>
-            RM{" "}
-            {mortgage.loanAmount
-              ? parseFloat(mortgage.loanAmount.replace(/,/g, "")).toLocaleString()
-              : "-"}{" "}
-            loan amount at{" "}
-            {Math.round(
-              (parseFloat(mortgage.loanAmount.replace(/,/g, "")) /
-                parseFloat(mortgage.propertyPrice.replace(/,/g, ""))) *
-                100
-            )}
-            % Loan-to-value
-          </span>
-        </div>
-      </div>
-
-      {/* Desktop button (inside LEFT column only) */}
-      <button
-        className="legal-btn d-none d-md-block"
-        onClick={handleCalculateMortgage}
-      >
-        Calculate
-      </button>
-    </div>
-
-    {/* RIGHT COLUMN */}
-    <div className="d-flex flex-column gap-2 w-100 w-md-50">
-      <label className="legal-title">Property Price</label>
-      <input
-        className="legal-input"
-        value={`RM ${mortgage.propertyPrice}`}
-        onChange={(e) => {
-          const raw = e.target.value.replace(/[^\d]/g, "");
-          setMortgage({ ...mortgage, propertyPrice: raw });
-        }}
-        placeholder="RM 0"
-      />
-
-      <label className="legal-title">Loan Amount</label>
-      <input
-        className="legal-input"
-        value={`RM ${formatNumber(mortgage.loanAmount)}`}
-        onChange={(e) => {
-          const raw = e.target.value.replace(/[^\d]/g, "");
-          setMortgage({ ...mortgage, loanAmount: raw });
-        }}
-        placeholder="RM 0"
-      />
-
-      <div className="d-flex flex-column flex-sm-row gap-3 align-items-stretch">
-        <div className="flex-fill position-relative">
-          <label className="legal-title">Interest Rate</label>
+        {/* RIGHT COLUMN */}
+        <div className="d-flex flex-column gap-2 w-100 w-md-50">
+          <label className="legal-title">Property Price</label>
           <input
-            className="legal-input pe-5"
-            value={mortgage.interestRate}
-            onChange={(e) =>
-              setMortgage({ ...mortgage, interestRate: e.target.value })
-            }
-            placeholder="3.5"
+            className="legal-input"
+            value={`RM ${mortgage.propertyPrice}`}
+            onChange={(e) => {
+              const raw = e.target.value.replace(/[^\d]/g, "");
+              setMortgage({ ...mortgage, propertyPrice: raw });
+            }}
+            placeholder="RM 0"
           />
-          <span className="position-absolute end-0 top-50 translate-middle-y me-2 text-muted">
-            %
-          </span>
-        </div>
 
-        <div className="flex-fill position-relative">
-          <label className="legal-title">Loan Tenure</label>
+          <label className="legal-title">Loan Amount</label>
           <input
-            className="legal-input pe-5"
-            value={mortgage.loanTenure}
-            onChange={(e) =>
-              setMortgage({ ...mortgage, loanTenure: e.target.value })
-            }
-            placeholder="30"
+            className="legal-input"
+            value={`RM ${formatNumber(mortgage.loanAmount)}`}
+            onChange={(e) => {
+              const raw = e.target.value.replace(/[^\d]/g, "");
+              setMortgage({ ...mortgage, loanAmount: raw });
+            }}
+            placeholder="RM 0"
           />
-          <span className="position-absolute end-0 top-50 translate-middle-y me-2 text-muted">
-            Years
-          </span>
+
+          <div className="d-flex flex-column flex-sm-row gap-3 align-items-stretch">
+            {/* Interest Rate */}
+            <div className="flex-fill">
+              <label className="legal-title">Interest Rate</label>
+              <div className="input-group">
+                <input
+                  type="number"
+                  className="form-control legal-input"
+                  value={mortgage.interestRate}
+                  onChange={(e) =>
+                    setMortgage({ ...mortgage, interestRate: e.target.value })
+                  }
+                  placeholder="3.5"
+                />
+                <span className="input-group-text">%</span>
+              </div>
+            </div>
+
+            {/* Loan Tenure */}
+            <div className="flex-fill">
+              <label className="legal-title">Loan Tenure</label>
+              <div className="input-group">
+                <input
+                  type="number"
+                  className="form-control legal-input"
+                  value={mortgage.loanTenure}
+                  onChange={(e) =>
+                    setMortgage({ ...mortgage, loanTenure: e.target.value })
+                  }
+                  placeholder="30"
+                />
+                <span className="input-group-text">Years</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Mobile button (inside RIGHT column only) */}
+          <button
+            className="legal-btn mt-3 d-block d-md-none"
+            onClick={handleCalculateMortgage}
+          >
+            Calculate
+          </button>
         </div>
       </div>
-
-      {/* Mobile button (inside RIGHT column only) */}
-      <button
-        className="legal-btn mt-3 d-block d-md-none"
-        onClick={handleCalculateMortgage}
-      >
-        Calculate
-      </button>
     </div>
-  </div>
-</div>
-
-
   );
 };
 

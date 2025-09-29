@@ -138,6 +138,7 @@ function BusinessCard() {
 
   // const { template } = useTemplate();
   const [agent, setAgent] = useState({});
+  const [loading, setLoading] = useState(true);
 
   const iconMap = {
   instagram: <FaInstagram />,
@@ -188,6 +189,9 @@ function BusinessCard() {
       } catch (err) {
         console.error("Error fetching listing info:", err);
       }
+      finally {
+        setLoading(false); // ✅ done fetching
+      }
     };
 
     fetchListingInfo();
@@ -197,18 +201,15 @@ function BusinessCard() {
     if (agent) {
     }
   }, [agent]);
-  const handleShare = () => {
-    if (navigator.share) {
-      navigator.share({
-        title: `Contact ${agent.name}`,
-        text: `Here are the contact details of ${agent.name}`,
-        url: window.location.href,
-      });
-    } else {
-      navigator.clipboard.writeText(window.location.href);
-      alert("Link copied to clipboard!");
-    }
-  };
+  if (loading || !agent || !listingData) {
+    return (
+      <div className="d-flex justify-content-center align-items-center min-vh-100">
+        <div className="spinner-border text-primary" role="status">
+          <span className="visually-hidden">Loading...</span>
+        </div>
+      </div>
+    );
+  }
   const backgroundMap = {
     template1: BackgroundImage,
     template2: BackgroundImage2,
@@ -483,7 +484,7 @@ END:VCARD
                 <div className="mb-3 text-center pt-4">
                   <div className="ratio ratio-16x9">
                     <iframe
-                      src={`https://www.youtube.com/embed/${listingData.card.youtube_id}`}
+                      src={`https://www.youtube.com/embed/${mockJson.card.youtube_id}`}
                       title="YouTube video"
                       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                       allowFullScreen

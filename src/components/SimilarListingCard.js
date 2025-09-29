@@ -114,105 +114,105 @@ const SimilarListing = ({ listings }) => {
           View all
         </a>
       </div>
-  <div className="position-relative">
+      <div className="position-relative">
+        {/* Scroll buttons (hidden on mobile) */}
+        {showLeft && (
+          <button
+            className="scroll-button left d-none d-md-flex"
+            onClick={scrollLeft}
+          >
+            &#8249;
+          </button>
+        )}
+        {showRight && (
+          <button
+            className="scroll-button right d-none d-md-flex"
+            onClick={scrollRight}
+          >
+            &#8250;
+          </button>
+        )}
 
-      {/* Scroll buttons (hidden on mobile) */}
-      {showLeft && (
-        <button
-          className="scroll-button left d-none d-md-flex"
-          onClick={scrollLeft}
-        >
-          &#8249;
-        </button>
-      )}
-      {showRight && (
-        <button
-          className="scroll-button right d-none d-md-flex"
-          onClick={scrollRight}
-        >
-          &#8250;
-        </button>
-      )}
+        {/* Scrollable wrapper */}
+        <div onScroll={handleScroll}>
+          <div
+            ref={scrollRef}
+            id="scroll-container"
+            className="scroll-container flex-md-row flex-column"
+            onScroll={handleScroll} // ✅ make sure this is here
+          >
+            {(listings ?? []).slice(0, 12).map((card) => {
+              const modus = card.listing_modus?.toUpperCase();
+              const isForSale = modus === "FOR SALE";
+              const isForRental = modus === "FOR RENT";
+              const statusText = isForSale
+                ? "For Sale"
+                : isForRental
+                ? "For Rent"
+                : "";
+              const statusColor = isForSale
+                ? "bg-orange"
+                : isForRental
+                ? "bg-teal"
+                : "bg-secondary";
+              const belowMarket = card.below_market === "Y";
 
-      {/* Scrollable wrapper */}
-      <div  onScroll={handleScroll}>
-        <div
-          ref={scrollRef}
-          id="scroll-container"
-          className="scroll-container flex-md-row flex-column"
-          onScroll={handleScroll} // ✅ make sure this is here
-        >
-          {(listings ?? []).slice(0, 12).map((card) => {
-            const modus = card.listing_modus?.toUpperCase();
-            const isForSale = modus === "FOR SALE";
-            const isForRental = modus === "FOR RENT";
-            const statusText = isForSale
-              ? "For Sale"
-              : isForRental
-              ? "For Rent"
-              : "";
-            const statusColor = isForSale
-              ? "bg-orange"
-              : isForRental
-              ? "bg-teal"
-              : "bg-secondary";
-            const belowMarket = card.below_market === "Y";
+              return (
+                <div
+                  key={card.id_listing}
+                  onClick={() =>
+                    handleViewDetails(
+                      card.id_listing,
+                      card.ads_title,
+                      card.location,
+                      card.permalink,
+                      card.permalink_previous
+                    )
+                  }
+                  className="card property-card shadow-sm border-0 flex-shrink-0"
+                >
+                  <div>
+                    <img
+                      src={
+                        card.photos?.[0] ||
+                        "https://via.placeholder.com/300x200"
+                      }
+                      className="card-img-top property-img"
+                      alt={card.ads_title}
+                      //  onClick={() =>
+                      //           handleViewDetails(
+                      //             card.id_listing,
+                      //             card.ads_title,
+                      //             card.location,
+                      //             card.permalink,
+                      //             card.permalink_previous
+                      //           )
+                      //         }
+                    />
+                    {(statusText || belowMarket) && (
+                      <div className="position-absolute top-0 start-0 m-2 d-flex flex-column gap-1 z-2">
+                        {statusText && (
+                          <div
+                            className={`d-flex align-items-center justify-content-center text-white fw-semibold status-badge ${statusColor}`}
+                          >
+                            {statusText}
+                          </div>
+                        )}
+                        {belowMarket && (
+                          <div className="d-flex align-items-center justify-content-center text-white fw-semibold below-badge">
+                            Below Market
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                  <div className="card-body d-flex flex-column">
+                    <h5 className="card-title fw-bold text-dark fs-5">
+                      RM {card.price}
+                    </h5>
+                    <p className=" mb-1 resp-textTitle">{card.ads_title}</p>
 
-            return (
-              <div
-                key={card.id_listing}
-                onClick={() =>
-                  handleViewDetails(
-                    card.id_listing,
-                    card.ads_title,
-                    card.location,
-                    card.permalink,
-                    card.permalink_previous
-                  )
-                }
-                className="card property-card shadow-sm border-0 flex-shrink-0"
-              >
-                <div >
-                  <img
-                    src={
-                      card.photos?.[0] || "https://via.placeholder.com/300x200"
-                    }
-                    className="card-img-top property-img"
-                    alt={card.ads_title}
-                    //  onClick={() =>
-                    //           handleViewDetails(
-                    //             card.id_listing,
-                    //             card.ads_title,
-                    //             card.location,
-                    //             card.permalink,
-                    //             card.permalink_previous
-                    //           )
-                    //         }
-                  />
-                  {(statusText || belowMarket) && (
-                    <div className="position-absolute top-0 start-0 m-2 d-flex flex-column gap-1 z-2">
-                      {statusText && (
-                        <div
-                          className={`d-flex align-items-center justify-content-center text-white fw-semibold status-badge ${statusColor}`}
-                        >
-                          {statusText}
-                        </div>
-                      )}
-                      {belowMarket && (
-                        <div className="d-flex align-items-center justify-content-center text-white fw-semibold below-badge">
-                          Below Market
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </div>
-                <div className="card-body d-flex flex-column">
-                  <h5 className="card-title fw-bold text-dark fs-5">
-                    RM {card.price}
-                  </h5>
-                  <p className=" mb-1 resp-textTitle">{card.ads_title}</p>
-
-                      <p className="text-muted mb-2 resp-text1">
+                    <p className="text-muted mb-2 resp-text1">
                         {/* Location */}
                         <div className="row mt-2 text-muted resp-text1">
                           <div className="col-auto pe-0">
@@ -230,8 +230,10 @@ const SimilarListing = ({ listings }) => {
                         </div>
 
                         {/* Category / Type */}
-                  <div className="row mt-3 text-muted resp-text1 lh-sm">
-
+                        <div
+                          className="row mt-3 text-muted resp-text1"
+                          style={{ lineHeight: "1.3" }}
+                        >
                           <div className="col">
                             {card.category_type_title_holding_lottype_storey}
                           </div>
@@ -327,12 +329,12 @@ const SimilarListing = ({ listings }) => {
                           </span>
                         </div>
                       )}
+                  </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
         </div>
-      </div>
       </div>
 
       {/* Modal unchanged */}

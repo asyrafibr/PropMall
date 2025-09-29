@@ -127,7 +127,25 @@
     object-fit: contain;
     z-index: 1; /* image stays behind */
   }
-
+.resp-badge {
+  font-weight: 600;
+  font-size: 0.75rem;
+  width: 100px; /* force same width for all */
+  text-align: center; /* 📱 12px for mobile */
+}
+@media (min-width: 768px) {
+  .resp-badge {
+    font-size: 1rem; /* 💻 16px for desktop */
+  }
+  .resp-badge2 {
+    font-weight: 600;
+    font-size: 1rem;
+  }
+  .resp-badge3 {
+    font-weight: 600;
+    font-size: 1rem;
+  }
+}
   /* nav buttons */
   .nav-button {
     font-size: 2rem;

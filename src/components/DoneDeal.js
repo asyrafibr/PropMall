@@ -6,7 +6,11 @@ import { getFeaturedList } from "../api/axiosApi";
 import { FaBed, FaBath, FaPhone, FaStar } from "react-icons/fa";
 import { useTemplate } from "../context/TemplateContext";
 import bg from "../image/titlebg3.png";
-
+import builtIcon from "../image/built_up.svg";
+import landIcon from "../image/land_size.svg";
+import locationIcon from "../image/size_built.svg";
+import bathIcon from "../image/bath.svg";
+import bedIcon from "../image/bed.svg";
 const DoneDeal = () => {
   const [doneDeal, setDoneDeal] = useState([]);
   const [currentImageIndex, setCurrentImageIndex] = useState({});
@@ -235,22 +239,21 @@ const DoneDeal = () => {
       <div
         className={`
 px-4 px-lg-5 py-4 pb-1    ${
-      template === "template3"
-        ? `
+          template === "template3"
+            ? `
       d-flex align-items-center justify-content-center
       bg-cover bg-center bg-no-repeat
       mt-3 mb-3
       h-50px w-20p pt-10px
     `
-        : ""
-    }
+            : ""
+        }
     my-template-div ${template === "template3" ? "template3-bg" : ""}
   `}
-       
       >
         <p className="text-dark px-0 px-lg-3 fw-semibold font-poppins mb-0 done-deals-text">
-  Done Deals
-</p>
+          Done Deals
+        </p>
       </div>
 
       <div className="container-fluid px-2 px-md-5">
@@ -317,12 +320,11 @@ px-4 px-lg-5 py-4 pb-1    ${
                         {showTag && (
                           <div
                             className={`
-      position-absolute top-0 start-0 m-2
-      d-flex align-items-center justify-content-center
-      text-white rounded
-      status-badge
-      ${isForSale ? "bg-sale" : isForRental ? "bg-rental" : "bg-default"}
-    `}
+            position-absolute top-0 start-0 m-2
+            d-flex align-items-center justify-content-center
+            text-white rounded status-badge
+            ${isForSale ? "bg-sale" : isForRental ? "bg-rental" : "bg-default"}
+          `}
                           >
                             <span className="fs-6 fw-semibold font-poppins">
                               {statusText}
@@ -349,123 +351,133 @@ px-4 px-lg-5 py-4 pb-1    ${
                         <h5 className="fs-5 fw-semibold font-poppins">
                           RM {card.price}
                         </h5>
-
                         <p className="text-muted mb-1">
                           <span className="fs-5 fw-normal font-poppins">
                             {card.ads_title}
                           </span>
-                          <br />
-                          <span className="fs-6 fw-normal font-poppins">
-                            {card.location_area}
-                          </span>
                         </p>
 
-                        <p className="text-muted mb-2 fs-6 fw-normal font-poppins">
-                          {card.category_type_title_holding_lottype_storey}
-                          <br />
-
-                          {/* Built-up Size */}
-                          {card.built_size && (
-                            <div>
-                              Built-up Size: {card.built_size}
-                              {card.built_size_unit}
-                              {!card.land_size && card.built_price_per_unit && (
-                                <>
-                                  {" "}
-                                  ({card.monetary_currency}
-                                  {card.built_price_per_unit} per sqft)
-                                </>
-                              )}
-                            </div>
-                          )}
-
-                          {/* Land Size only */}
-                          {!card.built_size && card.land_size && (
-                            <div>
-                              Land Size: {card.land_size} {card.land_size_unit}
-                              {["acre", "hectar"].includes(
-                                card.land_size_unit?.toLowerCase()
-                              ) &&
-                                card.land_price_per_unit && (
-                                  <>
-                                    {" "}
-                                    ({card.monetary_currency}{" "}
-                                    {card.land_price_per_unit} per{" "}
-                                    {card.land_size_unit})
-                                  </>
-                                )}
-                              {["sqft", "sqm"].includes(
-                                card.land_size_unit?.toLowerCase()
-                              ) &&
-                                card.land_price_per_sqft && (
-                                  <>
-                                    {" "}
-                                    ({card.monetary_currency}{" "}
-                                    {card.land_price_per_sqft} per sqft)
-                                  </>
-                                )}
-                            </div>
-                          )}
-
-                          {/* Both Built & Land */}
-                          {card.built_size && card.land_size && (
-                            <div>
-                              Land Size: {card.land_size} {card.land_size_unit}
-                              {["acre", "hectar"].includes(
-                                card.land_size_unit?.toLowerCase()
-                              ) &&
-                                card.land_price_per_unit && (
-                                  <>
-                                    {" "}
-                                    ({card.monetary_currency}{" "}
-                                    {card.land_price_per_unit} per{" "}
-                                    {card.land_size_unit})
-                                  </>
-                                )}
-                              {["sqft", "sqm"].includes(
-                                card.land_size_unit?.toLowerCase()
-                              ) &&
-                                card.land_price_per_sqft && (
-                                  <>
-                                    {" "}
-                                    ({card.monetary_currency}{" "}
-                                    {card.land_price_per_sqft} per sqft)
-                                  </>
-                                )}
-                            </div>
-                          )}
-                        </p>
-
-                        {/* Footer Actions */}
-                        <div className="mt-auto">
-                          {card.bathroom && card.room > 0 && (
-                            <div className="d-flex flex-wrap gap-3 mb-3">
-                              <span className="d-flex align-items-center gap-2">
-                                <FaBed /> {card.room}
-                              </span>
-                              <span className="d-flex align-items-center gap-2">
-                                <FaBath /> {card.bathroom}
-                              </span>
-                            </div>
-                          )}
-
-                          <div className="d-flex flex-column flex-md-row gap-2">
-                            <button className="btn btn-outline-secondary w-100">
-                              <i className="bi bi-whatsapp me-1"></i> Whatsapp
-                            </button>
-                            {/* <button
-                              onClick={() =>
-                                handleViewDetails(
-                                  card.id_listing,
-                                  card.ads_title,
-                                  card.location
-                                )
-                              }
-                              className="btn btn-outline-secondary w-100"
-                            >
-                              <i className="bi bi-info-circle me-1"></i> Details
-                            </button> */}
+                        {/* Location */}
+                        <div className="row mt-2 text-muted resp-text1">
+                          <div className="col-auto pe-0">
+                            <img
+                              src={locationIcon}
+                              alt="Location Icon"
+                              width={16}
+                              height={16}
+                              className="me-2"
+                            />
                           </div>
+                          <div className="col ps-0">
+                            {card.location_description}
+                          </div>
+                        </div>
+
+                        {/* Category / Type */}
+                        <div
+                          className="row mt-3 text-muted resp-text1"
+                          style={{ lineHeight: "1.3" }}
+                        >
+                          <div className="col">
+                            {card.category_type_title_holding_lottype_storey}
+                          </div>
+                        </div>
+
+                        {/* Built-up and Land Size */}
+                        {card.built_size && card.land_size && (
+                          <>
+                            <div className="row mt-2 text-muted resp-text1 lh-1">
+                              <div className="col-auto pe-0">
+                                <img
+                                  src={builtIcon}
+                                  alt="Built-up Icon"
+                                  width={16}
+                                  height={16}
+                                  className="me-2"
+                                />
+                              </div>
+                              <div className="col ps-0">
+                                Built-up Size: {card.built_size}{" "}
+                                {card.built_size_unit}{" "}
+                                <small className="text-muted">
+                                  (RM {card.built_price_per_sqft} per sqft)
+                                </small>
+                              </div>
+                            </div>
+
+                            <div className="row mt-2 text-muted resp-text1 lh-1">
+                              <div className="col-auto pe-0">
+                                <img
+                                  src={landIcon}
+                                  alt="Land Size Icon"
+                                  width={16}
+                                  height={16}
+                                  className="me-2"
+                                />
+                              </div>
+                              <div className="col ps-0">
+                                Land Size: {card.land_size}{" "}
+                                {card.land_size_unit}{" "}
+                                <small className="text-muted">
+                                  (RM {card.land_price_per_sqft} per sqft)
+                                </small>
+                              </div>
+                            </div>
+                          </>
+                        )}
+
+                        {/* Only Land Size */}
+                        {!card.built_size && card.land_size && (
+                          <div className="row mt-2 text-muted resp-text1 lh-1">
+                            <div className="col-auto pe-0">
+                              <img
+                                src={landIcon}
+                                alt="Land Size Icon"
+                                width={16}
+                                height={16}
+                                className="me-2"
+                              />
+                            </div>
+                            <div className="col ps-0">
+                              Land Size: {card.land_size} {card.land_size_unit}{" "}
+                              <small className="text-muted">
+                                (RM {card.land_price_per_sqft} per sqft)
+                              </small>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Rooms & Bathrooms */}
+                        {card.bathroom && card.room > 0 && (
+                          <div className="d-flex flex-wrap gap-3 mb-3">
+                            <span className="d-flex align-items-center gap-2 resp-text1">
+                              <img
+                                src={bedIcon}
+                                alt="Bed Icon"
+                                width={16}
+                                height={16}
+                                className="me-2"
+                              />
+                              {card.room}
+                            </span>
+                            <span className="d-flex align-items-center gap-2 resp-text1">
+                              <img
+                                src={bathIcon}
+                                alt="Bath Icon"
+                                width={16}
+                                height={16}
+                                className="me-2"
+                              />
+                              {card.bathroom}
+                            </span>
+                          </div>
+                        )}
+
+                        {/* WhatsApp Button pinned at bottom */}
+                        <div className="d-flex flex-column flex-md-row gap-2 mt-auto">
+                          <button className="btn btn-outline-secondary w-100">
+                            <i className="bi bi-whatsapp me-1"></i> Whatsapp
+                          </button>
                         </div>
                       </div>
                     </div>

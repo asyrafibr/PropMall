@@ -4,7 +4,7 @@ import { useTemplate } from "../context/TemplateContext";
 import { FaLocationDot } from "react-icons/fa6";
 import builtIcon from "../image/built_up.svg";
 import landIcon from "../image/land_size.svg";
-import './ListingCard.css'
+import "./ListingCard.css";
 const ListingCard = ({ product, handleViewDetails }) => {
   const {
     id_listing,
@@ -29,7 +29,8 @@ const ListingCard = ({ product, handleViewDetails }) => {
     land_price_per_sqft,
     land_size_unit,
     land_price_per_unit,
-    built_size_unit
+    built_size_unit,
+    publish_dt,
   } = product;
   const [modalImages, setModalImages] = useState([]);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -80,75 +81,83 @@ const ListingCard = ({ product, handleViewDetails }) => {
   const isForSale = modus === "FOR SALE";
   const isForRent = modus === "FOR RENT";
   const statusText = isForSale ? "For Sale" : isForRent ? "For Rent" : "";
-  const statusColor = isForSale ? "#FF7A00" : isForRent ? "#007B83" : "#ccc";
-  const isBelowMarket = below_market === "Y";
+      const statusColor = isForSale
+                ? "bg-orange text-white"
+                : isForRent
+                ? "bg-info text-white"
+                : "bg-secondary text-white";  const isBelowMarket = below_market === "Y";
 
   return (
     <div className="d-flex justify-content-center mb-3">
       <div className="card w-100">
+        <div className="p-2 resp-text1">Listed on {publish_dt}</div>
+
+        {/* Image full width, no side padding */}
+        <div
+          className="position-relative mb-3 overflow-hidden rounded-0"
+          style={{ height: "300px" }}
+        >
+          <img
+            src={photo1}
+            alt={ads_title}
+            className="card-img-top h-100 w-100 object-fit-cover cursor-pointer rounded-0"
+            onClick={() => openModal(photos || [], 0)}
+          />
+
+          {/* Tag Badges */}
+          {(statusText || isBelowMarket) && (
+           <div className="position-absolute top-0 start-0 m-2 d-flex flex-column gap-1 badge-container">
+                          {statusText && (
+                            <div
+                              className={`d-flex align-items-center justify-content-start rounded resp-badge px-3 py-1 ${statusColor}`}
+                            >
+                              {statusText}
+                            </div>
+                          )}
+                          {isBelowMarket && (
+                            <div className="d-flex align-items-center justify-content-center rounded bg-success text-white resp-badge3 px-3 py-1 mt-1 below-market-badge">
+                              Below Market
+                            </div>
+                          )}
+                        </div>
+          )}
+
+          {/* Exclusive Ribbon */}
+          {product.exclusive === "Y" && (
+            <div
+              style={{
+                position: "absolute",
+                top: "2rem",
+                right: "-2.5rem",
+                backgroundColor: "#f6b400",
+                color: "white",
+                transform: "rotate(45deg)",
+                width: "200px",
+                height: "30px",
+                textAlign: "center",
+                fontWeight: "bold",
+                fontSize: "14px",
+                zIndex: 2,
+                overflow: "hidden",
+                whiteSpace: "nowrap",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                pointerEvents: "none",
+              }}
+            >
+              Exclusive
+            </div>
+          )}
+
+          <span className="position-absolute bottom-0 end-0 m-2 text-white small">
+            <i className="bi bi-camera-fill me-1"></i>
+            {photos.length ?? 0}
+          </span>
+        </div>
+
+        {/* Content with padding */}
         <div className="p-3">
-          {/* Image with Badges */}
-          <div
-            className="position-relative mb-3 overflow-hidden rounded"
-            style={{ height: "300px" }}
-          >
-            <img
-              src={photo1}
-              alt={ads_title}
-              className="card-img-top h-100 w-100 object-fit-cover cursor-pointer"
-              onClick={() => openModal(photos || [], 0)}
-            />
-
-            {/* Tag Badges */}
-            {(statusText || isBelowMarket) && (
-              <div className="position-absolute top-0 start-0 d-flex flex-column gap-2 p-2">
-                {statusText && (
-                  <span
-                    className="badge text-white"
-                    style={{ backgroundColor: statusColor }}
-                  >
-                    {statusText}
-                  </span>
-                )}
-                {isBelowMarket && (
-                  <span className="badge bg-success">Below Market</span>
-                )}
-              </div>
-            )}
-
-            {/* Exclusive Ribbon */}
-            {product.exclusive === "Y" && (
-              <div
-                style={{
-                  position: "absolute",
-                  top: "2rem",
-                  right: "-2.5rem",
-                  backgroundColor: "#f6b400",
-                  color: "white",
-                  transform: "rotate(45deg)",
-                  width: "200px",
-                  height: "30px",
-                  textAlign: "center",
-                  fontWeight: "bold",
-                  fontSize: "14px",
-                  zIndex: 2,
-                  overflow: "hidden",
-                  whiteSpace: "nowrap",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  pointerEvents: "none",
-                }}
-              >
-                Exclusive
-              </div>
-            )}
-            <span className="position-absolute bottom-0 end-0 m-2 text-white small">
-              <i className="bi bi-camera-fill me-1"></i>
-              {photos.length ?? 0}
-            </span>
-          </div>
-
           {/* Price + Save */}
           <div className="d-flex justify-content-between align-items-center mb-2">
             <div className="fw-bold fs-5">
@@ -157,10 +166,6 @@ const ListingCard = ({ product, handleViewDetails }) => {
               {monetary_currency} {price}
               {listing_modus === "FOR RENT" && " /month"}
             </div>
-            {/* <button className="btn btn-link p-0 d-flex align-items-center gap-1">
-              <FaStar className="text-warning" />
-              Save
-            </button> */}
           </div>
 
           {/* Title */}
@@ -226,7 +231,7 @@ const ListingCard = ({ product, handleViewDetails }) => {
 
             {!built_size && land_size && (
               <>
-             <div className="d-flex align-items-center">
+                <div className="d-flex align-items-center">
                   <img
                     src={landIcon}
                     alt="Land Size Icon"
@@ -332,7 +337,7 @@ const ListingCard = ({ product, handleViewDetails }) => {
                 }
               >
                 <i className="bi bi-info-circle text-secondary"></i>
-                View Details
+                Details
               </button>
             </div>
           </div>
